@@ -1,0 +1,92 @@
+#############
+# .NET
+#############
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vs/
+*.vscode/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]uild[Ll]og.*
+*.dbmdl
+
+# Rider
+.idea/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# NCrunch
+.ncrunch*
+*.nunit.xml
+
+# DotCover
+.idea/
+*.dotCover
+
+# Publish
+publish/
+app.publish/
+
+# Others
+*.log
+*.tlog
+*.tmp
+*.bak
+*.orig
+*.swp
+
+#############
+# Frontend (Vite, Node.js)
+#############
+node_modules/
+dist/
+build/
+.env
+.env.*.local
+*.log
+
+#############
+# General (VSCode, sistema operativo, etc.)
+#############
+.vscode/
+*.DS_Store
+Thumbs.db
+*.sqlite
+*.sqlite3
+*.db
+
+# Configuración sensible de .NET
+appsettings.Development.json
+appsettings.Staging.json
+appsettings.Production.json
+secrets.json
+
+
+#############
+# Optional (según tu proyecto)
+#############
+# Evita que se suban archivos generados por Swagger u otras herramientas
+wwwroot/
+coverage/
