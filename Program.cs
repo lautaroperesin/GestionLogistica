@@ -33,4 +33,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/", () => "La API está corriendo");
+
 app.Run();
