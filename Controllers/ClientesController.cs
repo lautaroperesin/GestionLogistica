@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.Services;
 
 namespace LogisticaBackend.Controllers
 {
@@ -14,25 +15,25 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class ClientesController : ControllerBase
     {
-        private readonly LogisticaContext _context;
+        private readonly ClienteService _clienteService;
 
-        public ClientesController(LogisticaContext context)
+        public ClientesController(ClienteService clienteService)
         {
-            _context = context;
+            _clienteService = clienteService;
         }
 
         // GET: api/Clientes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
-            return await _context.Clientes.ToListAsync();
+            return await _clienteService.GetClientesAsync();
         }
 
         // GET: api/Clientes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Cliente>> GetCliente(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _clienteService.GetClienteByIdAsync(id);
 
             if (cliente == null)
             {
@@ -47,20 +48,13 @@ namespace LogisticaBackend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCliente(int id, Cliente cliente)
         {
-            if (id != cliente.IdCliente)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(cliente).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _clienteService.UpdateClienteAsync(cliente);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClienteExists(id))
+                if (!await _clienteService.ClienteExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -69,42 +63,25 @@ namespace LogisticaBackend.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
         // POST: api/Clientes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
         {
-            _context.Clientes.Add(cliente);
-            await _context.SaveChangesAsync();
+            var nuevoCliente = await _clienteService.CreateClienteAsync(cliente);
 
-            return CreatedAtAction("GetCliente", new { id = cliente.IdCliente }, cliente);
+            return CreatedAtAction("GetCliente", new { id = nuevoCliente.IdCliente }, nuevoCliente);
         }
 
         // DELETE: api/Clientes/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCliente(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            // Soft delete: set Deleted to true instead of removing the record
-            cliente.Deleted = true;
-            _context.Entry(cliente).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await _clienteService.DeleteClienteAsync(id);
 
             return NoContent();
-        }
-
-        private bool ClienteExists(int id)
-        {
-            return _context.Clientes.Any(e => e.IdCliente == id);
         }
     }
 }

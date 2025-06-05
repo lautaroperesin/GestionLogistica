@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.Services;
 
 namespace LogisticaBackend.Controllers
 {
@@ -14,31 +15,29 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class ConductoresController : ControllerBase
     {
-        private readonly LogisticaContext _context;
+        private readonly ConductorService _conductorService;
 
-        public ConductoresController(LogisticaContext context)
+        public ConductoresController(ConductorService conductorService)
         {
-            _context = context;
+            _conductorService = conductorService;
         }
 
         // GET: api/Conductores
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Conductor>>> GetConductores()
         {
-            return await _context.Conductores.ToListAsync();
+            return await _conductorService.GetConductoresAsync();
         }
 
         // GET: api/Conductores/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Conductor>> GetConductor(int id)
         {
-            var conductor = await _context.Conductores.FindAsync(id);
-
+            var conductor = await _conductorService.GetConductorByIdAsync(id);
             if (conductor == null)
             {
                 return NotFound();
             }
-
             return conductor;
         }
 
@@ -49,27 +48,24 @@ namespace LogisticaBackend.Controllers
         {
             if (id != conductor.IdConductor)
             {
-                return BadRequest();
+                return BadRequest("El ID del conductor no coincide.");
             }
-
-            _context.Entry(conductor).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                conductor = await _conductorService.UpdateConductorAsync(conductor);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ConductorExists(id))
+                if (await _conductorService.GetConductorByIdAsync(id) == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-
             return NoContent();
         }
 
@@ -78,8 +74,14 @@ namespace LogisticaBackend.Controllers
         [HttpPost]
         public async Task<ActionResult<Conductor>> PostConductor(Conductor conductor)
         {
-            _context.Conductores.Add(conductor);
-            await _context.SaveChangesAsync();
+            try
+            {
+                conductor = await _conductorService.CreateConductorAsync(conductor);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return CreatedAtAction("GetConductor", new { id = conductor.IdConductor }, conductor);
         }
@@ -88,23 +90,20 @@ namespace LogisticaBackend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConductor(int id)
         {
-            var conductor = await _context.Conductores.FindAsync(id);
-            if (conductor == null)
+            try
             {
-                return NotFound();
+                var result = await _conductorService.DeleteConductorAsync(id);
+                if (!result)
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
-            // Soft delete: set Deleted to true instead of removing the record
-            conductor.Deleted = true;
-            _context.Entry(conductor).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool ConductorExists(int id)
-        {
-            return _context.Conductores.Any(e => e.IdConductor == id);
         }
     }
 }
