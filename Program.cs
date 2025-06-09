@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<ConductorService>();
+builder.Services.AddScoped<UbicacionService>();
 
 // Configurar Entity Framework con MySQL
 builder.Services.AddDbContext<LogisticaContext>(options =>

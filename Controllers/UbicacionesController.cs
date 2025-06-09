@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.DTOs.Ubicacion;
+using GestionLogisticaBackend.Services;
 
 namespace LogisticaBackend.Controllers
 {
@@ -14,53 +16,70 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class UbicacionesController : ControllerBase
     {
-        private readonly LogisticaContext _context;
+        private readonly UbicacionService _ubicacionService;
 
-        public UbicacionesController(LogisticaContext context)
+        public UbicacionesController(UbicacionService ubicacionService)
         {
-            _context = context;
+            _ubicacionService = ubicacionService;
         }
 
         // GET: api/Ubicaciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ubicacion>>> GetUbicaciones()
+        public async Task<ActionResult<IEnumerable<UbicacionDto>>> GetUbicaciones()
         {
-            return await _context.Ubicaciones.ToListAsync();
+            var ubicaciones = await _ubicacionService.GetUbicacionesAsync();
+
+            var ubicacionesDto = ubicaciones
+                .Select(u => new UbicacionDto
+                {
+                    IdUbicacion = u.IdUbicacion,
+                    Direccion = u.Direccion,
+                    IdLocalidad = u.IdLocalidad,
+                    LocalidadNombre = u.Localidad.Nombre
+                });
+            
+            return Ok(ubicacionesDto);
         }
 
         // GET: api/Ubicaciones/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ubicacion>> GetUbicacion(int id)
+        public async Task<ActionResult<UbicacionDto>> GetUbicacion(int id)
         {
-            var ubicacion = await _context.Ubicaciones.FindAsync(id);
+            var ubicacion = await _ubicacionService.GetUbicacionByIdAsync(id);
 
             if (ubicacion == null)
             {
                 return NotFound();
             }
 
-            return ubicacion;
+            var ubicacionDto = new UbicacionDto
+            {
+                IdUbicacion = ubicacion.IdUbicacion,
+                Direccion = ubicacion.Direccion,
+                IdLocalidad = ubicacion.IdLocalidad,
+                LocalidadNombre = ubicacion.Localidad.Nombre
+            };
+
+            return ubicacionDto;
         }
 
         // PUT: api/Ubicaciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUbicacion(int id, Ubicacion ubicacion)
+        public async Task<IActionResult> PutUbicacion(int id, CreateUbicacionDto dto)
         {
-            if (id != ubicacion.IdUbicacion)
-            {
-                return BadRequest();
-            }
+            var ubicacion = await _ubicacionService.GetUbicacionByIdAsync(id);
 
-            _context.Entry(ubicacion).State = EntityState.Modified;
+            ubicacion.Direccion = dto.Direccion;
+            ubicacion.IdLocalidad = dto.IdLocalidad;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _ubicacionService.UpdateUbicacionAsync(ubicacion);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UbicacionExists(id))
+                if (await _ubicacionService.GetUbicacionByIdAsync(ubicacion.IdUbicacion) == null)
                 {
                     return NotFound();
                 }
@@ -69,40 +88,37 @@ namespace LogisticaBackend.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
         // POST: api/Ubicaciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Ubicacion>> PostUbicacion(Ubicacion ubicacion)
+        public async Task<IActionResult> PostUbicacion(CreateUbicacionDto dto)
         {
-            _context.Ubicaciones.Add(ubicacion);
-            await _context.SaveChangesAsync();
+            var ubicacion = new Ubicacion
+            {
+                Direccion = dto.Direccion,
+                IdLocalidad = dto.IdLocalidad
+            };
 
-            return CreatedAtAction("GetUbicacion", new { id = ubicacion.IdUbicacion }, ubicacion);
+            await _ubicacionService.CreateUbicacionAsync(ubicacion);
+
+            return CreatedAtAction("GetUbicacion", new { id = ubicacion.IdUbicacion }, dto);
         }
 
         // DELETE: api/Ubicaciones/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUbicacion(int id)
         {
-            var ubicacion = await _context.Ubicaciones.FindAsync(id);
-            if (ubicacion == null)
+            var ubicacionBorrada = await _ubicacionService.DeleteUbicacionAsync(id);
+
+            if (!ubicacionBorrada)
             {
                 return NotFound();
             }
 
-            _context.Ubicaciones.Remove(ubicacion);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool UbicacionExists(int id)
-        {
-            return _context.Ubicaciones.Any(e => e.IdUbicacion == id);
         }
     }
 }
