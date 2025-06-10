@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.Services;
 
 namespace LogisticaBackend.Controllers
 {
@@ -14,31 +15,29 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class VehiculosController : ControllerBase
     {
-        private readonly LogisticaContext _context;
+        private readonly VehiculoService _vehiculoService;
 
-        public VehiculosController(LogisticaContext context)
+        public VehiculosController(VehiculoService vehiculoService)
         {
-            _context = context;
+            _vehiculoService = vehiculoService;
         }
 
         // GET: api/Vehiculos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vehiculo>>> GetVehiculos()
         {
-            return await _context.Vehiculos.ToListAsync();
+            return await _vehiculoService.GetVehiculosAsync();
         }
 
         // GET: api/Vehiculos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Vehiculo>> GetVehiculo(int id)
         {
-            var vehiculo = await _context.Vehiculos.FindAsync(id);
-
+            var vehiculo = await _vehiculoService.GetVehiculoByIdAsync(id);
             if (vehiculo == null)
             {
                 return NotFound();
             }
-
             return vehiculo;
         }
 
@@ -49,25 +48,16 @@ namespace LogisticaBackend.Controllers
         {
             if (id != vehiculo.IdVehiculo)
             {
-                return BadRequest();
+                return BadRequest("El ID del vehículo no coincide.");
             }
-
-            _context.Entry(vehiculo).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                vehiculo = await _vehiculoService.UpdateVehiculoAsync(vehiculo);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (ArgumentException ex)
             {
-                if (!VehiculoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
 
             return NoContent();
@@ -78,8 +68,14 @@ namespace LogisticaBackend.Controllers
         [HttpPost]
         public async Task<ActionResult<Vehiculo>> PostVehiculo(Vehiculo vehiculo)
         {
-            _context.Vehiculos.Add(vehiculo);
-            await _context.SaveChangesAsync();
+            try
+            {
+                vehiculo = await _vehiculoService.CreateVehiculoAsync(vehiculo);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return CreatedAtAction("GetVehiculo", new { id = vehiculo.IdVehiculo }, vehiculo);
         }
@@ -88,23 +84,14 @@ namespace LogisticaBackend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVehiculo(int id)
         {
-            var vehiculo = await _context.Vehiculos.FindAsync(id);
-            if (vehiculo == null)
+            var result = await _vehiculoService.DeleteVehiculoAsync(id);
+
+            if (!result)
             {
                 return NotFound();
             }
 
-            // Soft delete
-            vehiculo.Deleted = true;
-            _context.Entry(vehiculo).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool VehiculoExists(int id)
-        {
-            return _context.Vehiculos.Any(e => e.IdVehiculo == id);
         }
     }
 }

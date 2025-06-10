@@ -60,7 +60,10 @@ namespace GestionLogisticaBackend.Services
             {
                 return false; // No se encontró el conductor
             }
-            _context.Conductores.Remove(conductor);
+
+            // soft delete: marcar como eliminado
+
+
             await _context.SaveChangesAsync();
             return true; // Conductor eliminado exitosamente
         }
