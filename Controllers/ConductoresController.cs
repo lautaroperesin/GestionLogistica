@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services;
+using GestionLogisticaBackend.Services.Implementations;
+using GestionLogisticaBackend.DTOs.Conductor;
 
 namespace LogisticaBackend.Controllers
 {
@@ -24,47 +25,49 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/Conductores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Conductor>>> GetConductores()
+        public async Task<ActionResult<IEnumerable<ConductorDto>>> GetConductores()
         {
-            return await _conductorService.GetConductoresAsync();
+            var conductores = await _conductorService.GetConductoresAsync();
+            if (conductores == null || !conductores.Any())
+            {
+                return NotFound("No se encontraron conductores.");
+            }
+            return Ok(conductores);
         }
 
         // GET: api/Conductores/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Conductor>> GetConductor(int id)
+        public async Task<ActionResult<ConductorDto>> GetConductor(int id)
         {
             var conductor = await _conductorService.GetConductorByIdAsync(id);
             if (conductor == null)
             {
-                return NotFound();
+                return NotFound($"Conductor con ID {id} no encontrado.");
             }
-            return conductor;
+
+            return Ok(conductor);
         }
 
         // PUT: api/Conductores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutConductor(int id, Conductor conductor)
+        public async Task<IActionResult> PutConductor(int id, UpdateConductorDto conductorDto)
         {
-            if (id != conductor.IdConductor)
+            if (id != conductorDto.IdConductor)
             {
-                return BadRequest("El ID del conductor no coincide.");
+                return BadRequest("El ID del conductor no coincide con el ID proporcionado en la URL.");
             }
             try
             {
-                conductor = await _conductorService.UpdateConductorAsync(conductor);
+                var result = await _conductorService.UpdateConductorAsync(conductorDto);
+                if (!result)
+                {
+                    return NotFound($"Conductor con ID {id} no encontrado.");
+                }
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (await _conductorService.GetConductorByIdAsync(id) == null)
-                {
-                    return NotFound();
-                }
-                throw;
             }
             return NoContent();
         }
@@ -72,35 +75,29 @@ namespace LogisticaBackend.Controllers
         // POST: api/Conductores
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Conductor>> PostConductor(Conductor conductor)
+        public async Task<ActionResult<ConductorDto>> PostConductor(CreateConductorDto conductorDto)
         {
-            try
-            {
-                conductor = await _conductorService.CreateConductorAsync(conductor);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var nuevoConductor = await _conductorService.CreateConductorAsync(conductorDto);
 
-            return CreatedAtAction("GetConductor", new { id = conductor.IdConductor }, conductor);
+            return CreatedAtAction("GetConductor", new { id = nuevoConductor.IdConductor }, nuevoConductor);
         }
 
         // DELETE: api/Conductores/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConductor(int id)
         {
-            try
+            var conductor = await _conductorService.GetConductorByIdAsync(id);
+
+            if (conductor == null)
             {
-                var result = await _conductorService.DeleteConductorAsync(id);
-                if (!result)
-                {
-                    return NotFound();
-                }
+                return NotFound($"Conductor con ID {id} no encontrado.");
             }
-            catch (Exception ex)
+
+            var result = await _conductorService.DeleteConductorAsync(id);
+
+            if (!result)
             {
-                return BadRequest(ex.Message);
+                return NotFound($"Conductor con ID {id} no encontrado o no se pudo eliminar.");
             }
 
             return NoContent();

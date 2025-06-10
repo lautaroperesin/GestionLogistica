@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services;
+using GestionLogisticaBackend.Services.Implementations;
+using GestionLogisticaBackend.Services.Interfaces;
+using GestionLogisticaBackend.DTOs.Vehiculo;
 
 namespace LogisticaBackend.Controllers
 {
@@ -15,45 +17,55 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class VehiculosController : ControllerBase
     {
-        private readonly VehiculoService _vehiculoService;
+        private readonly IVehiculoService _vehiculoService;
 
-        public VehiculosController(VehiculoService vehiculoService)
+        public VehiculosController(IVehiculoService vehiculoService)
         {
             _vehiculoService = vehiculoService;
         }
 
         // GET: api/Vehiculos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vehiculo>>> GetVehiculos()
+        public async Task<ActionResult<IEnumerable<VehiculoDto>>> GetVehiculos()
         {
-            return await _vehiculoService.GetVehiculosAsync();
+            var vehiculos = await _vehiculoService.GetVehiculosAsync();
+
+            if (vehiculos == null || !vehiculos.Any())
+            {
+                return NotFound("No se encontraron vehículos.");
+            }
+
+            return Ok(vehiculos);
         }
 
         // GET: api/Vehiculos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vehiculo>> GetVehiculo(int id)
+        public async Task<ActionResult<VehiculoDto>> GetVehiculo(int id)
         {
             var vehiculo = await _vehiculoService.GetVehiculoByIdAsync(id);
-            if (vehiculo == null)
-            {
-                return NotFound();
-            }
-            return vehiculo;
+
+            if (vehiculo == null) return NotFound();
+
+            return Ok(vehiculo);
         }
 
         // PUT: api/Vehiculos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVehiculo(int id, Vehiculo vehiculo)
+        public async Task<IActionResult> PutVehiculo(int id, UpdateVehiculoDto vehiculoDto)
         {
-            if (id != vehiculo.IdVehiculo)
+            if (id != vehiculoDto.IdVehiculo)
             {
-                return BadRequest("El ID del vehículo no coincide.");
+                return BadRequest("El ID del vehículo no coincide con el ID proporcionado en la URL.");
             }
 
             try
             {
-                vehiculo = await _vehiculoService.UpdateVehiculoAsync(vehiculo);
+                var result = await _vehiculoService.UpdateVehiculoAsync(vehiculoDto);
+                if (!result)
+                {
+                    return NotFound("Vehículo no encontrado o no se pudo actualizar.");
+                }
             }
             catch (ArgumentException ex)
             {
@@ -66,16 +78,9 @@ namespace LogisticaBackend.Controllers
         // POST: api/Vehiculos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Vehiculo>> PostVehiculo(Vehiculo vehiculo)
+        public async Task<ActionResult<VehiculoDto>> PostVehiculo(CreateVehiculoDto vehiculoDto)
         {
-            try
-            {
-                vehiculo = await _vehiculoService.CreateVehiculoAsync(vehiculo);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var vehiculo = await _vehiculoService.CreateVehiculoAsync(vehiculoDto);
 
             return CreatedAtAction("GetVehiculo", new { id = vehiculo.IdVehiculo }, vehiculo);
         }
@@ -86,10 +91,7 @@ namespace LogisticaBackend.Controllers
         {
             var result = await _vehiculoService.DeleteVehiculoAsync(id);
 
-            if (!result)
-            {
-                return NotFound();
-            }
+            if (!result) return NotFound();
 
             return NoContent();
         }

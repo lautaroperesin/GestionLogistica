@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services;
+using GestionLogisticaBackend.Services.Implementations;
+using GestionLogisticaBackend.Services.Interfaces;
+using GestionLogisticaBackend.DTOs.Cliente;
 
 namespace LogisticaBackend.Controllers
 {
@@ -15,64 +17,65 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class ClientesController : ControllerBase
     {
-        private readonly ClienteService _clienteService;
+        private readonly IClienteService _clienteService;
 
-        public ClientesController(ClienteService clienteService)
+        public ClientesController(IClienteService clienteService)
         {
             _clienteService = clienteService;
         }
 
         // GET: api/Clientes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+        public async Task<ActionResult<IEnumerable<ClienteDto>>> GetClientes()
         {
-            return await _clienteService.GetClientesAsync();
-        }
+            var clientes = await _clienteService.GetClientesAsync();
+
+            if (clientes == null || !clientes.Any())
+            {
+                return NotFound("No se encontraron clientes.");
+            }
+
+            return Ok(clientes);
+        }   
 
         // GET: api/Clientes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetCliente(int id)
+        public async Task<ActionResult<ClienteDto>> GetCliente(int id)
         {
             var cliente = await _clienteService.GetClienteByIdAsync(id);
 
-            if (cliente == null)
-            {
-                return NotFound();
-            }
+            if (cliente == null) return NotFound();
 
-            return cliente;
+            return Ok(cliente);
         }
 
         // PUT: api/Clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCliente(int id, Cliente cliente)
+        public async Task<IActionResult> PutCliente(int id, UpdateClienteDto cliente)
         {
-            try
+            if (id != cliente.IdCliente)
             {
-                await _clienteService.UpdateClienteAsync(cliente);
+                return BadRequest("El ID del cliente no coincide con el ID proporcionado en la URL.");
             }
-            catch (DbUpdateConcurrencyException)
+
+            var updated = await _clienteService.UpdateClienteAsync(cliente);
+
+            if (!updated)
             {
-                if (!await _clienteService.ClienteExistsAsync(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound("Cliente no encontrado o no se pudo actualizar.");
             }
+
             return NoContent();
         }
 
         // POST: api/Clientes
         [HttpPost]
-        public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
+        public async Task<ActionResult<ClienteDto>> PostCliente(CreateClienteDto clienteDto)
         {
-            var nuevoCliente = await _clienteService.CreateClienteAsync(cliente);
+            var nuevoCliente = await _clienteService.CreateClienteAsync(clienteDto);
 
-            return CreatedAtAction("GetCliente", new { id = nuevoCliente.IdCliente }, nuevoCliente);
+            return CreatedAtAction(nameof(GetCliente), new { id = nuevoCliente.IdCliente }, nuevoCliente);
         }
 
         // DELETE: api/Clientes/5

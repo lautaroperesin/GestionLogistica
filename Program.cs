@@ -1,4 +1,5 @@
-using GestionLogisticaBackend.Services;
+using GestionLogisticaBackend.Services.Implementations;
+using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,9 +11,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ClienteService>();
-builder.Services.AddScoped<ConductorService>();
-builder.Services.AddScoped<UbicacionService>();
+builder.Services.AddScoped<IUbicacionService, UbicacionService>();
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IVehiculoService, VehiculoService>();
+builder.Services.AddScoped<IConductorService, ConductorService>();
 
 // Configurar Entity Framework con MySQL
 builder.Services.AddDbContext<LogisticaContext>(options =>
