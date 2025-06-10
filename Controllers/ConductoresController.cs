@@ -9,6 +9,7 @@ using LogisticaBackend.Data;
 using LogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Implementations;
 using GestionLogisticaBackend.DTOs.Conductor;
+using GestionLogisticaBackend.Services.Interfaces;
 
 namespace LogisticaBackend.Controllers
 {
@@ -16,9 +17,9 @@ namespace LogisticaBackend.Controllers
     [ApiController]
     public class ConductoresController : ControllerBase
     {
-        private readonly ConductorService _conductorService;
+        private readonly IConductorService _conductorService;
 
-        public ConductoresController(ConductorService conductorService)
+        public ConductoresController(IConductorService conductorService)
         {
             _conductorService = conductorService;
         }
