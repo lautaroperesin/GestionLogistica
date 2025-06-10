@@ -7,5 +7,6 @@
         public string Modelo { get; set; } = string.Empty;
         public string Patente { get; set; } = string.Empty;
         public decimal CapacidadCarga { get; set; }
+        public DateTime UltimaInspeccion { get; set; }
     }
 }
