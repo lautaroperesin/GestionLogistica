@@ -13,6 +13,7 @@ namespace GestionLogisticaBackend.DTOs.Cliente
         [StringLength(150, ErrorMessage = "El email no puede exceder 150 caracteres")]
         public string Email { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "El teléfono es requerido")]
         [StringLength(20, ErrorMessage = "El teléfono no puede exceder 20 caracteres")]
         public string? Telefono { get; set; }
     }
