@@ -58,7 +58,6 @@ namespace GestionLogisticaBackend.Services.Implementations
                 Marca = vehiculoDto.Marca,
                 Modelo = vehiculoDto.Modelo,
                 Patente = vehiculoDto.Patente,
-                Refrigerado = false,
                 CapacidadKg = vehiculoDto.CapacidadCarga,
                 UltimaInspeccion = DateTime.UtcNow
             };

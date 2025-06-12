@@ -25,9 +25,6 @@ namespace LogisticaBackend.Models
         [Column("modelo")]
         public string Modelo { get; set; } = string.Empty;
 
-        [Column("refrigerado")]
-        public bool Refrigerado { get; set; } = false;
-
         [Required]
         [Column("capacidad_kg", TypeName = "decimal(10,2)")]
         public decimal CapacidadKg { get; set; }
