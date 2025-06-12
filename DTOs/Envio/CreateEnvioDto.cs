@@ -10,22 +10,21 @@ namespace GestionLogisticaBackend.DTOs.Envio
         [Required(ErrorMessage = "El destino es requerido")]
         public int IdDestino { get; set; }
 
-        [DataType(DataType.DateTime)]
-        public DateTime? FechaSalidaProgramada { get; set; }
+        [Required(ErrorMessage = "La fecha de salida programada es requerida")]
+        public DateTime FechaSalidaProgramada { get; set; }
 
         [Required(ErrorMessage = "La fecha de entrega estimada es requerida")]
         [DataType(DataType.Date)]
         public DateTime FechaEntregaEstimada { get; set; }
 
         [Required(ErrorMessage = "El peso es requerido")]
-        [Range(0.01, 999999.99, ErrorMessage = "El peso debe ser mayor a 0")]
         public decimal PesoKg { get; set; }
 
         [StringLength(1000, ErrorMessage = "La descripción no puede exceder los 1000 caracteres")]
         public string? Descripcion { get; set; }
 
-        [Range(0, 999999.99, ErrorMessage = "El costo debe ser mayor o igual a 0")]
-        public decimal CostoTotal { get; set; } = 0.00m;
+        [Required(ErrorMessage = "El costo total es requerido")]
+        public decimal CostoTotal { get; set; }
 
         [Required(ErrorMessage = "El vehículo es requerido")]
         public int IdVehiculo { get; set; }

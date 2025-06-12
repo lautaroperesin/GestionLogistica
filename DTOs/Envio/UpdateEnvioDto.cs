@@ -4,6 +4,8 @@ namespace GestionLogisticaBackend.DTOs.Envio
 {
     public class UpdateEnvioDto
     {
+        public int IdEnvio { get; set; }
+
         [Required(ErrorMessage = "El origen es requerido")]
         public int IdOrigen { get; set; }
 
@@ -20,20 +22,19 @@ namespace GestionLogisticaBackend.DTOs.Envio
         [DataType(DataType.Date)]
         public DateTime FechaEntregaEstimada { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime? FechaEntregaReal { get; set; }
 
         [Required(ErrorMessage = "El estado es requerido")]
         public int IdEstado { get; set; }
 
         [Required(ErrorMessage = "El peso es requerido")]
-        [Range(0.01, 999999.99, ErrorMessage = "El peso debe ser mayor a 0")]
         public decimal PesoKg { get; set; }
 
         [StringLength(1000, ErrorMessage = "La descripción no puede exceder los 1000 caracteres")]
         public string? Descripcion { get; set; }
 
-        [Range(0, 999999.99, ErrorMessage = "El costo debe ser mayor o igual a 0")]
+        [Required(ErrorMessage = "El costo total es requerido")]
         public decimal CostoTotal { get; set; } = 0.00m;
 
         [Required(ErrorMessage = "El vehículo es requerido")]

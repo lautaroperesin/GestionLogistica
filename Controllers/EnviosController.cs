@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.Services.Interfaces;
+using GestionLogisticaBackend.DTOs.Envio;
 
 namespace GestionLogisticaBackend.Controllers
 {
@@ -14,60 +16,47 @@ namespace GestionLogisticaBackend.Controllers
     [ApiController]
     public class EnviosController : ControllerBase
     {
-        private readonly LogisticaContext _context;
+        private readonly IEnvioService _envioService;
 
-        public EnviosController(LogisticaContext context)
+        public EnviosController(IEnvioService envioService)
         {
-            _context = context;
+            _envioService = envioService;
         }
 
         // GET: api/Envios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Envio>>> GetEnvios()
+        public async Task<ActionResult<IEnumerable<EnvioDto>>> GetEnvios()
         {
-            return await _context.Envios.ToListAsync();
+            var envios = await _envioService.GetAllEnviosAsync();
+            if (envios == null || !envios.Any())
+            {
+                return NotFound("No se encontraron envíos.");
+            }
+            return Ok(envios);
         }
 
         // GET: api/Envios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Envio>> GetEnvio(int id)
         {
-            var envio = await _context.Envios.FindAsync(id);
-
+            var envio = await _envioService.GetEnvioByIdAsync(id);
             if (envio == null)
             {
-                return NotFound();
+                return NotFound($"No se encontró el envío con ID {id}.");
             }
-
-            return envio;
+            return Ok(envio);
         }
 
         // PUT: api/Envios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEnvio(int id, Envio envio)
+        public async Task<IActionResult> PutEnvio(UpdateEnvioDto envioDto)
         {
-            if (id != envio.IdEnvio)
-            {
-                return BadRequest();
-            }
+            var updatedEnvio = await _envioService.UpdateEnvioAsync(envioDto.IdEnvio, envioDto);
 
-            _context.Entry(envio).State = EntityState.Modified;
-
-            try
+            if (updatedEnvio == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EnvioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest("Error al actualizar el envío.");
             }
 
             return NoContent();
@@ -76,33 +65,34 @@ namespace GestionLogisticaBackend.Controllers
         // POST: api/Envios
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Envio>> PostEnvio(Envio envio)
+        public async Task<ActionResult<Envio>> PostEnvio(CreateEnvioDto envioDto)
         {
-            _context.Envios.Add(envio);
-            await _context.SaveChangesAsync();
+            if (envioDto == null)
+            {
+                return BadRequest("Datos de envío inválidos.");
+            }
 
-            return CreatedAtAction("GetEnvio", new { id = envio.IdEnvio }, envio);
+            var createdEnvio = await _envioService.CreateEnvioAsync(envioDto);
+            if (createdEnvio == null)
+            {
+                return BadRequest("Error al crear el envío.");
+            }
+
+            return CreatedAtAction(nameof(GetEnvio), new { id = createdEnvio.IdEnvio }, createdEnvio);
         }
 
         // DELETE: api/Envios/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEnvio(int id)
         {
-            var envio = await _context.Envios.FindAsync(id);
-            if (envio == null)
+            var deleted = await _envioService.DeleteEnvioAsync(id);
+
+            if (!deleted)
             {
-                return NotFound();
+                return BadRequest("Error al eliminar el envío.");
             }
 
-            _context.Envios.Remove(envio);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool EnvioExists(int id)
-        {
-            return _context.Envios.Any(e => e.IdEnvio == id);
         }
     }
 }
