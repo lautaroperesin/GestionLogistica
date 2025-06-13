@@ -17,7 +17,6 @@ namespace GestionLogisticaBackend.DTOs.Vehiculo
         public string Patente { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La capacidad en kg es requerida")]
-        [Range(0.01, 999999.99, ErrorMessage = "La capacidad debe ser mayor a 0")]
         public decimal CapacidadCarga { get; set; }
 
         [Required(ErrorMessage = "La fecha de última inspección es requerida")]

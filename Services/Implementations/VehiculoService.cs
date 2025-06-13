@@ -23,7 +23,9 @@ namespace GestionLogisticaBackend.Services.Implementations
                     IdVehiculo = v.IdVehiculo,
                     Marca = v.Marca,
                     Modelo = v.Modelo,
-                    Patente = v.Patente
+                    Patente = v.Patente,
+                    CapacidadCarga = v.CapacidadKg,
+                    UltimaInspeccion = v.UltimaInspeccion,
                 }).ToListAsync();
         }
 
@@ -38,7 +40,9 @@ namespace GestionLogisticaBackend.Services.Implementations
                 IdVehiculo = vehiculo.IdVehiculo,
                 Marca = vehiculo.Marca,
                 Modelo = vehiculo.Modelo,
-                Patente = vehiculo.Patente
+                Patente = vehiculo.Patente,
+                CapacidadCarga = vehiculo.CapacidadKg,
+                UltimaInspeccion = vehiculo.UltimaInspeccion
             };
         }
 
@@ -59,7 +63,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                 Modelo = vehiculoDto.Modelo,
                 Patente = vehiculoDto.Patente,
                 CapacidadKg = vehiculoDto.CapacidadCarga,
-                UltimaInspeccion = DateTime.UtcNow
+                UltimaInspeccion = vehiculoDto.UltimaInspeccion
             };
 
             _context.Vehiculos.Add(vehiculo);
@@ -70,7 +74,9 @@ namespace GestionLogisticaBackend.Services.Implementations
                 IdVehiculo = vehiculo.IdVehiculo,
                 Marca = vehiculo.Marca,
                 Modelo = vehiculo.Modelo,
-                Patente = vehiculo.Patente
+                Patente = vehiculo.Patente,
+                CapacidadCarga = vehiculo.CapacidadKg,
+                UltimaInspeccion = vehiculo.UltimaInspeccion
             };
         }
 
@@ -92,6 +98,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             vehiculo.Modelo = vehiculoDto.Modelo;
             vehiculo.Patente = vehiculoDto.Patente;
             vehiculo.CapacidadKg = vehiculoDto.CapacidadCarga;
+            vehiculo.UltimaInspeccion = vehiculoDto.UltimaInspeccion;
 
             await _context.SaveChangesAsync();
             return true;
