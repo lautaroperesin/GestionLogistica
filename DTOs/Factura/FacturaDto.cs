@@ -11,6 +11,5 @@ namespace GestionLogisticaBackend.DTOs.Factura
         public decimal MontoTotal { get; set; }
         public string? MetodoPago { get; set; }
         public EstadoFacturaDto EstadoFactura { get; set; } = new();
-        public EnvioDto? Envio { get; set; }
     }
 }
