@@ -24,7 +24,7 @@ namespace GestionLogisticaBackend.Models
         public decimal Monto { get; set; }
 
         [Required]
-        [Column("metodo_pago")]
+        [Column("id_metodo_pago")]
         public int IdMetodoPago { get; set; }
 
         [Column("observaciones")]

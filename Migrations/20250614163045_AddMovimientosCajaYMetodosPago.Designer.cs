@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogisticaBackend.Migrations
 {
     [DbContext(typeof(LogisticaContext))]
-    [Migration("20250614155416_AddMovimientosCajaYMetodosPago")]
+    [Migration("20250614163045_AddMovimientosCajaYMetodosPago")]
     partial class AddMovimientosCajaYMetodosPago
     {
         /// <inheritdoc />
@@ -96,7 +96,7 @@ namespace LogisticaBackend.Migrations
 
                     b.Property<int>("IdMetodoPago")
                         .HasColumnType("int")
-                        .HasColumnName("metodo_pago");
+                        .HasColumnName("id_metodo_pago");
 
                     b.Property<decimal>("Monto")
                         .HasColumnType("decimal(65,30)")

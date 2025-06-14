@@ -93,7 +93,7 @@ namespace LogisticaBackend.Migrations
 
                     b.Property<int>("IdMetodoPago")
                         .HasColumnType("int")
-                        .HasColumnName("metodo_pago");
+                        .HasColumnName("id_metodo_pago");
 
                     b.Property<decimal>("Monto")
                         .HasColumnType("decimal(65,30)")
