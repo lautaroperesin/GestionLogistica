@@ -22,14 +22,12 @@ namespace GestionLogisticaBackend.Services.Implementations
                 {
                     IdFactura = f.IdFactura,
                     FechaEmision = f.FechaEmision,
-                    MontoTotal = f.MontoTotal,
                     EstadoFactura = new EstadoFacturaDto
                     {
                         IdEstadoFactura = f.EstadoFactura.IdEstadoFactura,
                         Nombre = f.EstadoFactura.Nombre
                     },
                     NumeroFactura = f.NumeroFactura,
-                    MetodoPago = f.MetodoPago,
                     IdEnvio = f.IdEnvio
                 }).ToListAsync();
         }
@@ -46,14 +44,12 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 IdFactura = factura.IdFactura,
                 FechaEmision = factura.FechaEmision,
-                MontoTotal = factura.MontoTotal,
                 EstadoFactura = new EstadoFacturaDto
                 {
                     IdEstadoFactura = factura.EstadoFactura.IdEstadoFactura,
                     Nombre = factura.EstadoFactura.Nombre
                 },
                 NumeroFactura = factura.NumeroFactura,
-                MetodoPago = factura.MetodoPago,
                 IdEnvio = factura.IdEnvio
             };
         }
@@ -70,8 +66,6 @@ namespace GestionLogisticaBackend.Services.Implementations
                 IdEnvio = facturaDto.IdEnvio,
                 NumeroFactura = facturaDto.NumeroFactura,
                 FechaEmision = DateTime.UtcNow,
-                MontoTotal = facturaDto.MontoTotal,
-                MetodoPago = facturaDto.MetodoPago,
                 IdEstadoFactura = 1
             };
 
@@ -82,13 +76,11 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 IdFactura = factura.IdFactura,
                 FechaEmision = factura.FechaEmision,
-                MontoTotal = factura.MontoTotal,
                 EstadoFactura = new EstadoFacturaDto
                 {
                     IdEstadoFactura = factura.IdEstadoFactura      
                 },
                 NumeroFactura = factura.NumeroFactura,
-                MetodoPago = factura.MetodoPago,
                 IdEnvio = factura.IdEnvio
             };
         }
@@ -113,14 +105,12 @@ namespace GestionLogisticaBackend.Services.Implementations
                 {
                     IdFactura = f.IdFactura,
                     FechaEmision = f.FechaEmision,
-                    MontoTotal = f.MontoTotal,
                     EstadoFactura = new EstadoFacturaDto
                     {
                         IdEstadoFactura = f.EstadoFactura.IdEstadoFactura,
                         Nombre = f.EstadoFactura.Nombre
                     },
                     NumeroFactura = f.NumeroFactura,
-                    MetodoPago = f.MetodoPago,
                     IdEnvio = f.IdEnvio
                 }).ToListAsync();
         }

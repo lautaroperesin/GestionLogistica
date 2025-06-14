@@ -1,4 +1,5 @@
-﻿using LogisticaBackend.Models;
+﻿using GestionLogisticaBackend.Models;
+using LogisticaBackend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogisticaBackend.Data
@@ -19,6 +20,8 @@ namespace LogisticaBackend.Data
         public DbSet<Ubicacion> Ubicaciones { get; set; }
         public DbSet<Vehiculo> Vehiculos { get; set; }
         public DbSet<TipoCarga> TiposCarga { get; set; }
+        public DbSet<MetodoPago> MetodosPago { get; set; }
+        public DbSet<MovimientoCaja> MovimientosCaja { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +71,7 @@ namespace LogisticaBackend.Data
             modelBuilder.Entity<Provincia>().HasQueryFilter(p => !p.Deleted);
             modelBuilder.Entity<Localidad>().HasQueryFilter(l => !l.Deleted);
             modelBuilder.Entity<Ubicacion>().HasQueryFilter(u => !u.Deleted);
+            modelBuilder.Entity<MovimientoCaja>().HasQueryFilter(m => !m.Deleted);
 
             // Configurar valores por defecto
             modelBuilder.Entity<Factura>()
@@ -87,10 +91,6 @@ namespace LogisticaBackend.Data
                 .Property(e => e.CostoTotal)
                 .HasPrecision(10, 2);
 
-            modelBuilder.Entity<Factura>()
-                .Property(f => f.MontoTotal)
-                .HasPrecision(12, 2);
-
             // Configurar valor por defecto en entidades con soft delete
             modelBuilder.Entity<Pais>().Property(p => p.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Provincia>().Property(p => p.Deleted).HasDefaultValue(false);
@@ -101,6 +101,7 @@ namespace LogisticaBackend.Data
             modelBuilder.Entity<Envio>().Property(e => e.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Factura>().Property(f => f.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Ubicacion>().Property(u => u.Deleted).HasDefaultValue(false);
+            modelBuilder.Entity<MovimientoCaja>().Property(m => m.Deleted).HasDefaultValue(false);
 
 
             // Seed data para estados
@@ -121,6 +122,15 @@ namespace LogisticaBackend.Data
                 new EstadoFactura { IdEstadoFactura = 3, Nombre = "Vencida" },
                 new EstadoFactura { IdEstadoFactura = 4, Nombre = "Anulada" },
                 new EstadoFactura { IdEstadoFactura = 5, Nombre = "Parcialmente pagada" }
+            );
+
+            // Seed data para métodos de pago
+            modelBuilder.Entity<MetodoPago>().HasData(
+                new MetodoPago { IdMetodoPago = 1, Nombre = "Efectivo" },
+                new MetodoPago { IdMetodoPago = 2, Nombre = "Transferencia"},
+                new MetodoPago { IdMetodoPago = 3, Nombre = "Cheque" },
+                new MetodoPago { IdMetodoPago = 4, Nombre = "Tarjeta de Crédito" },
+                new MetodoPago { IdMetodoPago = 5, Nombre = "Tarjeta de Débito" }
             );
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using GestionLogisticaBackend.Models;
 
 namespace LogisticaBackend.Models
 {
@@ -15,7 +16,11 @@ namespace LogisticaBackend.Models
         public int IdEnvio { get; set; }
 
         [Required]
-        [StringLength(20)]
+        [Column("id_cliente")]
+        public int IdCliente { get; set; }
+
+        [Required]
+        [StringLength(50)]
         [Column("numero_factura")]
         public string NumeroFactura { get; set; } = string.Empty;
 
@@ -23,13 +28,20 @@ namespace LogisticaBackend.Models
         [Column("fecha_emision")]
         public DateTime FechaEmision { get; set; }
 
-        [Required]
-        [Column("monto_total", TypeName = "decimal(12,2)")]
-        public decimal MontoTotal { get; set; }
+        [Column("fecha_vencimiento")]
+        public DateTime? FechaVencimiento { get; set; }
 
-        [StringLength(50)]
-        [Column("metodo_pago")]
-        public string? MetodoPago { get; set; }
+        [Required]
+        [Column("subtotal", TypeName = "decimal(12,2)")]
+        public decimal Subtotal { get; set; }
+
+        [Required]
+        [Column("iva", TypeName = "decimal(12,2)")]
+        public decimal Iva { get; set; }
+
+        [Required]
+        [Column("total", TypeName = "decimal(12,2)")]
+        public decimal Total { get; set; }
 
         [Column("deleted")]
         public bool Deleted { get; set; } = false;
@@ -42,7 +54,12 @@ namespace LogisticaBackend.Models
         [ForeignKey("IdEnvio")]
         public virtual Envio Envio { get; set; } = null!;
 
+        [ForeignKey("IdCliente")]
+        public virtual Cliente Cliente { get; set; } = null!;
+
         [ForeignKey("IdEstadoFactura")]
         public virtual EstadoFactura EstadoFactura { get; set; } = null!;
+
+        public virtual ICollection<MovimientoCaja> MovimientosCaja { get; set; } = new List<MovimientoCaja>();
     }
 }
