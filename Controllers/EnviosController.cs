@@ -50,13 +50,18 @@ namespace GestionLogisticaBackend.Controllers
         // PUT: api/Envios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEnvio(UpdateEnvioDto envioDto)
+        public async Task<IActionResult> PutEnvio(int id, UpdateEnvioDto envioDto)
         {
-            var updatedEnvio = await _envioService.UpdateEnvioAsync(envioDto.IdEnvio, envioDto);
+            if (id != envioDto.IdEnvio)
+            {
+                return BadRequest("El ID del envío en la URL no coincide con el del cuerpo.");
+            }
+
+            var updatedEnvio = await _envioService.UpdateEnvioAsync(id, envioDto);
 
             if (updatedEnvio == null)
             {
-                return BadRequest("Error al actualizar el envío.");
+                return NotFound($"Envío con ID {id} no encontrado.");
             }
 
             return NoContent();
