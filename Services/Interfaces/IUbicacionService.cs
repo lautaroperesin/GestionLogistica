@@ -7,8 +7,8 @@ namespace GestionLogisticaBackend.Services.Interfaces
     {
         Task<List<UbicacionDto>> GetUbicacionesAsync();
         Task<UbicacionDto?> GetUbicacionByIdAsync(int id);
-        Task<UbicacionDto> CreateUbicacionAsync(CreateUbicacionDto clienteDto);
-        Task<bool> UpdateUbicacionAsync(UpdateUbicacionDto clienteDto);
+        Task<UbicacionDto> CreateUbicacionAsync(CreateUbicacionDto ubicacionDto);
+        Task<bool> UpdateUbicacionAsync(UpdateUbicacionDto ubicacionDto);
         Task<bool> DeleteUbicacionAsync(int id);
     }
 }
