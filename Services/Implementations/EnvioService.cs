@@ -176,18 +176,78 @@ namespace GestionLogisticaBackend.Services.Implementations
             return new EnvioDto
             {
                 IdEnvio = envio.IdEnvio,
-                Origen = new UbicacionDto { IdUbicacion = envio.IdOrigen },
-                Destino = new UbicacionDto { IdUbicacion = envio.IdDestino },
+                Origen = new UbicacionDto 
+                { 
+                    IdUbicacion = envio.IdOrigen,
+                    Direccion = envio.Origen.Direccion,
+                    Localidad = new LocalidadDto
+                    {
+                        IdLocalidad = envio.Origen.Localidad.IdLocalidad,
+                        Nombre = envio.Origen.Localidad.Nombre,
+                        Provincia = new ProvinciaDto
+                        {
+                            IdProvincia = envio.Origen.Localidad.Provincia.IdProvincia,
+                            Nombre = envio.Origen.Localidad.Provincia.Nombre,
+                            Pais = new PaisDto
+                            {
+                                IdPais = envio.Origen.Localidad.Provincia.Pais.IdPais,
+                                Nombre = envio.Origen.Localidad.Provincia.Pais.Nombre
+                            }
+                        }
+                    }
+                },
+                Destino = new UbicacionDto
+                {
+                    IdUbicacion = envio.IdDestino,
+                    Direccion = envio.Destino.Direccion,
+                    Localidad = new LocalidadDto
+                    {
+                        IdLocalidad = envio.Destino.Localidad.IdLocalidad,
+                        Nombre = envio.Destino.Localidad.Nombre,
+                        Provincia = new ProvinciaDto
+                        {
+                            IdProvincia = envio.Destino.Localidad.Provincia.IdProvincia,
+                            Nombre = envio.Destino.Localidad.Provincia.Nombre,
+                            Pais = new PaisDto
+                            {
+                                IdPais = envio.Destino.Localidad.Provincia.Pais.IdPais,
+                                Nombre = envio.Destino.Localidad.Provincia.Pais.Nombre
+                            }
+                        }
+                    }
+                },
                 FechaCreacionEnvio = envio.FechaCreacionEnvio,
                 FechaSalidaProgramada = envio.FechaSalidaProgramada,
                 FechaEntregaEstimada = envio.FechaEntregaEstimada,
                 PesoKg = envio.PesoKg,
                 Descripcion = envio.Descripcion,
                 CostoTotal = envio.CostoTotal,
-                Vehiculo = new VehiculoDto { IdVehiculo = envio.IdVehiculo },
-                Conductor = new ConductorDto { IdConductor = envio.IdConductor },
-                Cliente = new ClienteDto { IdCliente = envio.IdCliente },
-                TipoCarga = new TipoCargaDto { IdTipoCarga = envio.IdTipoCarga }
+                Vehiculo = new VehiculoDto
+                {
+                    IdVehiculo = envio.IdVehiculo,
+                    Patente = envio.Vehiculo.Patente,
+                    Marca = envio.Vehiculo.Marca,
+                    Modelo = envio.Vehiculo.Modelo
+                },
+                Conductor = new ConductorDto
+                {
+                    IdConductor = envio.IdConductor,
+                    Nombre = envio.Conductor.Nombre,
+                    Dni = envio.Conductor.Dni,
+                    Telefono = envio.Conductor.Telefono
+                },
+                Cliente = new ClienteDto
+                {
+                    IdCliente = envio.IdCliente,
+                    Nombre = envio.Cliente.Nombre,
+                    Email = envio.Cliente.Email,
+                    Telefono = envio.Cliente.Telefono
+                },
+                TipoCarga = new TipoCargaDto
+                {
+                    IdTipoCarga = envio.IdTipoCarga,
+                    Nombre = envio.TipoCarga.Nombre
+                },
             };
         }
 
@@ -220,21 +280,78 @@ namespace GestionLogisticaBackend.Services.Implementations
             return new EnvioDto
             {
                 IdEnvio = envio.IdEnvio,
-                Origen = new UbicacionDto { IdUbicacion = envio.IdOrigen },
-                Destino = new UbicacionDto { IdUbicacion = envio.IdDestino },
+                Origen = new UbicacionDto
+                {
+                    IdUbicacion = envio.IdOrigen,
+                    Direccion = envio.Origen.Direccion,
+                    Localidad = new LocalidadDto
+                    {
+                        IdLocalidad = envio.Origen.Localidad.IdLocalidad,
+                        Nombre = envio.Origen.Localidad.Nombre,
+                        Provincia = new ProvinciaDto
+                        {
+                            IdProvincia = envio.Origen.Localidad.Provincia.IdProvincia,
+                            Nombre = envio.Origen.Localidad.Provincia.Nombre,
+                            Pais = new PaisDto
+                            {
+                                IdPais = envio.Origen.Localidad.Provincia.Pais.IdPais,
+                                Nombre = envio.Origen.Localidad.Provincia.Pais.Nombre
+                            }
+                        }
+                    }
+                },
+                Destino = new UbicacionDto
+                {
+                    IdUbicacion = envio.IdDestino,
+                    Direccion = envio.Destino.Direccion,
+                    Localidad = new LocalidadDto
+                    {
+                        IdLocalidad = envio.Destino.Localidad.IdLocalidad,
+                        Nombre = envio.Destino.Localidad.Nombre,
+                        Provincia = new ProvinciaDto
+                        {
+                            IdProvincia = envio.Destino.Localidad.Provincia.IdProvincia,
+                            Nombre = envio.Destino.Localidad.Provincia.Nombre,
+                            Pais = new PaisDto
+                            {
+                                IdPais = envio.Destino.Localidad.Provincia.Pais.IdPais,
+                                Nombre = envio.Destino.Localidad.Provincia.Pais.Nombre
+                            }
+                        }
+                    }
+                },
                 FechaCreacionEnvio = envio.FechaCreacionEnvio,
                 FechaSalidaProgramada = envio.FechaSalidaProgramada,
                 FechaEntregaEstimada = envio.FechaEntregaEstimada,
-                FechaSalidaReal = envio.FechaSalidaReal,
-                FechaEntregaReal = envio.FechaEntregaReal,
-                Estado = new EstadoEnvioDto { IdEstado = envio.IdEstado },
                 PesoKg = envio.PesoKg,
                 Descripcion = envio.Descripcion,
                 CostoTotal = envio.CostoTotal,
-                Vehiculo = new VehiculoDto { IdVehiculo = envio.IdVehiculo },
-                Conductor = new ConductorDto { IdConductor = envio.IdConductor },
-                Cliente = new ClienteDto { IdCliente = envio.IdCliente },
-                TipoCarga = new TipoCargaDto { IdTipoCarga = envio.IdTipoCarga }
+                Vehiculo = new VehiculoDto
+                {
+                    IdVehiculo = envio.IdVehiculo,
+                    Patente = envio.Vehiculo.Patente,
+                    Marca = envio.Vehiculo.Marca,
+                    Modelo = envio.Vehiculo.Modelo
+                },
+                Conductor = new ConductorDto
+                {
+                    IdConductor = envio.IdConductor,
+                    Nombre = envio.Conductor.Nombre,
+                    Dni = envio.Conductor.Dni,
+                    Telefono = envio.Conductor.Telefono
+                },
+                Cliente = new ClienteDto
+                {
+                    IdCliente = envio.IdCliente,
+                    Nombre = envio.Cliente.Nombre,
+                    Email = envio.Cliente.Email,
+                    Telefono = envio.Cliente.Telefono
+                },
+                TipoCarga = new TipoCargaDto
+                {
+                    IdTipoCarga = envio.IdTipoCarga,
+                    Nombre = envio.TipoCarga.Nombre
+                },
             };
         }
 
