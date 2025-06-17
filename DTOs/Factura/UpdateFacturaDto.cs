@@ -3,8 +3,10 @@ using GestionLogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.DTOs.Factura
 {
-    public class CreateFacturaDto
+    public class UpdateFacturaDto
     {
+        public int IdFactura { get; set; }
+
         [Required(ErrorMessage = "El envío es requerido")]
         public int IdEnvio { get; set; }
 

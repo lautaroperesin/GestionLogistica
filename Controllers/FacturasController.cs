@@ -52,6 +52,21 @@ namespace GestionLogisticaBackend.Controllers
         }
 
         // PUT: api/Facturas/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<ActionResult<FacturaDto>> PutFactura(int id, UpdateFacturaDto facturaDto)
+        {
+            if (id != facturaDto.IdFactura)
+            {
+                return BadRequest("El ID de la factura no coincide con el ID proporcionado en el cuerpo de la solicitud.");
+            }
+            var facturaActualizada = await _facturaService.UpdateFacturaAsync(id, facturaDto);
+            if (facturaActualizada == null)
+            {
+                return NotFound($"Factura con ID {id} no encontrada o no se pudo actualizar.");
+            }
+            return Ok(facturaActualizada);
+        }
 
         // POST: api/Facturas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
