@@ -43,5 +43,8 @@ namespace LogisticaBackend.Models
 
         // Navegación
         public virtual ICollection<Envio> Envios { get; set; } = new List<Envio>();
+
+        [NotMapped]
+        public bool LicenciaVencida => VencimientoLicencia < DateTime.Now;
     }
 }

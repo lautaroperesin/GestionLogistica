@@ -9,6 +9,5 @@
         public DateTime VencimientoLicencia { get; set; }
         public string Telefono { get; set; } = string.Empty;
         public string? Email { get; set; }
-        public bool LicenciaVencida => VencimientoLicencia < DateTime.Now;
     }
 }

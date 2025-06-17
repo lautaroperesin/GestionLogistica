@@ -121,5 +121,21 @@ namespace GestionLogisticaBackend.Services.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<ConductorDto>> GetConductoresConLicenciaVencidaAsync()
+        {
+            return await _context.Conductores
+                .Where(c => c.LicenciaVencida)
+                .Select(c => new ConductorDto
+                {
+                    IdConductor = c.IdConductor,
+                    Dni = c.Dni,
+                    Nombre = c.Nombre,
+                    ClaseLicencia = c.ClaseLicencia,
+                    VencimientoLicencia = c.VencimientoLicencia,
+                    Telefono = c.Telefono,
+                    Email = c.Email
+                }).ToListAsync();
+        }
     }
 }
