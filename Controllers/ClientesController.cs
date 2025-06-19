@@ -10,6 +10,7 @@ using LogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Implementations;
 using GestionLogisticaBackend.Services.Interfaces;
 using GestionLogisticaBackend.DTOs.Cliente;
+using GestionLogisticaBackend.DTOs.Pagination;
 
 namespace LogisticaBackend.Controllers
 {
@@ -26,14 +27,9 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/Clientes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClienteDto>>> GetClientes()
+        public async Task<ActionResult<IEnumerable<ClienteDto>>> GetClientes([FromQuery] PaginationParams pagParams)
         {
-            var clientes = await _clienteService.GetClientesAsync();
-
-            if (clientes == null || !clientes.Any())
-            {
-                return NotFound("No se encontraron clientes.");
-            }
+            var clientes = await _clienteService.GetClientesAsync(pagParams);
 
             return Ok(clientes);
         }   

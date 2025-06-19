@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Services.Interfaces;
 using Humanizer;
 using LogisticaBackend.Data;
@@ -16,16 +17,30 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<ClienteDto>> GetClientesAsync()
+        public async Task<PagedResult<ClienteDto>> GetClientesAsync(PaginationParams pagParams)
         {
-            return await _context.Clientes
+            var query = _context.Clientes.OrderBy(c => c.Nombre);
+
+            var totalItems = await query.CountAsync();
+            var clientes = await query
+                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
+                .Take(pagParams.PageSize)
                 .Select(c => new ClienteDto
                 {
                     IdCliente = c.IdCliente,
                     Nombre = c.Nombre,
                     Telefono = c.Telefono,
                     Email = c.Email
-                }).ToListAsync();
+                })
+                .ToListAsync();
+
+            return new PagedResult<ClienteDto>
+            {
+                Items = clientes,
+                TotalItems = totalItems,
+                PageNumber = pagParams.PageNumber,
+                PageSize = pagParams.PageSize
+            };
         }
 
         public async Task<ClienteDto?> GetClienteByIdAsync(int id)
@@ -68,7 +83,8 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 IdCliente = cliente.IdCliente,
                 Nombre = cliente.Nombre,
-                Email = cliente.Email
+                Email = cliente.Email,
+                Telefono = cliente.Telefono
             };
         }
 

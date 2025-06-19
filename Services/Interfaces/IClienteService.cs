@@ -1,11 +1,12 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
+using GestionLogisticaBackend.DTOs.Pagination;
 using LogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.Services.Interfaces
 {
     public interface IClienteService
     {
-        Task<List<ClienteDto>> GetClientesAsync();
+        Task<PagedResult<ClienteDto>> GetClientesAsync(PaginationParams pagParams);
         Task<ClienteDto?> GetClienteByIdAsync(int id);
         Task<ClienteDto> CreateClienteAsync(CreateClienteDto clienteDto);
         Task<bool> UpdateClienteAsync(UpdateClienteDto clienteDto);
