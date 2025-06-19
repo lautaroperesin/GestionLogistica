@@ -1,5 +1,6 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.Enums;
 using GestionLogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.DTOs.Factura
@@ -15,6 +16,6 @@ namespace GestionLogisticaBackend.DTOs.Factura
         public decimal Subtotal { get; set; }
         public decimal Iva { get; set; }
         public decimal Total { get; set; }
-        public EstadoFacturaDto EstadoFactura { get; set; } = new();
+        public EstadoFactura Estado { get; set; }
     }
 }

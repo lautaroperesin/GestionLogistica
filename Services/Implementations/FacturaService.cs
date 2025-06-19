@@ -2,6 +2,7 @@
 using GestionLogisticaBackend.DTOs.Envio;
 using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.DTOs.Ubicacion;
+using GestionLogisticaBackend.Enums;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
@@ -78,11 +79,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                         Email = f.Cliente.Email
                     },
                     FechaEmision = f.FechaEmision,
-                    EstadoFactura = new EstadoFacturaDto
-                    {
-                        IdEstadoFactura = f.EstadoFactura.IdEstadoFactura,
-                        Nombre = f.EstadoFactura.Nombre
-                    },
+                    Estado = f.Estado,
                     Subtotal = f.Subtotal,
                     Iva = f.Iva,
                     Total = f.Total
@@ -91,9 +88,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<FacturaDto?> GetFacturaByIdAsync(int id)
         {
-            var factura = await _context.Facturas
-                .Include(f => f.EstadoFactura)
-                .FirstOrDefaultAsync(f => f.IdFactura == id);
+            var factura = await _context.Facturas.FirstOrDefaultAsync(f => f.IdFactura == id);
 
             if (factura == null) return null;
 
@@ -154,11 +149,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                     Email = factura.Cliente.Email
                 },
                 FechaEmision = factura.FechaEmision,
-                EstadoFactura = new EstadoFacturaDto
-                {
-                    IdEstadoFactura = factura.EstadoFactura.IdEstadoFactura,
-                    Nombre = factura.EstadoFactura.Nombre
-                },
+                Estado = factura.Estado,
                 Subtotal = factura.Subtotal,
                 Iva = factura.Iva,
                 Total = factura.Total
@@ -182,7 +173,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                 Subtotal = facturaDto.Subtotal,
                 Iva = facturaDto.Iva,
                 Total = facturaDto.Total,
-                IdEstadoFactura = facturaDto.IdEstadoFactura,
+                Estado = facturaDto.Estado,
             };
 
             _context.Facturas.Add(factura);
@@ -245,11 +236,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                     Email = factura.Cliente.Email
                 },
                 FechaEmision = factura.FechaEmision,
-                EstadoFactura = new EstadoFacturaDto
-                {
-                    IdEstadoFactura = factura.EstadoFactura.IdEstadoFactura,
-                    Nombre = factura.EstadoFactura.Nombre
-                },
+                Estado = factura.Estado,
                 Subtotal = factura.Subtotal,
                 Iva = factura.Iva,
                 Total = factura.Total
@@ -275,7 +262,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             factura.Subtotal = facturaDto.Subtotal;
             factura.Iva = facturaDto.Iva;
             factura.Total = facturaDto.Total;
-            factura.IdEstadoFactura = facturaDto.IdEstadoFactura;
+            factura.Estado = facturaDto.Estado;
 
             await _context.SaveChangesAsync();
 
@@ -336,11 +323,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                     Email = factura.Cliente.Email
                 },
                 FechaEmision = factura.FechaEmision,
-                EstadoFactura = new EstadoFacturaDto
-                {
-                    IdEstadoFactura = factura.EstadoFactura.IdEstadoFactura,
-                    Nombre = factura.EstadoFactura.Nombre
-                },
+                Estado = factura.Estado,
                 Subtotal = factura.Subtotal,
                 Iva = factura.Iva,
                 Total = factura.Total
@@ -360,23 +343,23 @@ namespace GestionLogisticaBackend.Services.Implementations
             return true;
         }
 
-        public async Task<List<FacturaDto>> GetFacturasPorEstadoAsync(int estadoId)
+        public async Task<List<FacturaDto>> GetFacturasPorEstadoAsync(EstadoFactura estado)
         {
             return await _context.Facturas
-                .Where(f => f.IdEstadoFactura == estadoId)
+                .Where(f => f.Estado == estado)
                 .Select(f => new FacturaDto
                 {
 
                 }).ToListAsync();
         }
 
-        public async Task<bool> ActualizarEstadoFacturaAsync(int facturaId, int nuevoEstadoId)
+        public async Task<bool> ActualizarEstadoFacturaAsync(int facturaId, EstadoFactura nuevoEstado)
         {
             var factura = await _context.Facturas.FindAsync(facturaId);
 
             if (factura == null) return false;
 
-            factura.IdEstadoFactura = nuevoEstadoId;
+            factura.Estado = nuevoEstado;
 
             await _context.SaveChangesAsync();
             return true;

@@ -13,7 +13,6 @@ namespace LogisticaBackend.Data
         public DbSet<Envio> Envios { get; set; }
         public DbSet<Factura> Facturas { get; set; }
         public DbSet<EstadoEnvio> EstadosEnvio { get; set; }
-        public DbSet<EstadoFactura> EstadosFactura { get; set; }
         public DbSet<Localidad> Localidades { get; set; }
         public DbSet<Provincia> Provincias { get; set; }
         public DbSet<Pais> Paises { get; set; }
@@ -73,11 +72,6 @@ namespace LogisticaBackend.Data
             modelBuilder.Entity<Ubicacion>().HasQueryFilter(u => !u.Deleted);
             modelBuilder.Entity<MovimientoCaja>().HasQueryFilter(m => !m.Deleted);
 
-            // Configurar valores por defecto
-            modelBuilder.Entity<Factura>()
-                .Property(f => f.IdEstadoFactura)
-                .HasDefaultValue(1);
-
             // Configurar precisión decimal
             modelBuilder.Entity<Vehiculo>()
                 .Property(v => v.CapacidadKg)
@@ -90,6 +84,12 @@ namespace LogisticaBackend.Data
             modelBuilder.Entity<Envio>()
                 .Property(e => e.CostoTotal)
                 .HasPrecision(10, 2);
+
+            // Configurar conversiones de enumeraciones
+            modelBuilder.Entity<Factura>()
+                .Property(f => f.Estado)
+                .HasConversion<int>();
+
 
             // Configurar valor por defecto en entidades con soft delete
             modelBuilder.Entity<Pais>().Property(p => p.Deleted).HasDefaultValue(false);
@@ -113,15 +113,6 @@ namespace LogisticaBackend.Data
                 new EstadoEnvio { IdEstado = 5, Nombre = "Demorado" },
                 new EstadoEnvio { IdEstado = 6, Nombre = "Incidencia" },
                 new EstadoEnvio { IdEstado = 7, Nombre = "Cancelado" }
-            );
-
-            // Estados de factura
-            modelBuilder.Entity<EstadoFactura>().HasData(
-                new EstadoFactura { IdEstadoFactura = 1, Nombre = "Emitida" },
-                new EstadoFactura { IdEstadoFactura = 2, Nombre = "Pagada" },
-                new EstadoFactura { IdEstadoFactura = 3, Nombre = "Vencida" },
-                new EstadoFactura { IdEstadoFactura = 4, Nombre = "Anulada" },
-                new EstadoFactura { IdEstadoFactura = 5, Nombre = "Parcialmente pagada" }
             );
 
             // Seed data para métodos de pago

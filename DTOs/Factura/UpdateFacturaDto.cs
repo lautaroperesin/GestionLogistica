@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GestionLogisticaBackend.Enums;
 using GestionLogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.DTOs.Factura
@@ -21,6 +22,8 @@ namespace GestionLogisticaBackend.DTOs.Factura
         public DateTime FechaEmision { get; set; }
         public DateTime? FechaVencimiento { get; set; }
 
+        public EstadoFactura Estado { get; set; }
+
         [Required(ErrorMessage = "El subtotal es requerido")]
         public decimal Subtotal { get; set; }
 
@@ -29,6 +32,5 @@ namespace GestionLogisticaBackend.DTOs.Factura
 
         [Required(ErrorMessage = "El monto total es requerido")]
         public decimal Total { get; set; }
-        public int IdEstadoFactura { get; set; } = 1; // Por defecto, estado "Pendiente"
     }
 }

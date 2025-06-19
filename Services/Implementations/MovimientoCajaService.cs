@@ -22,7 +22,6 @@ namespace GestionLogisticaBackend.Services.Implementations
         {
             return await _context.MovimientosCaja
                 .Include(m => m.Factura)
-                    .ThenInclude(f => f.EstadoFactura)
                     .Select(m => new MovimientoCajaDto
                     {
                         IdMovimiento = m.IdMovimiento,
@@ -31,11 +30,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                             IdFactura = m.IdFactura,
                             FechaEmision = m.FechaPago,
                             NumeroFactura = m.Factura.NumeroFactura,
-                            EstadoFactura = new EstadoFacturaDto
-                            {
-                                IdEstadoFactura = m.Factura.EstadoFactura.IdEstadoFactura,
-                                Nombre = m.Factura.EstadoFactura.Nombre
-                            }
+                            Estado = m.Factura.Estado
                         },
                         FechaPago = m.FechaPago,
                         Monto = m.Monto,
@@ -48,7 +43,6 @@ namespace GestionLogisticaBackend.Services.Implementations
         {
             var movimiento = await _context.MovimientosCaja
                 .Include(m => m.Factura)
-                    .ThenInclude(f => f.EstadoFactura)
                 .FirstOrDefaultAsync(m => m.IdMovimiento == id);
 
             if (movimiento == null) return null;
@@ -61,11 +55,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                     IdFactura = movimiento.IdFactura,
                     FechaEmision = movimiento.FechaPago,
                     NumeroFactura = movimiento.Factura.NumeroFactura,
-                    EstadoFactura = new EstadoFacturaDto
-                    {
-                        IdEstadoFactura = movimiento.Factura.EstadoFactura.IdEstadoFactura,
-                        Nombre = movimiento.Factura.EstadoFactura.Nombre
-                    }
+                    Estado = movimiento.Factura.Estado
                 },
                 FechaPago = movimiento.FechaPago,
                 Monto = movimiento.Monto,
@@ -107,18 +97,6 @@ namespace GestionLogisticaBackend.Services.Implementations
             decimal saldoPendiente = factura.Total - montoPagadoTotal;
 
             // Actualizar el estado de la factura según el saldo pendiente
-            if (saldoPendiente <= 0)
-            {
-                factura.IdEstadoFactura = 3; // Pagada
-            }
-            else if (montoPagadoTotal > 0)
-            {
-                factura.IdEstadoFactura = 2; // Parcialmente Pagada
-            }
-            else
-            {
-                factura.IdEstadoFactura = 1; // Pendiente
-            }
 
             await _context.SaveChangesAsync();
         }
