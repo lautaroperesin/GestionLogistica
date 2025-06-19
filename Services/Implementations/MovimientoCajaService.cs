@@ -76,7 +76,10 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task CreateMovimientoAsync(CreateMovimientoCajaDto movimientoCaja)
         {
-            var factura = await _facturaService.GetFacturaByIdAsync(movimientoCaja.IdFactura);
+            var factura = await _context.Facturas
+                .Include(f => f.MovimientosCaja)
+                .FirstOrDefaultAsync(f => f.IdFactura == movimientoCaja.IdFactura);
+
             if (factura == null)
             {
                 throw new KeyNotFoundException($"No se encontró una factura con ID {movimientoCaja.IdFactura}.");
@@ -86,6 +89,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 throw new ArgumentNullException(nameof(movimientoCaja), "El movimiento de caja no puede ser nulo.");
             }
+
             var nuevoMovimiento = new MovimientoCaja
             {
                 Monto = movimientoCaja.Monto,
@@ -97,11 +101,23 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             _context.MovimientosCaja.Add(nuevoMovimiento);
 
-            // Actualizar el estado de la factura si es necesario
-            if (factura.EstadoFactura.Nombre != "Pagada")
+            decimal montoPagadoPrevio = factura.MovimientosCaja.Sum(m => m.Monto);
+
+            decimal montoPagadoTotal = montoPagadoPrevio + movimientoCaja.Monto;
+            decimal saldoPendiente = factura.Total - montoPagadoTotal;
+
+            // Actualizar el estado de la factura según el saldo pendiente
+            if (saldoPendiente <= 0)
             {
-                factura.EstadoFactura.Nombre = "Pagada"; 
-                _facturaService.ActualizarEstadoFacturaAsync(factura.IdFactura, factura.EstadoFactura.IdEstadoFactura);
+                factura.IdEstadoFactura = 3; // Pagada
+            }
+            else if (montoPagadoTotal > 0)
+            {
+                factura.IdEstadoFactura = 2; // Parcialmente Pagada
+            }
+            else
+            {
+                factura.IdEstadoFactura = 1; // Pendiente
             }
 
             await _context.SaveChangesAsync();
