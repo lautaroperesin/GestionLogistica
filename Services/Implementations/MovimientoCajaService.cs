@@ -1,5 +1,6 @@
 ﻿using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.DTOs.MovimientoCaja;
+using GestionLogisticaBackend.Enums;
 using GestionLogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
@@ -66,6 +67,12 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task CreateMovimientoAsync(CreateMovimientoCajaDto movimientoCaja)
         {
+
+            if (movimientoCaja == null)
+            {
+                throw new ArgumentNullException(nameof(movimientoCaja), "El movimiento de caja no puede ser nulo.");
+            }
+
             var factura = await _context.Facturas
                 .Include(f => f.MovimientosCaja)
                 .FirstOrDefaultAsync(f => f.IdFactura == movimientoCaja.IdFactura);
@@ -75,9 +82,18 @@ namespace GestionLogisticaBackend.Services.Implementations
                 throw new KeyNotFoundException($"No se encontró una factura con ID {movimientoCaja.IdFactura}.");
             }
 
-            if (movimientoCaja == null)
+            if (movimientoCaja.Monto <= 0)
             {
-                throw new ArgumentNullException(nameof(movimientoCaja), "El movimiento de caja no puede ser nulo.");
+                throw new ArgumentException("El monto debe ser mayor a cero.", nameof(movimientoCaja.Monto));
+            }
+
+            // Verificar que no se exceda el monto pendiente
+            decimal totalPagadoActual = factura.MovimientosCaja.Sum(m => m.Monto);
+            decimal saldoPendienteActual = factura.Total - totalPagadoActual;
+
+            if (movimientoCaja.Monto > saldoPendienteActual)
+            {
+                throw new InvalidOperationException($"El monto a pagar ({movimientoCaja.Monto:C}) excede el saldo pendiente ({saldoPendienteActual:C}).");
             }
 
             var nuevoMovimiento = new MovimientoCaja
@@ -91,12 +107,17 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             _context.MovimientosCaja.Add(nuevoMovimiento);
 
-            decimal montoPagadoPrevio = factura.MovimientosCaja.Sum(m => m.Monto);
+            // Actualizar estado de la factura usando las propiedades NotMapped
+            factura.MovimientosCaja.Add(nuevoMovimiento);
 
-            decimal montoPagadoTotal = montoPagadoPrevio + movimientoCaja.Monto;
-            decimal saldoPendiente = factura.Total - montoPagadoTotal;
+            decimal nuevoSaldoPendiente = factura.SaldoPendiente;
 
-            // Actualizar el estado de la factura según el saldo pendiente
+            if (nuevoSaldoPendiente <= 0)
+                factura.Estado = EstadoFactura.Pagada;
+            else if (factura.TotalPagado > 0)
+                factura.Estado = EstadoFactura.ParcialmentePagada;
+            else
+                factura.Estado = EstadoFactura.Emitida;
 
             await _context.SaveChangesAsync();
         }

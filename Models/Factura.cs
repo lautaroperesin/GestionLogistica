@@ -58,5 +58,11 @@ namespace LogisticaBackend.Models
         public virtual Cliente Cliente { get; set; } = null!;
 
         public virtual ICollection<MovimientoCaja> MovimientosCaja { get; set; } = new List<MovimientoCaja>();
+
+        [NotMapped]
+        public decimal TotalPagado => MovimientosCaja.Sum(m => m.Monto);
+
+        [NotMapped]
+        public decimal SaldoPendiente => Total - TotalPagado;
     }
 }
