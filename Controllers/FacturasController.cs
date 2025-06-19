@@ -29,11 +29,6 @@ namespace GestionLogisticaBackend.Controllers
         {
             var facturas = await _facturaService.GetFacturasAsync();
 
-            if (facturas == null || !facturas.Any())
-            {
-                return NotFound("No se encontraron facturas.");
-            }
-
             return Ok(facturas);
         }
 

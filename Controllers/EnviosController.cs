@@ -28,10 +28,7 @@ namespace GestionLogisticaBackend.Controllers
         public async Task<ActionResult<IEnumerable<EnvioDto>>> GetEnvios()
         {
             var envios = await _envioService.GetAllEnviosAsync();
-            if (envios == null || !envios.Any())
-            {
-                return NotFound("No se encontraron envíos.");
-            }
+
             return Ok(envios);
         }
 

@@ -21,10 +21,7 @@ namespace GestionLogisticaBackend.Controllers
         public async Task<ActionResult<IEnumerable<MovimientoCajaDto>>> GetMovimientos()
         {
             var movimientos = await _movimientoCajaService.GetMovimientosAsync();
-            if (movimientos == null || !movimientos.Any())
-            {
-                return NotFound("No se encontraron movimientos de caja.");
-            }
+
             return Ok(movimientos);
         }
 

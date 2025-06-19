@@ -30,11 +30,6 @@ namespace LogisticaBackend.Controllers
         {
             var vehiculos = await _vehiculoService.GetVehiculosAsync();
 
-            if (vehiculos == null || !vehiculos.Any())
-            {
-                return NotFound("No se encontraron vehículos.");
-            }
-
             return Ok(vehiculos);
         }
 

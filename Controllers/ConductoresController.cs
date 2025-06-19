@@ -29,10 +29,7 @@ namespace LogisticaBackend.Controllers
         public async Task<ActionResult<IEnumerable<ConductorDto>>> GetConductores()
         {
             var conductores = await _conductorService.GetConductoresAsync();
-            if (conductores == null || !conductores.Any())
-            {
-                return NotFound("No se encontraron conductores.");
-            }
+
             return Ok(conductores);
         }
 
