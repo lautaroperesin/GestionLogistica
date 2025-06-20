@@ -10,6 +10,7 @@ using LogisticaBackend.Models;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.Services.Implementations;
 using GestionLogisticaBackend.Services.Interfaces;
+using GestionLogisticaBackend.DTOs.Pagination;
 
 namespace LogisticaBackend.Controllers
 {
@@ -26,9 +27,9 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/Ubicaciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UbicacionDto>>> GetUbicaciones()
+        public async Task<ActionResult<PagedResult<UbicacionDto>>> GetUbicaciones([FromQuery] PaginationParams pagParams)
         {
-            var ubicaciones = await _ubicacionService.GetUbicacionesAsync();
+            var ubicaciones = await _ubicacionService.GetUbicacionesAsync(pagParams);
             
             return Ok(ubicaciones);
         }

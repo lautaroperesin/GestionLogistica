@@ -1,4 +1,6 @@
-﻿using GestionLogisticaBackend.DTOs.Ubicacion;
+﻿using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.DTOs.Ubicacion;
+using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
@@ -16,35 +18,29 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<UbicacionDto>> GetUbicacionesAsync()
+        public async Task<PagedResult<UbicacionDto>> GetUbicacionesAsync(PaginationParams pagParams)
         {
-            var ubicaciones = await _context.Ubicaciones
+            var query = _context.Ubicaciones
                 .Include(u => u.Localidad)
-                 .ThenInclude(l => l.Provincia)
-                 .ThenInclude(p => p.Pais)
+                    .ThenInclude(l => l.Provincia)
+                    .ThenInclude(p => p.Pais);
+
+            var totalItems = await query.CountAsync();
+
+            var ubicaciones = await query
+                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
+                .Take(pagParams.PageSize)
                 .ToListAsync();
 
-            return ubicaciones.Select(u => new UbicacionDto
+            var ubicacionesDto = ubicaciones.ToDtoList();
+
+            return new PagedResult<UbicacionDto>
             {
-                IdUbicacion = u.IdUbicacion,
-                Direccion = u.Direccion,
-                Localidad = new LocalidadDto
-                {
-                    IdLocalidad = u.Localidad.IdLocalidad,
-                    Nombre = u.Localidad.Nombre,
-                    Provincia = new ProvinciaDto
-                    {
-                        IdProvincia = u.Localidad.Provincia.IdProvincia,
-                        Nombre = u.Localidad.Provincia.Nombre,
-                        Pais = new PaisDto
-                        {
-                            IdPais = u.Localidad.Provincia.Pais.IdPais,
-                            Nombre = u.Localidad.Provincia.Pais.Nombre,
-                            CodigoIso = u.Localidad.Provincia.Pais.CodigoIso
-                        }
-                    }
-                },
-            }).ToList();
+                Items = ubicacionesDto,
+                TotalItems = totalItems,
+                PageNumber = pagParams.PageNumber,
+                PageSize = pagParams.PageSize
+            };
         }
 
         public async Task<UbicacionDto?> GetUbicacionByIdAsync(int id)
