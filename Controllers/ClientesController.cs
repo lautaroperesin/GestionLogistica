@@ -27,7 +27,7 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/Clientes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClienteDto>>> GetClientes([FromQuery] PaginationParams pagParams)
+        public async Task<ActionResult<PagedResult<ClienteDto>>> GetClientes([FromQuery] PaginationParams pagParams)
         {
             var clientes = await _clienteService.GetClientesAsync(pagParams);
 

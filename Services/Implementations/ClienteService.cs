@@ -1,5 +1,6 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using Humanizer;
 using LogisticaBackend.Data;
@@ -22,21 +23,17 @@ namespace GestionLogisticaBackend.Services.Implementations
             var query = _context.Clientes.OrderBy(c => c.Nombre);
 
             var totalItems = await query.CountAsync();
+
             var clientes = await query
                 .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
                 .Take(pagParams.PageSize)
-                .Select(c => new ClienteDto
-                {
-                    IdCliente = c.IdCliente,
-                    Nombre = c.Nombre,
-                    Telefono = c.Telefono,
-                    Email = c.Email
-                })
                 .ToListAsync();
+
+            var clientesDto = clientes.ToDtoList();
 
             return new PagedResult<ClienteDto>
             {
-                Items = clientes,
+                Items = clientesDto,
                 TotalItems = totalItems,
                 PageNumber = pagParams.PageNumber,
                 PageSize = pagParams.PageSize
@@ -49,13 +46,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (cliente == null) return null;
 
-            return new ClienteDto
-            {
-                IdCliente = cliente.IdCliente,
-                Nombre = cliente.Nombre,
-                Telefono = cliente.Telefono,
-                Email = cliente.Email
-            };
+            return cliente.ToDto();
         }
 
         public async Task<ClienteDto> CreateClienteAsync(CreateClienteDto clienteDto)
@@ -69,23 +60,12 @@ namespace GestionLogisticaBackend.Services.Implementations
                 throw new ArgumentException("El cliente debe tener un nombre, teléfono y email válidos.");
             }
 
-            var cliente = new Cliente
-            {
-                Nombre = clienteDto.Nombre,
-                Telefono = clienteDto.Telefono,
-                Email = clienteDto.Email
-            };
+           var cliente = clienteDto.ToEntity();
 
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
 
-            return new ClienteDto
-            {
-                IdCliente = cliente.IdCliente,
-                Nombre = cliente.Nombre,
-                Email = cliente.Email,
-                Telefono = cliente.Telefono
-            };
+            return cliente.ToDto();
         }
 
         public async Task<bool> UpdateClienteAsync(UpdateClienteDto clienteDto)
@@ -94,9 +74,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (cliente == null) return false;
 
-            cliente.Nombre = clienteDto.Nombre;
-            cliente.Telefono = clienteDto.Telefono;
-            cliente.Email = clienteDto.Email;
+            cliente.UpdateFromDto(clienteDto);
 
             await _context.SaveChangesAsync();
             return true;
