@@ -10,6 +10,7 @@ using LogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Implementations;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.Services.Interfaces;
+using GestionLogisticaBackend.DTOs.Pagination;
 
 namespace LogisticaBackend.Controllers
 {
@@ -26,9 +27,9 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/Conductores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ConductorDto>>> GetConductores()
+        public async Task<ActionResult<PagedResult<ConductorDto>>> GetConductores([FromQuery] PaginationParams pagParams)
         {
-            var conductores = await _conductorService.GetConductoresAsync();
+            var conductores = await _conductorService.GetConductoresAsync(pagParams);
 
             return Ok(conductores);
         }

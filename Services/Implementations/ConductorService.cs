@@ -1,5 +1,6 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
@@ -17,11 +18,26 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<ConductorDto>> GetConductoresAsync()
+        public async Task<PagedResult<ConductorDto>> GetConductoresAsync(PaginationParams pagParams)
         {
-            var conductores = await _context.Conductores.ToListAsync();
+            var query = _context.Conductores.OrderBy(c => c.Nombre);
 
-            return (List<ConductorDto>)conductores.ToDtoList();
+            var totalItems = await query.CountAsync();
+
+            var conductores = await query
+                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
+                .Take(pagParams.PageSize)
+                .ToListAsync();
+
+            var conductoresDto = conductores.ToDtoList();
+
+            return new PagedResult<ConductorDto>
+            {
+                Items = conductoresDto,
+                TotalItems = totalItems,
+                PageNumber = pagParams.PageNumber,
+                PageSize = pagParams.PageSize
+            };
         }
 
         public async Task<ConductorDto?> GetConductorByIdAsync(int id)
