@@ -55,17 +55,5 @@ namespace GestionLogisticaBackend.Extensions
                 IdLocalidad = dto.IdLocalidad
             };
         }
-
-        /// <summary>
-        /// Actualiza una entidad existente con los datos del DTO.
-        /// Útil para PUT o PATCH.
-        /// </summary>
-        //public static void UpdateFromDto(this Ubicacion ubicacion, UpdateUbicacionDto dto)
-        //{
-        //    if (ubicacion == null || dto == null) return;
-
-        //    ubicacion.Direccion = dto.Direccion;
-
-        //}
     }
 }
