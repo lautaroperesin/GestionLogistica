@@ -1,6 +1,7 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.DTOs.Vehiculo;
 using GestionLogisticaBackend.Extensions;
@@ -20,9 +21,9 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<EnvioDto>> GetAllEnviosAsync()
+        public async Task<PagedResult<EnvioDto>> GetEnviosAsync(PaginationParams pagParams)
         {
-            var envios = await _context.Envios
+            var query = _context.Envios
               .Include(e => e.Origen)
                 .ThenInclude(o => o.Localidad)
                 .ThenInclude(l => l.Provincia)
@@ -36,9 +37,24 @@ namespace GestionLogisticaBackend.Services.Implementations
               .Include(e => e.Conductor)
               .Include(e => e.Cliente)
               .Include(e => e.TipoCarga)
-              .ToListAsync();
+                .OrderBy(e => e.FechaCreacionEnvio);
 
-            return (List<EnvioDto>)envios.ToDtoList();
+            var totalItems = await query.CountAsync();
+
+            var envios = await query
+                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
+                .Take(pagParams.PageSize)
+                .ToListAsync();
+
+            var enviosDto = envios.ToDtoList();
+
+            return new PagedResult<EnvioDto>
+            {
+                Items = enviosDto,
+                TotalItems = totalItems,
+                PageNumber = pagParams.PageNumber,
+                PageSize = pagParams.PageSize
+            };
         }
 
         public async Task<EnvioDto?> GetEnvioByIdAsync(int id)

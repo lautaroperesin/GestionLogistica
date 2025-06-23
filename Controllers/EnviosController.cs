@@ -9,6 +9,7 @@ using LogisticaBackend.Data;
 using LogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Interfaces;
 using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.DTOs.Pagination;
 
 namespace GestionLogisticaBackend.Controllers
 {
@@ -25,9 +26,9 @@ namespace GestionLogisticaBackend.Controllers
 
         // GET: api/Envios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EnvioDto>>> GetEnvios()
+        public async Task<ActionResult<PagedResult<EnvioDto>>> GetEnvios([FromQuery] PaginationParams pagParams)
         {
-            var envios = await _envioService.GetAllEnviosAsync();
+            var envios = await _envioService.GetEnviosAsync(pagParams);
 
             return Ok(envios);
         }
