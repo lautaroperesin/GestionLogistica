@@ -27,8 +27,8 @@ namespace GestionLogisticaBackend.Extensions
                 Origen = envio.Origen.ToDto(),
                 Destino = envio.Destino.ToDto(),
                 //Estado = envio.Estado.ToDto(),
-                //Vehiculo = envio.Vehiculo.ToDto(),
-                //Conductor = envio.Conductor.ToDto(),
+                Vehiculo = envio.Vehiculo.ToDto(),
+                Conductor = envio.Conductor.ToDto(),
                 Cliente = envio.Cliente.ToDto(),
                 //TipoCarga = envio.TipoCarga.ToDto()
             };

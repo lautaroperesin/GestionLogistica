@@ -1,5 +1,6 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
+using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
@@ -18,17 +19,9 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<List<ConductorDto>> GetConductoresAsync()
         {
-            return await _context.Conductores
-                .Select(c => new ConductorDto
-                {
-                    IdConductor = c.IdConductor,
-                    Dni = c.Dni,
-                    Nombre = c.Nombre,
-                    Telefono = c.Telefono,
-                    Email = c.Email,
-                    ClaseLicencia = c.ClaseLicencia,
-                    VencimientoLicencia = c.VencimientoLicencia
-                }).ToListAsync();
+            var conductores = await _context.Conductores.ToListAsync();
+
+            return (List<ConductorDto>)conductores.ToDtoList();
         }
 
         public async Task<ConductorDto?> GetConductorByIdAsync(int id)
@@ -37,16 +30,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (conductor == null) return null;
 
-            return new ConductorDto
-            {
-                IdConductor = conductor.IdConductor,
-                Dni = conductor.Dni,
-                Nombre = conductor.Nombre,
-                ClaseLicencia = conductor.ClaseLicencia,
-                VencimientoLicencia = conductor.VencimientoLicencia,
-                Telefono = conductor.Telefono,
-                Email = conductor.Email
-            };
+            return conductor.ToDto();
         }
 
         public async Task<ConductorDto> CreateConductorAsync(CreateConductorDto conductorDto)
@@ -60,29 +44,12 @@ namespace GestionLogisticaBackend.Services.Implementations
                 throw new ArgumentException("El conductor debe tener un nombre, teléfono y email válidos.");
             }
 
-            var conductor = new Conductor
-            {
-                Dni = conductorDto.Dni,
-                Nombre = conductorDto.Nombre,
-                ClaseLicencia = conductorDto.ClaseLicencia,
-                VencimientoLicencia = conductorDto.VencimientoLicencia,
-                Telefono = conductorDto.Telefono,
-                Email = conductorDto.Email
-            };
+            var conductor = conductorDto.ToEntity();
 
             _context.Conductores.Add(conductor);
             await _context.SaveChangesAsync();
 
-            return new ConductorDto
-            {
-                IdConductor = conductor.IdConductor,
-                Dni = conductor.Dni,
-                Nombre = conductor.Nombre,
-                ClaseLicencia = conductor.ClaseLicencia,
-                VencimientoLicencia = conductor.VencimientoLicencia,
-                Telefono = conductor.Telefono,
-                Email = conductor.Email
-            };
+            return conductor.ToDto();
         }
 
         public async Task<bool> UpdateConductorAsync(UpdateConductorDto conductorDto)
@@ -100,12 +67,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (conductor == null) return false;
 
-            conductor.Dni = conductorDto.Dni;
-            conductor.Nombre = conductorDto.Nombre;
-            conductor.ClaseLicencia = conductorDto.ClaseLicencia;
-            conductor.VencimientoLicencia = conductorDto.VencimientoLicencia;
-            conductor.Telefono = conductorDto.Telefono;
-            conductor.Email = conductorDto.Email;
+            conductor.UpdateFromDto(conductorDto);
 
             await _context.SaveChangesAsync();
             return true;
