@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Vehiculo;
+using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
@@ -17,16 +18,9 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<List<VehiculoDto>> GetVehiculosAsync()
         {
-            return await _context.Vehiculos
-                .Select(v => new VehiculoDto
-                {
-                    IdVehiculo = v.IdVehiculo,
-                    Marca = v.Marca,
-                    Modelo = v.Modelo,
-                    Patente = v.Patente,
-                    CapacidadCarga = v.CapacidadKg,
-                    UltimaInspeccion = v.UltimaInspeccion,
-                }).ToListAsync();
+            var vehiculos = await _context.Vehiculos.ToListAsync();
+
+            return (List<VehiculoDto>)vehiculos.ToDtoList();
         }
 
         public async Task<VehiculoDto?> GetVehiculoByIdAsync(int id)
@@ -35,15 +29,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (vehiculo == null) return null;
 
-            return new VehiculoDto
-            {
-                IdVehiculo = vehiculo.IdVehiculo,
-                Marca = vehiculo.Marca,
-                Modelo = vehiculo.Modelo,
-                Patente = vehiculo.Patente,
-                CapacidadCarga = vehiculo.CapacidadKg,
-                UltimaInspeccion = vehiculo.UltimaInspeccion
-            };
+            return vehiculo.ToDto();
         }
 
         public async Task<VehiculoDto> CreateVehiculoAsync(CreateVehiculoDto vehiculoDto)
@@ -57,27 +43,12 @@ namespace GestionLogisticaBackend.Services.Implementations
                 throw new ArgumentException("El vehículo debe tener una marca, modelo y patente válidos.");
             }
 
-            var vehiculo = new Vehiculo
-            {
-                Marca = vehiculoDto.Marca,
-                Modelo = vehiculoDto.Modelo,
-                Patente = vehiculoDto.Patente,
-                CapacidadKg = vehiculoDto.CapacidadCarga,
-                UltimaInspeccion = vehiculoDto.UltimaInspeccion
-            };
+            var vehiculo = vehiculoDto.ToEntity();
 
             _context.Vehiculos.Add(vehiculo);
             await _context.SaveChangesAsync();
 
-            return new VehiculoDto
-            {
-                IdVehiculo = vehiculo.IdVehiculo,
-                Marca = vehiculo.Marca,
-                Modelo = vehiculo.Modelo,
-                Patente = vehiculo.Patente,
-                CapacidadCarga = vehiculo.CapacidadKg,
-                UltimaInspeccion = vehiculo.UltimaInspeccion
-            };
+            return vehiculo.ToDto();
         }
 
         public async Task<bool> UpdateVehiculoAsync(UpdateVehiculoDto vehiculoDto)
@@ -94,11 +65,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                 throw new ArgumentException("El vehículo debe tener una marca, modelo y patente válidos.");
             }
 
-            vehiculo.Marca = vehiculoDto.Marca;
-            vehiculo.Modelo = vehiculoDto.Modelo;
-            vehiculo.Patente = vehiculoDto.Patente;
-            vehiculo.CapacidadKg = vehiculoDto.CapacidadCarga;
-            vehiculo.UltimaInspeccion = vehiculoDto.UltimaInspeccion;
+            vehiculo.UpdateFromDto(vehiculoDto);
 
             await _context.SaveChangesAsync();
             return true;
@@ -109,10 +76,8 @@ namespace GestionLogisticaBackend.Services.Implementations
             var vehiculo = await _context.Vehiculos.FindAsync(id);
 
             if (vehiculo == null) return false;
- 
-            // Marcar como eliminado en lugar de eliminar físicamente
-            vehiculo.Deleted = true;
 
+            vehiculo.Deleted = true;
             await _context.SaveChangesAsync();
             return true;
         }
