@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Envio;
+using Humanizer;
 using LogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.Extensions
@@ -10,7 +11,8 @@ namespace GestionLogisticaBackend.Extensions
         /// </summary>
         public static EnvioDto ToDto(this Envio envio)
         {
-            if (envio == null) return null!;
+            if (envio == null)
+                throw new ArgumentNullException(nameof(envio));
 
             return new EnvioDto
             {
@@ -23,14 +25,21 @@ namespace GestionLogisticaBackend.Extensions
                 PesoKg = envio.PesoKg,
                 Descripcion = envio.Descripcion,
                 CostoTotal = envio.CostoTotal,
-
                 Origen = envio.Origen.ToDto(),
                 Destino = envio.Destino.ToDto(),
-                //Estado = envio.Estado.ToDto(),
+                Estado = new EstadoEnvioDto
+                {
+                    IdEstado = envio.Estado.IdEstado,
+                    Nombre = envio.Estado.Nombre
+                },
                 Vehiculo = envio.Vehiculo.ToDto(),
                 Conductor = envio.Conductor.ToDto(),
                 Cliente = envio.Cliente.ToDto(),
-                //TipoCarga = envio.TipoCarga.ToDto()
+                TipoCarga = new TipoCargaDto
+                {
+                    IdTipoCarga = envio.IdTipoCarga,
+                    Nombre = envio.TipoCarga.Nombre
+                }
             };
         }
 
@@ -47,7 +56,8 @@ namespace GestionLogisticaBackend.Extensions
         /// </summary>
         public static Envio ToEntity(this CreateEnvioDto dto)
         {
-            if (dto == null) return null!;
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
 
             return new Envio
             {
@@ -57,10 +67,9 @@ namespace GestionLogisticaBackend.Extensions
                 PesoKg = dto.PesoKg,
                 Descripcion = dto.Descripcion,
                 CostoTotal = dto.CostoTotal,
-
                 IdOrigen = dto.IdOrigen,
                 IdDestino = dto.IdDestino,
-                IdEstado = 1,   // VERIFICAR EL ESTADO DE ENVIO
+                IdEstado = 1,
                 IdVehiculo = dto.IdVehiculo,
                 IdConductor = dto.IdConductor,
                 IdCliente = dto.IdCliente,
