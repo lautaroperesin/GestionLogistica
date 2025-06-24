@@ -1,6 +1,8 @@
 ﻿using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.DTOs.MovimientoCaja;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Enums;
+using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
@@ -19,25 +21,30 @@ namespace GestionLogisticaBackend.Services.Implementations
             _facturaService = facturaService;
         }
 
-        public async Task<IEnumerable<MovimientoCajaDto>> GetMovimientosAsync()
+        public async Task<PagedResult<MovimientoCajaDto>> GetMovimientosAsync(PaginationParams pagParams)
         {
-            return await _context.MovimientosCaja
+            var query = _context.MovimientosCaja
                 .Include(m => m.Factura)
-                    .Select(m => new MovimientoCajaDto
-                    {
-                        IdMovimiento = m.IdMovimiento,
-                        Factura = new FacturaDto
-                        {
-                            IdFactura = m.IdFactura,
-                            FechaEmision = m.FechaPago,
-                            NumeroFactura = m.Factura.NumeroFactura,
-                            Estado = m.Factura.Estado
-                        },
-                        FechaPago = m.FechaPago,
-                        Monto = m.Monto,
-                        IdMetodoPago = m.IdMetodoPago, // deberia ser un DTO de MetodoPago
-                        Observaciones = m.Observaciones    
-                    }).ToListAsync();
+                .Include(m => m.MetodoPago)
+                .OrderBy(m => m.FechaPago);
+
+            var totalItems = await query.CountAsync();
+
+            var movimientos = await query
+                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
+                .Take(pagParams.PageSize)
+                .ToListAsync();
+
+            var movimientosDto = movimientos.ToDtoList();
+
+            return new PagedResult<MovimientoCajaDto>
+            {
+                Items = movimientosDto,
+                TotalItems = totalItems,
+                PageNumber = pagParams.PageNumber,
+                PageSize = pagParams.PageSize
+            };
+
         }
 
         public async Task<MovimientoCajaDto> GetMovimientoByIdAsync(int id)
@@ -48,62 +55,41 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (movimiento == null) return null;
 
-            return new MovimientoCajaDto
-            {
-                IdMovimiento = movimiento.IdMovimiento,
-                Factura = new FacturaDto
-                {
-                    IdFactura = movimiento.IdFactura,
-                    FechaEmision = movimiento.FechaPago,
-                    NumeroFactura = movimiento.Factura.NumeroFactura,
-                    Estado = movimiento.Factura.Estado
-                },
-                FechaPago = movimiento.FechaPago,
-                Monto = movimiento.Monto,
-                IdMetodoPago = movimiento.IdMetodoPago, // deberia ser un DTO de MetodoPago
-                Observaciones = movimiento.Observaciones,
-            };
+           return movimiento.ToDto();
         }
 
-        public async Task CreateMovimientoAsync(CreateMovimientoCajaDto movimientoCaja)
+        public async Task CreateMovimientoAsync(CreateMovimientoCajaDto movimientoCajaDto)
         {
 
-            if (movimientoCaja == null)
+            if (movimientoCajaDto == null)
             {
-                throw new ArgumentNullException(nameof(movimientoCaja), "El movimiento de caja no puede ser nulo.");
+                throw new ArgumentNullException(nameof(movimientoCajaDto), "El movimiento de caja no puede ser nulo.");
             }
 
             var factura = await _context.Facturas
                 .Include(f => f.MovimientosCaja)
-                .FirstOrDefaultAsync(f => f.IdFactura == movimientoCaja.IdFactura);
+                .FirstOrDefaultAsync(f => f.IdFactura == movimientoCajaDto.IdFactura);
 
             if (factura == null)
             {
-                throw new KeyNotFoundException($"No se encontró una factura con ID {movimientoCaja.IdFactura}.");
+                throw new KeyNotFoundException($"No se encontró una factura con ID {movimientoCajaDto.IdFactura}.");
             }
 
-            if (movimientoCaja.Monto <= 0)
+            if (movimientoCajaDto.Monto <= 0)
             {
-                throw new ArgumentException("El monto debe ser mayor a cero.", nameof(movimientoCaja.Monto));
+                throw new ArgumentException("El monto debe ser mayor a cero.", nameof(movimientoCajaDto.Monto));
             }
 
             // Verificar que no se exceda el monto pendiente
             decimal totalPagadoActual = factura.MovimientosCaja.Sum(m => m.Monto);
             decimal saldoPendienteActual = factura.Total - totalPagadoActual;
 
-            if (movimientoCaja.Monto > saldoPendienteActual)
+            if (movimientoCajaDto.Monto > saldoPendienteActual)
             {
-                throw new InvalidOperationException($"El monto a pagar ({movimientoCaja.Monto:C}) excede el saldo pendiente ({saldoPendienteActual:C}).");
+                throw new InvalidOperationException($"El monto a pagar ({movimientoCajaDto.Monto:C}) excede el saldo pendiente ({saldoPendienteActual:C}).");
             }
 
-            var nuevoMovimiento = new MovimientoCaja
-            {
-                Monto = movimientoCaja.Monto,
-                FechaPago = movimientoCaja.FechaPago,
-                IdMetodoPago = movimientoCaja.IdMetodoPago,
-                Observaciones = movimientoCaja.Observaciones,
-                IdFactura = movimientoCaja.IdFactura,
-            };
+            var nuevoMovimiento = movimientoCajaDto.ToEntity();
 
             _context.MovimientosCaja.Add(nuevoMovimiento);
 

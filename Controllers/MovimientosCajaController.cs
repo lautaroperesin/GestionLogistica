@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.MovimientoCaja;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,9 @@ namespace GestionLogisticaBackend.Controllers
 
         // GET: api/MovimientosCaja
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MovimientoCajaDto>>> GetMovimientos()
+        public async Task<ActionResult<PagedResult<MovimientoCajaDto>>> GetMovimientos([FromQuery] PaginationParams pagParams)
         {
-            var movimientos = await _movimientoCajaService.GetMovimientosAsync();
+            var movimientos = await _movimientoCajaService.GetMovimientosAsync(pagParams);
 
             return Ok(movimientos);
         }
