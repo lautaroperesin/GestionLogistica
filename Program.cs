@@ -32,6 +32,7 @@ builder.Services.AddScoped<IVehiculoService, VehiculoService>();
 builder.Services.AddScoped<IConductorService, ConductorService>();
 builder.Services.AddScoped<IEnvioService, EnvioService>();
 builder.Services.AddScoped<IFacturaService, FacturaService>();
+builder.Services.AddScoped<IMetodoPagoService, MetodoPagoService>();
 
 // Configurar Entity Framework con MySQL
 builder.Services.AddDbContext<LogisticaContext>(options =>
