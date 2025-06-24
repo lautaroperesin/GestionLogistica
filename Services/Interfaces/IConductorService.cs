@@ -10,6 +10,6 @@ namespace GestionLogisticaBackend.Services.Interfaces
         Task<ConductorDto> CreateConductorAsync(CreateConductorDto conductorDto);
         Task<bool> UpdateConductorAsync(UpdateConductorDto conductorDto);
         Task<bool> DeleteConductorAsync(int id);
-        Task<List<ConductorDto>> GetConductoresConLicenciaVencidaAsync();
+        Task<IEnumerable<ConductorDto>> GetConductoresConLicenciaVencidaAsync();
     }
 }

@@ -100,20 +100,13 @@ namespace GestionLogisticaBackend.Services.Implementations
             return true;
         }
 
-        public async Task<List<ConductorDto>> GetConductoresConLicenciaVencidaAsync()
+        public async Task<IEnumerable<ConductorDto>> GetConductoresConLicenciaVencidaAsync()
         {
-            return await _context.Conductores
+            var conductoresLicenciaVencida = await _context.Conductores
                 .Where(c => c.LicenciaVencida)
-                .Select(c => new ConductorDto
-                {
-                    IdConductor = c.IdConductor,
-                    Dni = c.Dni,
-                    Nombre = c.Nombre,
-                    ClaseLicencia = c.ClaseLicencia,
-                    VencimientoLicencia = c.VencimientoLicencia,
-                    Telefono = c.Telefono,
-                    Email = c.Email
-                }).ToListAsync();
+                .ToListAsync();
+
+            return conductoresLicenciaVencida.ToDtoList();
         }
     }
 }
