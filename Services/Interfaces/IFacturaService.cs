@@ -1,11 +1,12 @@
 ﻿using GestionLogisticaBackend.DTOs.Factura;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Enums;
 
 namespace GestionLogisticaBackend.Services.Interfaces
 {
     public interface IFacturaService
     {
-        Task<List<FacturaDto>> GetFacturasAsync();
+        Task<PagedResult<FacturaDto>> GetFacturasAsync(PaginationParams pagParams);
         Task<FacturaDto?> GetFacturaByIdAsync(int id);
         Task<FacturaDto> CreateFacturaAsync(CreateFacturaDto facturaDto);
         Task<FacturaDto?> UpdateFacturaAsync(int id, UpdateFacturaDto facturaDto);

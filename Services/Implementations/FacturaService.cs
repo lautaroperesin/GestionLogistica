@@ -1,8 +1,10 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Envio;
 using GestionLogisticaBackend.DTOs.Factura;
+using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.Enums;
+using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
@@ -19,71 +21,39 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<FacturaDto>> GetFacturasAsync()
+        public async Task<PagedResult<FacturaDto>> GetFacturasAsync(PaginationParams pagParams)
         {
-            return await _context.Facturas
-                .Select(f => new FacturaDto
-                {
-                    IdFactura = f.IdFactura,
-                    NumeroFactura = f.NumeroFactura,
-                    Envio = new EnvioDto
-                    {
-                        IdEnvio = f.IdEnvio,
-                        Origen = new UbicacionDto
-                        {
-                            IdUbicacion = f.Envio.Origen.IdUbicacion,
-                            Direccion = f.Envio.Origen.Direccion,
-                            Localidad = new LocalidadDto
-                            {
-                                IdLocalidad = f.Envio.Origen.Localidad.IdLocalidad,
-                                Nombre = f.Envio.Origen.Localidad.Nombre,
-                                Provincia = new ProvinciaDto
-                                {
-                                    IdProvincia = f.Envio.Origen.Localidad.Provincia.IdProvincia,
-                                    Nombre = f.Envio.Origen.Localidad.Provincia.Nombre,
-                                    Pais = new PaisDto
-                                    {
-                                        IdPais = f.Envio.Origen.Localidad.Provincia.Pais.IdPais,
-                                        Nombre = f.Envio.Origen.Localidad.Provincia.Pais.Nombre
-                                    }
-                                }
-                            }
-                        },
-                        Destino = new UbicacionDto
-                        {
-                            IdUbicacion = f.Envio.Destino.IdUbicacion,
-                            Direccion = f.Envio.Destino.Direccion,
-                            Localidad = new LocalidadDto
-                            {
-                                IdLocalidad = f.Envio.Destino.Localidad.IdLocalidad,
-                                Nombre = f.Envio.Destino.Localidad.Nombre,
-                                Provincia = new ProvinciaDto
-                                {
-                                    IdProvincia = f.Envio.Destino.Localidad.Provincia.IdProvincia,
-                                    Nombre = f.Envio.Destino.Localidad.Provincia.Nombre,
-                                    Pais = new PaisDto
-                                    {
-                                        IdPais = f.Envio.Destino.Localidad.Provincia.Pais.IdPais,
-                                        Nombre = f.Envio.Destino.Localidad.Provincia.Pais.Nombre
-                                    }
-                                }
-                            }
-                        },
-                        FechaEntregaReal = f.Envio.FechaEntregaReal,
-                    },
-                    Cliente = new ClienteDto
-                    {
-                        IdCliente = f.Cliente.IdCliente,
-                        Nombre = f.Cliente.Nombre,
-                        Telefono = f.Cliente.Telefono,
-                        Email = f.Cliente.Email
-                    },
-                    FechaEmision = f.FechaEmision,
-                    Estado = f.Estado,
-                    Subtotal = f.Subtotal,
-                    Iva = f.Iva,
-                    Total = f.Total
-                }).ToListAsync();
+            var query = _context.Facturas
+                .Where(f => !f.Deleted)
+                .Include(f => f.Envio)
+                    .ThenInclude(e => e.Origen)
+                        .ThenInclude(o => o.Localidad)
+                            .ThenInclude(l => l.Provincia)
+                                .ThenInclude(p => p.Pais)
+                .Include(f => f.Envio)
+                    .ThenInclude(e => e.Destino)
+                        .ThenInclude(d => d.Localidad)
+                            .ThenInclude(l => l.Provincia)
+                                .ThenInclude(p => p.Pais)
+                .Include(f => f.Cliente)
+                .OrderBy(f => f.FechaEmision);
+
+            var totalItems = await query.CountAsync();
+
+            var facturas = await query
+                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
+                .Take(pagParams.PageSize)
+                .ToListAsync();
+
+            var facturasDto = facturas.ToDtoList();
+
+            return new PagedResult<FacturaDto>
+            {
+                Items = facturasDto,
+                TotalItems = totalItems,
+                PageNumber = pagParams.PageNumber,
+                PageSize = pagParams.PageSize
+            };
         }
 
         public async Task<FacturaDto?> GetFacturaByIdAsync(int id)
@@ -92,68 +62,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             if (factura == null) return null;
 
-            return new FacturaDto
-            {
-                IdFactura = factura.IdFactura,
-                NumeroFactura = factura.NumeroFactura,
-                Envio = new EnvioDto
-                {
-                    IdEnvio = factura.IdEnvio,
-                    Origen = new UbicacionDto
-                    {
-                        IdUbicacion = factura.Envio.Origen.IdUbicacion,
-                        Direccion = factura.Envio.Origen.Direccion,
-                        Localidad = new LocalidadDto
-                        {
-                            IdLocalidad = factura.Envio.Origen.Localidad.IdLocalidad,
-                            Nombre = factura.Envio.Origen.Localidad.Nombre,
-                            Provincia = new ProvinciaDto
-                            {
-                                IdProvincia = factura.Envio.Origen.Localidad.Provincia.IdProvincia,
-                                Nombre = factura.Envio.Origen.Localidad.Provincia.Nombre,
-                                Pais = new PaisDto
-                                {
-                                    IdPais = factura.Envio.Origen.Localidad.Provincia.Pais.IdPais,
-                                    Nombre = factura.Envio.Origen.Localidad.Provincia.Pais.Nombre
-                                }
-                            }
-                        }
-                    },
-                    Destino = new UbicacionDto
-                    {
-                        IdUbicacion = factura.Envio.Destino.IdUbicacion,
-                        Direccion = factura.Envio.Destino.Direccion,
-                        Localidad = new LocalidadDto
-                        {
-                            IdLocalidad = factura.Envio.Destino.Localidad.IdLocalidad,
-                            Nombre = factura.Envio.Destino.Localidad.Nombre,
-                            Provincia = new ProvinciaDto
-                            {
-                                IdProvincia = factura.Envio.Destino.Localidad.Provincia.IdProvincia,
-                                Nombre = factura.Envio.Destino.Localidad.Provincia.Nombre,
-                                Pais = new PaisDto
-                                {
-                                    IdPais = factura.Envio.Destino.Localidad.Provincia.Pais.IdPais,
-                                    Nombre = factura.Envio.Destino.Localidad.Provincia.Pais.Nombre
-                                }
-                            }
-                        }
-                    },
-                    FechaEntregaReal = factura.Envio.FechaEntregaReal,
-                },
-                Cliente = new ClienteDto
-                {
-                    IdCliente = factura.Cliente.IdCliente,
-                    Nombre = factura.Cliente.Nombre,
-                    Telefono = factura.Cliente.Telefono,
-                    Email = factura.Cliente.Email
-                },
-                FechaEmision = factura.FechaEmision,
-                Estado = factura.Estado,
-                Subtotal = factura.Subtotal,
-                Iva = factura.Iva,
-                Total = factura.Total
-            };
+            return 
         }
 
         public async Task<FacturaDto> CreateFacturaAsync(CreateFacturaDto facturaDto)
