@@ -17,6 +17,7 @@ namespace GestionLogisticaBackend.Extensions
             return new EnvioDto
             {
                 IdEnvio = envio.IdEnvio,
+                NumeroSeguimiento = envio.NumeroSeguimiento,
                 FechaCreacionEnvio = envio.FechaCreacionEnvio,
                 FechaSalidaProgramada = envio.FechaSalidaProgramada,
                 FechaSalidaReal = envio.FechaSalidaReal,
@@ -62,6 +63,7 @@ namespace GestionLogisticaBackend.Extensions
             return new Envio
             {
                 FechaCreacionEnvio = DateTime.Now,
+                NumeroSeguimiento = dto.NumeroSeguimiento,
                 FechaSalidaProgramada = dto.FechaSalidaProgramada,
                 FechaEntregaEstimada = dto.FechaEntregaEstimada,
                 PesoKg = dto.PesoKg,
@@ -92,6 +94,7 @@ namespace GestionLogisticaBackend.Extensions
             envio.PesoKg = dto.PesoKg;
             envio.Descripcion = dto.Descripcion;
             envio.CostoTotal = dto.CostoTotal;
+            envio.NumeroSeguimiento = dto.NumeroSeguimiento;
 
             envio.IdOrigen = dto.IdOrigen;
             envio.IdDestino = dto.IdDestino;

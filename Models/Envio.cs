@@ -19,6 +19,11 @@ namespace LogisticaBackend.Models
         public int IdDestino { get; set; }
 
         [Required]
+        [StringLength(50)]
+        [Column("numero_seguimiento")]
+        public string NumeroSeguimiento { get; set; } = string.Empty;
+
+        [Required]
         [Column("fecha_creacion_envio")]
         public DateTime FechaCreacionEnvio { get; set; } = DateTime.Now;
 

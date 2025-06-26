@@ -90,6 +90,10 @@ namespace LogisticaBackend.Data
                 .Property(f => f.Estado)
                 .HasConversion<int>();
 
+            modelBuilder.Entity<Vehiculo>()
+                .Property(v => v.Estado)
+                .HasConversion<int>();
+
 
             // Configurar valor por defecto en entidades con soft delete
             modelBuilder.Entity<Pais>().Property(p => p.Deleted).HasDefaultValue(false);

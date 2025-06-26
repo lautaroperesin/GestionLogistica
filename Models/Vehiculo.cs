@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using GestionLogisticaBackend.Enums;
 
 namespace LogisticaBackend.Models
 {
@@ -30,8 +31,15 @@ namespace LogisticaBackend.Models
         public decimal CapacidadKg { get; set; }
 
         [Required]
+        [Column("estado")]
+        public EstadoVehiculo Estado { get; set; } = EstadoVehiculo.Disponible;
+
+        [Required]
         [Column("ultima_inspeccion")]
         public DateTime UltimaInspeccion { get; set; }
+
+        [Column("rto_vencimiento")]
+        public DateTime RtoVencimiento { get; set; }
 
         [Column("deleted")]
         public bool Deleted { get; set; } = false;

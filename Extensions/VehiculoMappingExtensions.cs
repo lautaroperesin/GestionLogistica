@@ -19,7 +19,9 @@ namespace GestionLogisticaBackend.Extensions
                 Modelo = vehiculo.Modelo,
                 Patente = vehiculo.Patente,
                 CapacidadCarga = vehiculo.CapacidadKg,
-                UltimaInspeccion = vehiculo.UltimaInspeccion
+                Estado = vehiculo.Estado,
+                UltimaInspeccion = vehiculo.UltimaInspeccion,
+                RtoVencimiento = vehiculo.RtoVencimiento
             };
         }
 
@@ -44,7 +46,9 @@ namespace GestionLogisticaBackend.Extensions
                 Modelo = dto.Modelo,
                 Patente = dto.Patente,
                 CapacidadKg = dto.CapacidadCarga,
-                UltimaInspeccion = dto.UltimaInspeccion
+                Estado = dto.Estado,
+                UltimaInspeccion = dto.UltimaInspeccion,
+                RtoVencimiento = dto.RtoVencimiento
             };
         }
 
@@ -60,7 +64,9 @@ namespace GestionLogisticaBackend.Extensions
             vehiculo.Modelo = dto.Modelo;
             vehiculo.Patente = dto.Patente;
             vehiculo.CapacidadKg = dto.CapacidadCarga;
+            vehiculo.Estado = dto.Estado;
             vehiculo.UltimaInspeccion = dto.UltimaInspeccion;
+            vehiculo.RtoVencimiento = dto.RtoVencimiento;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GestionLogisticaBackend.Enums;
 
 namespace GestionLogisticaBackend.DTOs.Vehiculo
 {
@@ -21,7 +22,13 @@ namespace GestionLogisticaBackend.DTOs.Vehiculo
         [Required(ErrorMessage = "La capacidad en kg es requerida")]
         public decimal CapacidadCarga { get; set; }
 
+        [Required(ErrorMessage = "El estado del vehículo es requerido")]
+        public EstadoVehiculo Estado { get; set; }
+
         [Required(ErrorMessage = "La fecha de última inspección es requerida")]
         public DateTime UltimaInspeccion { get; set; }
+
+        [Required(ErrorMessage = "La fecha de vencimiento del RTO es requerida")]
+        public DateTime RtoVencimiento { get; set; }
     }
 }
