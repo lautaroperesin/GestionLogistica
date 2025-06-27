@@ -21,6 +21,7 @@ namespace LogisticaBackend.Data
         public DbSet<TipoCarga> TiposCarga { get; set; }
         public DbSet<MetodoPago> MetodosPago { get; set; }
         public DbSet<MovimientoCaja> MovimientosCaja { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
