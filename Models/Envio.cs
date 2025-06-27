@@ -48,6 +48,10 @@ namespace LogisticaBackend.Models
         [Column("peso_kg", TypeName = "decimal(10,2)")]
         public decimal PesoKg { get; set; }
 
+        [Required]
+        [Column("volumen_m3", TypeName = "decimal(10,2)")]
+        public decimal VolumenM3 { get; set; }
+
         [Column("descripcion")]
         public string? Descripcion { get; set; }
 

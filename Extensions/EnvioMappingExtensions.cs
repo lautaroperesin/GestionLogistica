@@ -24,6 +24,7 @@ namespace GestionLogisticaBackend.Extensions
                 FechaEntregaEstimada = envio.FechaEntregaEstimada,
                 FechaEntregaReal = envio.FechaEntregaReal,
                 PesoKg = envio.PesoKg,
+                VolumenM3 = envio.VolumenM3,
                 Descripcion = envio.Descripcion,
                 CostoTotal = envio.CostoTotal,
                 Origen = envio.Origen.ToDto(),
@@ -67,6 +68,7 @@ namespace GestionLogisticaBackend.Extensions
                 FechaSalidaProgramada = dto.FechaSalidaProgramada,
                 FechaEntregaEstimada = dto.FechaEntregaEstimada,
                 PesoKg = dto.PesoKg,
+                VolumenM3 = dto.VolumenM3,
                 Descripcion = dto.Descripcion,
                 CostoTotal = dto.CostoTotal,
                 IdOrigen = dto.IdOrigen,
@@ -92,6 +94,7 @@ namespace GestionLogisticaBackend.Extensions
             envio.FechaEntregaEstimada = dto.FechaEntregaEstimada;
             envio.FechaEntregaReal = dto.FechaEntregaReal;
             envio.PesoKg = dto.PesoKg;
+            envio.VolumenM3 = dto.VolumenM3;
             envio.Descripcion = dto.Descripcion;
             envio.CostoTotal = dto.CostoTotal;
             envio.NumeroSeguimiento = dto.NumeroSeguimiento;

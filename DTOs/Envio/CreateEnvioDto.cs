@@ -24,6 +24,9 @@ namespace GestionLogisticaBackend.DTOs.Envio
         [Required(ErrorMessage = "El peso es requerido")]
         public decimal PesoKg { get; set; }
 
+        [Required(ErrorMessage = "El volumen es requerido")]
+        public decimal VolumenM3 { get; set; }
+
         [StringLength(1000, ErrorMessage = "La descripción no puede exceder los 1000 caracteres")]
         public string? Descripcion { get; set; }
 
