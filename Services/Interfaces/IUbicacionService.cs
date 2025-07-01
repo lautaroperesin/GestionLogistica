@@ -4,7 +4,7 @@ using LogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.Services.Interfaces
 {
-    public interface IUbicacionService
+    public interface IUbicacionService : ILocalidadService, IProvinciaService, IPaisService
     {
         Task<PagedResult<UbicacionDto>> GetUbicacionesAsync(PaginationParams pagParams);
         Task<UbicacionDto?> GetUbicacionByIdAsync(int id);

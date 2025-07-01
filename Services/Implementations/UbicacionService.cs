@@ -96,5 +96,46 @@ namespace GestionLogisticaBackend.Services.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<PaisDto>> GetPaisesAsync()
+        {
+            return await _context.Paises
+                .Select(p => new PaisDto
+                {
+                    IdPais = p.IdPais,
+                    Nombre = p.Nombre,
+                    CodigoIso = p.CodigoIso,
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ProvinciaDto>> GetProvinciasByPaisAsync(int paisId)
+        {
+            return await _context.Provincias
+                .Where(p => p.IdPais == paisId)
+                .Select(p => new ProvinciaDto
+                {
+                    IdProvincia = p.IdProvincia,
+                    Nombre = p.Nombre,
+                    Pais = new PaisDto { IdPais = paisId }
+                })
+                .OrderBy(p => p.Nombre)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<LocalidadDto>> GetLocalidadesByProvinciaAsync(int provinciaId)
+        {
+            return await _context.Localidades
+                .Include(l => l.Provincia)
+                .Where(l => l.IdProvincia == provinciaId)
+                .Select(l => new LocalidadDto
+                {
+                    IdLocalidad = l.IdLocalidad,
+                    Nombre = l.Nombre,
+                    Provincia = new ProvinciaDto { IdProvincia = provinciaId }
+                })
+                .OrderBy(l => l.Nombre)
+                .ToListAsync();
+        }
     }
 }

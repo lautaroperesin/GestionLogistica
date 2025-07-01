@@ -88,5 +88,26 @@ namespace LogisticaBackend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("paises")]
+        public async Task<ActionResult<IEnumerable<PaisDto>>> GetPaises()
+        {
+            var paises = await _ubicacionService.GetPaisesAsync();
+            return Ok(paises);
+        }
+
+        [HttpGet("paises/{paisId}/provincias")]
+        public async Task<ActionResult<IEnumerable<Provincia>>> GetProvincias(int paisId)
+        {
+            var provincias = await _ubicacionService.GetProvinciasByPaisAsync(paisId);
+            return Ok(provincias);
+        }
+
+        [HttpGet("provincias/{provinciaId}/localidades")]
+        public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidades(int provinciaId)
+        {
+            var localidades = await _ubicacionService.GetLocalidadesByProvinciaAsync(provinciaId);
+            return Ok(localidades);
+        }
     }
 }

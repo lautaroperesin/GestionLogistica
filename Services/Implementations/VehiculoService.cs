@@ -16,11 +16,11 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<VehiculoDto>> GetVehiculosAsync()
+        public async Task<IEnumerable<VehiculoDto>> GetVehiculosAsync()
         {
             var vehiculos = await _context.Vehiculos.ToListAsync();
 
-            return (List<VehiculoDto>)vehiculos.ToDtoList();
+            return vehiculos.ToDtoList();
         }
 
         public async Task<VehiculoDto?> GetVehiculoByIdAsync(int id)
