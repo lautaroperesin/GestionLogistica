@@ -10,10 +10,13 @@ namespace LogisticaBackend.Models
         [Column("id_ubicacion")]
         public int IdUbicacion { get; set; }
 
-        [Required]
         [StringLength(100)]
         [Column("direccion")]
-        public string Direccion { get; set; } = string.Empty;
+        public string? Direccion { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        [Column("descripcion")]
+        public string? Descripcion { get; set; } = string.Empty;
 
         [Required]
         [Column("id_localidad")]

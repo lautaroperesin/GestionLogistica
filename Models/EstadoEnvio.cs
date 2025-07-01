@@ -7,7 +7,7 @@ namespace LogisticaBackend.Models
     public class EstadoEnvio
     {
         [Key]
-        [Column("id_estado")]
+        [Column("id_estado_envio")]
         public int IdEstado { get; set; }
 
         [Required]

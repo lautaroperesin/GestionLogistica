@@ -41,7 +41,7 @@ namespace LogisticaBackend.Models
         public DateTime? FechaEntregaReal { get; set; }
 
         [Required]
-        [Column("id_estado")]
+        [Column("id_estado_envio")]
         public int IdEstado { get; set; }
 
         [Required]

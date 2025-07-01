@@ -4,6 +4,7 @@ using LogisticaBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogisticaBackend.Migrations
 {
     [DbContext(typeof(LogisticaContext))]
-    partial class LogisticaContextModelSnapshot : ModelSnapshot
+    [Migration("20250701181938_AjusteNombresColumnasEstado")]
+    partial class AjusteNombresColumnasEstado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -618,12 +621,8 @@ namespace LogisticaBackend.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("deleted");
 
-                    b.Property<string>("Descripcion")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("descripcion");
-
                     b.Property<string>("Direccion")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("direccion");
