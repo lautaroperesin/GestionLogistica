@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.DTOs.Envio;
 
 namespace LogisticaBackend.Controllers
 {
@@ -23,14 +24,20 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/TiposCarga
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoCarga>>> GetTiposCarga()
+        public async Task<ActionResult<IEnumerable<TipoCargaDto>>> GetTiposCarga()
         {
-            return await _context.TiposCarga.ToListAsync();
+            var tiposCarga =  await _context.TiposCarga.ToListAsync();
+
+            return tiposCarga.Select(tc => new TipoCargaDto
+            {
+                IdTipoCarga = tc.IdTipoCarga,
+                Nombre = tc.Nombre
+            }).ToList();
         }
 
         // GET: api/TiposCarga/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TipoCarga>> GetTipoCarga(int id)
+        public async Task<ActionResult<TipoCargaDto>> GetTipoCarga(int id)
         {
             var tipoCarga = await _context.TiposCarga.FindAsync(id);
 
@@ -39,49 +46,53 @@ namespace LogisticaBackend.Controllers
                 return NotFound();
             }
 
-            return tipoCarga;
+            return new TipoCargaDto
+            {
+                IdTipoCarga = tipoCarga.IdTipoCarga,
+                Nombre = tipoCarga.Nombre
+            };
         }
 
         // PUT: api/TiposCarga/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTipoCarga(int id, TipoCarga tipoCarga)
+        public async Task<IActionResult> PutTipoCarga(int id, TipoCargaDto dto)
         {
-            if (id != tipoCarga.IdTipoCarga)
-            {
+            if (id != dto.IdTipoCarga)
                 return BadRequest();
-            }
 
-            _context.Entry(tipoCarga).State = EntityState.Modified;
+            var tipoCarga = await _context.TiposCarga.FindAsync(id);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TipoCargaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (tipoCarga == null)
+                return NotFound();
 
+            tipoCarga.Nombre = dto.Nombre;
+
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         // POST: api/TiposCarga
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TipoCarga>> PostTipoCarga(TipoCarga tipoCarga)
+        public async Task<ActionResult<TipoCargaDto>> PostTipoCarga(TipoCargaDto dto)
         {
+            if (dto == null)
+                return BadRequest("El tipo de carga no puede ser nulo.");
+
+            if (string.IsNullOrWhiteSpace(dto.Nombre))
+                return BadRequest("El nombre del tipo de carga no puede estar vacío.");
+
+            // mapear a entidad
+            var tipoCarga = new TipoCarga
+            {
+                Nombre = dto.Nombre
+            };
+
             _context.TiposCarga.Add(tipoCarga);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTipoCarga", new { id = tipoCarga.IdTipoCarga }, tipoCarga);
+            return CreatedAtAction(nameof(GetTipoCarga), new { id = tipoCarga.IdTipoCarga }, tipoCarga);
         }
 
         // DELETE: api/TiposCarga/5
@@ -98,11 +109,6 @@ namespace LogisticaBackend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool TipoCargaExists(int id)
-        {
-            return _context.TiposCarga.Any(e => e.IdTipoCarga == id);
         }
     }
 }

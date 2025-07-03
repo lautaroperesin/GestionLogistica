@@ -15,8 +15,8 @@ namespace GestionLogisticaBackend.Extensions
             return new FacturaDto
             {
                 IdFactura = factura.IdFactura,
-                Envio = factura.Envio?.ToDto(),
-                Cliente = factura.Cliente?.ToDto(),
+                Envio = factura.Envio.ToDto(),
+                Cliente = factura.Cliente.ToDto(),
                 NumeroFactura = factura.NumeroFactura,
                 FechaEmision = factura.FechaEmision,
                 FechaVencimiento = factura.FechaVencimiento,

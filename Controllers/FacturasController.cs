@@ -26,7 +26,7 @@ namespace GestionLogisticaBackend.Controllers
 
         // GET: api/Facturas
         [HttpGet]
-        public async Task<ActionResult<PagedResult<FacturaDto>>> GetFacturas(PaginationParams pagParams)
+        public async Task<ActionResult<PagedResult<FacturaDto>>> GetFacturas([FromQuery] PaginationParams pagParams)
         {
             var facturas = await _facturaService.GetFacturasAsync(pagParams);
 
