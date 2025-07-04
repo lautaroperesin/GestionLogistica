@@ -35,7 +35,7 @@ namespace GestionLogisticaBackend.Controllers
 
         // GET: api/Envios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Envio>> GetEnvio(int id)
+        public async Task<ActionResult<EnvioDto>> GetEnvio(int id)
         {
             var envio = await _envioService.GetEnvioByIdAsync(id);
             if (envio == null)
@@ -68,7 +68,7 @@ namespace GestionLogisticaBackend.Controllers
         // POST: api/Envios
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Envio>> PostEnvio(CreateEnvioDto envioDto)
+        public async Task<ActionResult<EnvioDto>> PostEnvio(CreateEnvioDto envioDto)
         {
             if (envioDto == null)
             {

@@ -1,4 +1,5 @@
-﻿using GestionLogisticaBackend.DTOs.Cliente;
+﻿using System.Diagnostics;
+using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Envio;
 using GestionLogisticaBackend.DTOs.Pagination;
@@ -23,21 +24,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<PagedResult<EnvioDto>> GetEnviosAsync(PaginationParams pagParams)
         {
-            var query = _context.Envios
-              .Include(e => e.Origen)
-                .ThenInclude(o => o.Localidad)
-                .ThenInclude(l => l.Provincia)
-                .ThenInclude(p => p.Pais)
-              .Include(e => e.Destino)
-                .ThenInclude(d => d.Localidad)
-                .ThenInclude(l => l.Provincia)
-                .ThenInclude(p => p.Pais)
-              .Include(e => e.Estado)
-              .Include(e => e.Vehiculo)
-              .Include(e => e.Conductor)
-              .Include(e => e.Cliente)
-              .Include(e => e.TipoCarga)
-                .OrderBy(e => e.FechaCreacionEnvio);
+            var query = GetEnvioWithIncludes().OrderBy(e => e.FechaCreacionEnvio);
 
             var totalItems = await query.CountAsync();
 
@@ -59,21 +46,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<EnvioDto?> GetEnvioByIdAsync(int id)
         {
-            var envio = await _context.Envios
-                .Include(e => e.Origen)
-                .ThenInclude(o => o.Localidad)
-                .ThenInclude(l => l.Provincia)
-                .ThenInclude(p => p.Pais)
-                .Include(e => e.Destino)
-                .ThenInclude(d => d.Localidad)
-                .ThenInclude(l => l.Provincia)
-                .ThenInclude(p => p.Pais)
-                .Include(e => e.Estado)
-                .Include(e => e.Vehiculo)
-                .Include(e => e.Conductor)
-                .Include(e => e.Cliente)
-                .Include(e => e.TipoCarga)
-                .FirstOrDefaultAsync(e => e.IdEnvio == id);
+            var envio = await GetEnvioWithIncludes().FirstOrDefaultAsync(e => e.IdEnvio == id);
             
             if (envio == null) return null;
 
@@ -87,6 +60,11 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context.Envios.Add(envio);
 
             await _context.SaveChangesAsync();
+
+            var envioCreado = await GetEnvioWithIncludes().FirstOrDefaultAsync(e => e.IdEnvio == envio.IdEnvio);
+
+            if (envioCreado == null)
+                throw new Exception("Error al obtener el envío luego de crearlo.");
 
             return envio.ToDto();
         }
@@ -104,6 +82,11 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             await _context.SaveChangesAsync();
 
+            var envioActualizado = await GetEnvioWithIncludes().FirstOrDefaultAsync(e => e.IdEnvio == envio.IdEnvio);
+
+            if (envioActualizado == null)
+                throw new Exception("Error al obtener el envío luego de actualizarlo.");
+
             return envio.ToDto();
         }
 
@@ -116,5 +99,24 @@ namespace GestionLogisticaBackend.Services.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
+
+        private IQueryable<Envio> GetEnvioWithIncludes()
+        {
+            return _context.Envios
+                .Include(e => e.Origen)
+                    .ThenInclude(o => o.Localidad)
+                        .ThenInclude(l => l.Provincia)
+                            .ThenInclude(p => p.Pais)
+                .Include(e => e.Destino)
+                    .ThenInclude(d => d.Localidad)
+                        .ThenInclude(l => l.Provincia)
+                            .ThenInclude(p => p.Pais)
+                .Include(e => e.Estado)
+                .Include(e => e.Vehiculo)
+                .Include(e => e.Conductor)
+                .Include(e => e.Cliente)
+                .Include(e => e.TipoCarga);
+        }
+
     }
 }
