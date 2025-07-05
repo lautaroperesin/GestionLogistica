@@ -66,7 +66,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             if (envioCreado == null)
                 throw new Exception("Error al obtener el envío luego de crearlo.");
 
-            return envio.ToDto();
+            return envioCreado.ToDto();
         }
 
         public async Task<EnvioDto?> UpdateEnvioAsync(int id, UpdateEnvioDto envioDto)
@@ -87,7 +87,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             if (envioActualizado == null)
                 throw new Exception("Error al obtener el envío luego de actualizarlo.");
 
-            return envio.ToDto();
+            return envioActualizado.ToDto();
         }
 
         public async Task<bool> DeleteEnvioAsync(int id)
