@@ -72,7 +72,17 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context.Ubicaciones.Add(ubicacion);
             await _context.SaveChangesAsync();
 
-            return ubicacion.ToDto();
+            // Cargar la localidad y sus relaciones para devolver el DTO completo
+            var ubicacionCreada = await _context.Ubicaciones
+                .Include(u => u.Localidad)
+                    .ThenInclude(l => l.Provincia)
+                    .ThenInclude(p => p.Pais)
+                .FirstOrDefaultAsync(u => u.IdUbicacion == ubicacion.IdUbicacion);
+
+            if (ubicacionCreada == null)
+                throw new Exception("Error al obtener la ubicación luego de crearla.");
+
+            return ubicacionCreada.ToDto();
         }
 
         public async Task<bool> UpdateUbicacionAsync(UpdateUbicacionDto ubicacionDto)
