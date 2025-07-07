@@ -62,6 +62,8 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             var facturaCreada = await GetFacturaWithIncludes().FirstOrDefaultAsync(f => f.IdFactura == factura.IdFactura);
 
+            if (facturaCreada == null) throw new Exception("Error al crear la factura");
+
             return facturaCreada.ToDto();
         }
 
@@ -77,6 +79,8 @@ namespace GestionLogisticaBackend.Services.Implementations
             await _context.SaveChangesAsync();
 
             var facturaActualizada = await GetFacturaWithIncludes().FirstOrDefaultAsync(f => f.IdFactura == factura.IdFactura);
+
+            if (facturaActualizada == null) throw new Exception("Error al actualizar la factura");
 
             return facturaActualizada.ToDto();
         }

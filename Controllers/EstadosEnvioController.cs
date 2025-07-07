@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
+using GestionLogisticaBackend.DTOs.Envio;
 
 namespace LogisticaBackend.Controllers
 {
@@ -23,14 +24,20 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/EstadosEnvio
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EstadoEnvio>>> GetEstadosEnvio()
+        public async Task<ActionResult<IEnumerable<EstadoEnvioDto>>> GetEstadosEnvio()
         {
-            return await _context.EstadosEnvio.ToListAsync();
+            var estadosEnvio = await _context.EstadosEnvio.ToListAsync();
+
+            return estadosEnvio.Select(e => new EstadoEnvioDto
+            {
+                IdEstado = e.IdEstado,
+                Nombre = e.Nombre
+            }).ToList();
         }
 
         // GET: api/EstadosEnvio/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EstadoEnvio>> GetEstadoEnvio(int id)
+        public async Task<ActionResult<EstadoEnvioDto>> GetEstadoEnvio(int id)
         {
             var estadoEnvio = await _context.EstadosEnvio.FindAsync(id);
 
@@ -39,36 +46,33 @@ namespace LogisticaBackend.Controllers
                 return NotFound();
             }
 
-            return estadoEnvio;
+            return new EstadoEnvioDto
+            {
+                IdEstado = estadoEnvio.IdEstado,
+                Nombre = estadoEnvio.Nombre
+            };
         }
 
         // PUT: api/EstadosEnvio/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEstadoEnvio(int id, EstadoEnvio estadoEnvio)
+        public async Task<IActionResult> PutEstadoEnvio(int id, EstadoEnvioDto estadoEnvioDto)
         {
-            if (id != estadoEnvio.IdEstado)
+            if (id != estadoEnvioDto.IdEstado)
             {
                 return BadRequest();
             }
 
-            _context.Entry(estadoEnvio).State = EntityState.Modified;
+            var estadoEnvio = await _context.EstadosEnvio.FindAsync(id);
 
-            try
+            if (estadoEnvio == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EstadoEnvioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            estadoEnvio.Nombre = estadoEnvioDto.Nombre;
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -76,8 +80,13 @@ namespace LogisticaBackend.Controllers
         // POST: api/EstadosEnvio
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EstadoEnvio>> PostEstadoEnvio(EstadoEnvio estadoEnvio)
+        public async Task<ActionResult<EstadoEnvio>> PostEstadoEnvio(EstadoEnvioDto dto)
         {
+            var estadoEnvio = new EstadoEnvio
+            {
+                Nombre = dto.Nombre
+            };
+
             _context.EstadosEnvio.Add(estadoEnvio);
             await _context.SaveChangesAsync();
 
@@ -98,11 +107,6 @@ namespace LogisticaBackend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool EstadoEnvioExists(int id)
-        {
-            return _context.EstadosEnvio.Any(e => e.IdEstado == id);
         }
     }
 }
