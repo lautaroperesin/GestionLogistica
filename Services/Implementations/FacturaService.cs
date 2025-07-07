@@ -23,20 +23,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<PagedResult<FacturaDto>> GetFacturasAsync(PaginationParams pagParams)
         {
-            var query = _context.Facturas
-                .Where(f => !f.Deleted)
-                .Include(f => f.Envio)
-                    .ThenInclude(e => e.Origen)
-                        .ThenInclude(o => o.Localidad)
-                            .ThenInclude(l => l.Provincia)
-                                .ThenInclude(p => p.Pais)
-                .Include(f => f.Envio)
-                    .ThenInclude(e => e.Destino)
-                        .ThenInclude(d => d.Localidad)
-                            .ThenInclude(l => l.Provincia)
-                                .ThenInclude(p => p.Pais)
-                .Include(f => f.Cliente)
-                .OrderBy(f => f.FechaEmision);
+            var query = GetFacturaWithIncludes();
 
             var totalItems = await query.CountAsync();
 
@@ -58,7 +45,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<FacturaDto?> GetFacturaByIdAsync(int id)
         {
-            var factura = await _context.Facturas.FirstOrDefaultAsync(f => f.IdFactura == id);
+            var factura = await GetFacturaWithIncludes().FirstOrDefaultAsync(f => f.IdFactura == id);
 
             if (factura == null) return null;
 
@@ -67,27 +54,20 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<FacturaDto> CreateFacturaAsync(CreateFacturaDto facturaDto)
         {
-            if (facturaDto == null)
-            {
-                throw new ArgumentNullException(nameof(facturaDto), "La factura no puede ser nula.");
-            }
-
             var factura = facturaDto.ToEntity();
 
             _context.Facturas.Add(factura);
+
             await _context.SaveChangesAsync();
 
-            return factura.ToDto();
+            var facturaCreada = await GetFacturaWithIncludes().FirstOrDefaultAsync(f => f.IdFactura == factura.IdFactura);
+
+            return facturaCreada.ToDto();
         }
 
         // update factura
         public async Task<FacturaDto?> UpdateFacturaAsync(int id, UpdateFacturaDto facturaDto)
         {
-            if (facturaDto == null)
-            {
-                throw new ArgumentNullException(nameof(facturaDto), "La factura no puede ser nula.");
-            }
-
             var factura = await _context.Facturas.FindAsync(id);
 
             if (factura == null) return null;
@@ -96,7 +76,9 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            return factura.ToDto();
+            var facturaActualizada = await GetFacturaWithIncludes().FirstOrDefaultAsync(f => f.IdFactura == factura.IdFactura);
+
+            return facturaActualizada.ToDto();
         }
 
 
@@ -114,22 +96,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<List<FacturaDto>> GetFacturasPorEstadoAsync(EstadoFactura estado)
         {
-            var query = _context.Facturas
-                .Where(f => f.Estado == estado)
-                .Include(f => f.Envio)
-                    .ThenInclude(e => e.Origen)
-                    .ThenInclude(o => o.Localidad)
-                    .ThenInclude(l => l.Provincia)
-                    .ThenInclude(p => p.Pais)
-                .Include(f => f.Envio)
-                    .ThenInclude(e => e.Destino)
-                    .ThenInclude(d => d.Localidad)
-                    .ThenInclude(l => l.Provincia)
-                    .ThenInclude(p => p.Pais)
-                    .Include(f => f.Cliente)
-                .OrderBy(f => f.FechaEmision);
-
-            var facturas = await query.ToListAsync();
+            var facturas = await GetFacturaWithIncludes().ToListAsync();
 
             return (List<FacturaDto>)facturas.ToDtoList();
         }
@@ -144,6 +111,23 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private IQueryable<Factura> GetFacturaWithIncludes()
+        {
+            return _context.Facturas
+                .Include(f => f.Envio)
+                    .ThenInclude(e => e.Origen)
+                        .ThenInclude(o => o.Localidad)
+                            .ThenInclude(l => l.Provincia)
+                                .ThenInclude(p => p.Pais)
+                .Include(f => f.Envio)
+                    .ThenInclude(e => e.Destino)
+                        .ThenInclude(d => d.Localidad)
+                            .ThenInclude(l => l.Provincia)
+                                .ThenInclude(p => p.Pais)
+                .Include(f => f.Cliente)
+                .OrderBy(f => f.FechaEmision);
         }
     }
 }
