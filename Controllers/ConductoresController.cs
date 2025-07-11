@@ -76,9 +76,20 @@ namespace LogisticaBackend.Controllers
         [HttpPost]
         public async Task<ActionResult<ConductorDto>> PostConductor(CreateConductorDto conductorDto)
         {
-            var nuevoConductor = await _conductorService.CreateConductorAsync(conductorDto);
-
-            return CreatedAtAction("GetConductor", new { id = nuevoConductor.IdConductor }, nuevoConductor);
+            try
+            {
+                var nuevoConductor = await _conductorService.CreateConductorAsync(conductorDto);
+                return CreatedAtAction("GetConductor", new { id = nuevoConductor.IdConductor }, nuevoConductor);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Esto es opcional, para capturar errores inesperados y evitar que exploten
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         // DELETE: api/Conductores/5

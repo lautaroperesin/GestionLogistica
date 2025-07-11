@@ -1,4 +1,5 @@
-﻿using GestionLogisticaBackend.DTOs.Cliente;
+﻿using System.Diagnostics;
+using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Extensions;
@@ -55,9 +56,19 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 throw new ArgumentNullException(nameof(conductorDto), "El conductor no puede ser nulo.");
             }
-            if (string.IsNullOrWhiteSpace(conductorDto.Nombre) || string.IsNullOrWhiteSpace(conductorDto.Telefono) || string.IsNullOrWhiteSpace(conductorDto.Email))
+            if (string.IsNullOrWhiteSpace(conductorDto.Nombre) ||
+                string.IsNullOrWhiteSpace(conductorDto.Dni) || 
+                string.IsNullOrWhiteSpace(conductorDto.Telefono) || 
+                string.IsNullOrWhiteSpace(conductorDto.Email))
             {
-                throw new ArgumentException("El conductor debe tener un nombre, teléfono y email válidos.");
+                throw new ArgumentException("El conductor debe tener un nombre, DNI, teléfono y email válidos.");
+            }
+
+            // validar si existe un conductor con el mismo dni
+            var existe = await _context.Conductores.AnyAsync(c => c.Dni == conductorDto.Dni);
+            if (existe)
+            {
+                throw new ArgumentException($"Ya existe un conductor con el DNI {conductorDto.Dni}.");
             }
 
             var conductor = conductorDto.ToEntity();
