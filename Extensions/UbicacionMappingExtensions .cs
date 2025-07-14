@@ -16,6 +16,7 @@ namespace GestionLogisticaBackend.Extensions
             {
                 IdUbicacion = ubicacion.IdUbicacion,
                 Direccion = ubicacion.Direccion,
+                Descripcion = ubicacion.Descripcion,
                 Localidad = new LocalidadDto
                 {
                     IdLocalidad = ubicacion.Localidad.IdLocalidad,
@@ -52,6 +53,7 @@ namespace GestionLogisticaBackend.Extensions
             return new Ubicacion
             {
                 Direccion = dto.Direccion,
+                Descripcion = dto.Descripcion,
                 IdLocalidad = dto.IdLocalidad
             };
         }

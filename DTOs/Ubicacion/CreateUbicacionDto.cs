@@ -8,6 +8,9 @@ namespace GestionLogisticaBackend.DTOs.Ubicacion
         [StringLength(100, ErrorMessage = "La dirección no puede exceder los 100 caracteres")]
         public string Direccion { get; set; } = string.Empty;
 
+        [StringLength(100, ErrorMessage = "La descripción no puede exceder los 100 caracteres")]
+        public string? Descripcion { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "La localidad es requerida")]
         public int IdLocalidad { get; set; }
     }

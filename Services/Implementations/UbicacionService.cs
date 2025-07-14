@@ -92,6 +92,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             if (ubicacion == null) return false;
 
             ubicacion.Direccion = ubicacionDto.Direccion;
+            ubicacion.Descripcion = ubicacionDto.Descripcion;
 
             await _context.SaveChangesAsync();
             return true;
