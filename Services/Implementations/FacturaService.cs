@@ -130,6 +130,8 @@ namespace GestionLogisticaBackend.Services.Implementations
                         .ThenInclude(d => d.Localidad)
                             .ThenInclude(l => l.Provincia)
                                 .ThenInclude(p => p.Pais)
+                .Include(f => f.Envio.Estado)
+                .Include(f => f.Envio.TipoCarga)
                 .Include(f => f.Cliente)
                 .OrderBy(f => f.FechaEmision);
         }

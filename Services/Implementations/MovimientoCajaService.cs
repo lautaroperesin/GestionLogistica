@@ -1,4 +1,5 @@
-﻿using GestionLogisticaBackend.DTOs.Factura;
+﻿using System.Diagnostics;
+using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.DTOs.MovimientoCaja;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Enums;
@@ -23,10 +24,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<PagedResult<MovimientoCajaDto>> GetMovimientosAsync(PaginationParams pagParams)
         {
-            var query = _context.MovimientosCaja
-                .Include(m => m.Factura)
-                .Include(m => m.MetodoPago)
-                .OrderBy(m => m.FechaPago);
+            var query = GetMovimientosQuery().OrderBy(m => m.FechaPago);
 
             var totalItems = await query.CountAsync();
 
@@ -49,13 +47,11 @@ namespace GestionLogisticaBackend.Services.Implementations
 
         public async Task<MovimientoCajaDto> GetMovimientoByIdAsync(int id)
         {
-            var movimiento = await _context.MovimientosCaja
-                .Include(m => m.Factura)
-                .FirstOrDefaultAsync(m => m.IdMovimiento == id);
+            var movimiento = await GetMovimientosQuery().FirstOrDefaultAsync(m => m.IdMovimiento == id);
 
             if (movimiento == null) return null;
 
-           return movimiento.ToDto();
+            return movimiento.ToDto();
         }
 
         public async Task CreateMovimientoAsync(CreateMovimientoCajaDto movimientoCajaDto)
@@ -122,7 +118,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             movimientoExistente.Monto = movimientoCaja.Monto;
             movimientoExistente.FechaPago = movimientoCaja.FechaPago;
-            movimientoExistente.IdMetodoPago = movimientoCaja.IdMetodoPago;
+            movimientoExistente.IdMetodoPago = movimientoCaja.MetodoPago.Id;
             movimientoExistente.Observaciones = movimientoCaja.Observaciones;
             movimientoExistente.IdFactura = movimientoCaja.Factura.IdFactura;
 
@@ -139,6 +135,41 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             movimiento.Deleted = true;
             await _context.SaveChangesAsync();
+        }
+
+        private IQueryable<MovimientoCaja> GetMovimientosQuery()
+        {
+            return _context.MovimientosCaja
+                .Include(m => m.MetodoPago)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.Origen)
+                .ThenInclude(o => o.Localidad)
+                    .ThenInclude(l => l.Provincia)
+                        .ThenInclude(p => p.Pais)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.Destino)
+                .ThenInclude(d => d.Localidad)
+                    .ThenInclude(l => l.Provincia)
+                        .ThenInclude(p => p.Pais)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.Vehiculo)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.Conductor)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.TipoCarga)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.Estado)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Envio)
+            .ThenInclude(e => e.Cliente)
+    .Include(m => m.Factura)
+        .ThenInclude(f => f.Cliente);
         }
     }
 }
