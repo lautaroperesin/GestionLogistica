@@ -100,6 +100,18 @@ namespace GestionLogisticaBackend.Services.Implementations
             return true;
         }
 
+        // actualizar estado del envio - seria un patch en el controller
+        public async Task UpdateEnvioEstadoAsync(int id, int nuevoEstadoId)
+        {
+            var envio = await _context.Envios.FindAsync(id);
+            if (envio == null)
+            {
+                throw new KeyNotFoundException($"No se encontró el envío con ID {id}.");
+            }
+            envio.IdEstado = nuevoEstadoId;
+            await _context.SaveChangesAsync();
+        }
+
         private IQueryable<Envio> GetEnvioWithIncludes()
         {
             return _context.Envios

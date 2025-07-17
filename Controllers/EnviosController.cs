@@ -97,5 +97,24 @@ namespace GestionLogisticaBackend.Controllers
 
             return NoContent();
         }
+
+        // actualizar estado del envio
+        [HttpPatch("{id}/estado/")]
+        public async Task<IActionResult> UpdateEnvioEstado(int id, [FromBody] EstadoEnvioDto dto)
+        {
+            try
+            {
+                await _envioService.UpdateEnvioEstadoAsync(id, dto.IdEstado);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al actualizar el estado del envío: {ex.Message}");
+            }
+        }
     }
 }
