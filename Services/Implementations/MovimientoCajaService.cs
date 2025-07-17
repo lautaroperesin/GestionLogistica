@@ -86,7 +86,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             }
 
             var nuevoMovimiento = movimientoCajaDto.ToEntity();
-
+ 
             _context.MovimientosCaja.Add(nuevoMovimiento);
 
             // Actualizar estado de la factura usando las propiedades NotMapped
@@ -135,6 +135,15 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             movimiento.Deleted = true;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<MovimientoCajaDto>> GetMovimientosByFacturaAsync(int idFactura)
+        {
+            var movimientos = await GetMovimientosQuery()
+                .Where(m => m.IdFactura == idFactura)
+                .ToListAsync();
+
+            return movimientos.ToDtoList();
         }
 
         private IQueryable<MovimientoCaja> GetMovimientosQuery()

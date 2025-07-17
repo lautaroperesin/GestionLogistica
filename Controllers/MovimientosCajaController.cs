@@ -26,6 +26,18 @@ namespace GestionLogisticaBackend.Controllers
             return Ok(movimientos);
         }
 
+        // get movimintos by factura
+        [HttpGet("factura/{idFactura}")]
+        public async Task<ActionResult<IEnumerable<MovimientoCajaDto>>> GetMovimientosByFactura(int idFactura)
+        {
+            var movimientos = await _movimientoCajaService.GetMovimientosByFacturaAsync(idFactura);
+            if (movimientos == null || !movimientos.Any())
+            {
+                return NotFound($"No se encontraron movimientos de caja para la factura con ID {idFactura}.");
+            }
+            return Ok(movimientos);
+        }
+
         // GET: api/MovimientosCaja/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MovimientoCajaDto>> GetMovimiento(int id)
