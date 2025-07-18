@@ -19,10 +19,7 @@ namespace GestionLogisticaBackend.Extensions
                 IdEnvio = envio.IdEnvio,
                 NumeroSeguimiento = envio.NumeroSeguimiento,
                 FechaCreacionEnvio = envio.FechaCreacionEnvio,
-                FechaSalidaProgramada = envio.FechaSalidaProgramada,
-                FechaSalidaReal = envio.FechaSalidaReal,
-                FechaEntregaEstimada = envio.FechaEntregaEstimada,
-                FechaEntregaReal = envio.FechaEntregaReal,
+                FechaSalida = envio.FechaSalida,
                 PesoKg = envio.PesoKg,
                 VolumenM3 = envio.VolumenM3,
                 Descripcion = envio.Descripcion,
@@ -65,8 +62,7 @@ namespace GestionLogisticaBackend.Extensions
             {
                 FechaCreacionEnvio = DateTime.Now,
                 NumeroSeguimiento = dto.NumeroSeguimiento,
-                FechaSalidaProgramada = dto.FechaSalidaProgramada,
-                FechaEntregaEstimada = dto.FechaEntregaEstimada,
+                FechaSalida = dto.FechaSalida,
                 PesoKg = dto.PesoKg,
                 VolumenM3 = dto.VolumenM3,
                 Descripcion = dto.Descripcion,
@@ -89,10 +85,7 @@ namespace GestionLogisticaBackend.Extensions
         {
             if (envio == null || dto == null) return;
 
-            envio.FechaSalidaProgramada = dto.FechaSalidaProgramada;
-            envio.FechaSalidaReal = dto.FechaSalidaReal;
-            envio.FechaEntregaEstimada = dto.FechaEntregaEstimada;
-            envio.FechaEntregaReal = dto.FechaEntregaReal;
+            envio.FechaSalida = dto.FechaSalida;
             envio.PesoKg = dto.PesoKg;
             envio.VolumenM3 = dto.VolumenM3;
             envio.Descripcion = dto.Descripcion;

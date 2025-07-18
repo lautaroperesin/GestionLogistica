@@ -17,17 +17,7 @@ namespace GestionLogisticaBackend.DTOs.Envio
         public string NumeroSeguimiento { get; set; } = string.Empty;
 
         [DataType(DataType.DateTime)]
-        public DateTime? FechaSalidaProgramada { get; set; }
-
-        [DataType(DataType.DateTime)]
-        public DateTime? FechaSalidaReal { get; set; }
-
-        [Required(ErrorMessage = "La fecha de entrega estimada es requerida")]
-        [DataType(DataType.Date)]
-        public DateTime FechaEntregaEstimada { get; set; }
-
-        [DataType(DataType.DateTime)]
-        public DateTime? FechaEntregaReal { get; set; }
+        public DateTime? FechaSalida { get; set; }
 
         [Required(ErrorMessage = "El estado es requerido")]
         public int IdEstado { get; set; }

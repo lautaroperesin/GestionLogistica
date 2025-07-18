@@ -27,18 +27,8 @@ namespace LogisticaBackend.Models
         [Column("fecha_creacion_envio")]
         public DateTime FechaCreacionEnvio { get; set; } = DateTime.Now;
 
-        [Column("fecha_salida_programada")]
-        public DateTime? FechaSalidaProgramada { get; set; }
-
-        [Column("fecha_salida_real")]
-        public DateTime? FechaSalidaReal { get; set; }
-
-        [Required]
-        [Column("fecha_entrega_estimada")]
-        public DateTime FechaEntregaEstimada { get; set; }
-
-        [Column("fecha_entrega_real")]
-        public DateTime? FechaEntregaReal { get; set; }
+        [Column("fecha_salida")]
+        public DateTime? FechaSalida { get; set; }
 
         [Required]
         [Column("id_estado_envio")]

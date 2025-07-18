@@ -13,10 +13,7 @@ namespace GestionLogisticaBackend.DTOs.Envio
         public UbicacionDto Destino { get; set; } = new();
         public string? NumeroSeguimiento { get; set; }
         public DateTime FechaCreacionEnvio { get; set; }
-        public DateTime? FechaSalidaProgramada { get; set; }
-        public DateTime? FechaSalidaReal { get; set; }
-        public DateTime FechaEntregaEstimada { get; set; }
-        public DateTime? FechaEntregaReal { get; set; }
+        public DateTime? FechaSalida { get; set; }
         public EstadoEnvioDto Estado { get; set; } = new();
         public decimal PesoKg { get; set; }
         public decimal VolumenM3 { get; set; }

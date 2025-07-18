@@ -14,12 +14,8 @@ namespace GestionLogisticaBackend.DTOs.Envio
         [StringLength(50, ErrorMessage = "El número de seguimiento no puede exceder los 50 caracteres")]
         public string NumeroSeguimiento { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La fecha de salida programada es requerida")]
-        public DateTime FechaSalidaProgramada { get; set; }
-
-        [Required(ErrorMessage = "La fecha de entrega estimada es requerida")]
-        [DataType(DataType.Date)]
-        public DateTime FechaEntregaEstimada { get; set; }
+        [Required(ErrorMessage = "La fecha de salida es requerida")]
+        public DateTime FechaSalida { get; set; }
 
         [Required(ErrorMessage = "El peso es requerido")]
         public decimal PesoKg { get; set; }
