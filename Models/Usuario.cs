@@ -27,8 +27,8 @@ namespace GestionLogisticaBackend.Models
         public string PasswordHash { get; set; } = null!;
 
         [Required]
-        [Column("rol")]
-        public RolUsuario Rol { get; set; } = RolUsuario.Operador;
+        [Column("rol_usuario")]
+        public string RolUsuario { get; set; } = "Admin";
 
         [Column("activo")]
         public bool Activo { get; set; } = true;
@@ -39,5 +39,12 @@ namespace GestionLogisticaBackend.Models
         [Required]
         [Column("fecha_alta")]
         public DateTime FechaAlta { get; set; } = DateTime.Now;
+
+        [Column("refresh_token")]
+        public string? RefreshToken { get; set; }
+
+        [Column("fecha_expiracion_refresh_token")]
+        public DateTime? FechaExpiracionRefreshToken { get; set; }
+
     }
 }

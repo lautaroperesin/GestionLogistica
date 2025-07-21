@@ -4,6 +4,7 @@ using LogisticaBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogisticaBackend.Migrations
 {
     [DbContext(typeof(LogisticaContext))]
-    partial class LogisticaContextModelSnapshot : ModelSnapshot
+    [Migration("20250702131728_AddRefreshTokens")]
+    partial class AddRefreshTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,9 +294,21 @@ namespace LogisticaBackend.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("fecha_creacion_envio");
 
-                    b.Property<DateTime?>("FechaSalida")
+                    b.Property<DateTime>("FechaEntregaEstimada")
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("fecha_salida");
+                        .HasColumnName("fecha_entrega_estimada");
+
+                    b.Property<DateTime?>("FechaEntregaReal")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("fecha_entrega_real");
+
+                    b.Property<DateTime?>("FechaSalidaProgramada")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("fecha_salida_programada");
+
+                    b.Property<DateTime?>("FechaSalidaReal")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("fecha_salida_real");
 
                     b.Property<int>("IdCliente")
                         .HasColumnType("int")

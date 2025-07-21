@@ -1,7 +1,10 @@
+using System.Text;
 using GestionLogisticaBackend.Services.Implementations;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,16 +18,28 @@ builder.Services.AddSwaggerGen();
 // Configurar CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:8080" };
-
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+        policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
     });
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Token"]!)),
+            ValidateIssuerSigningKey = true
+        };
+    });
 
 builder.Services.AddScoped<IUbicacionService, UbicacionService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
@@ -33,6 +48,8 @@ builder.Services.AddScoped<IConductorService, ConductorService>();
 builder.Services.AddScoped<IEnvioService, EnvioService>();
 builder.Services.AddScoped<IFacturaService, FacturaService>();
 builder.Services.AddScoped<IMetodoPagoService, MetodoPagoService>();
+builder.Services.AddScoped<IMovimientoCajaService, MovimientoCajaService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Configurar Entity Framework con MySQL
 builder.Services.AddDbContext<LogisticaContext>(options =>
@@ -53,7 +70,7 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.UseCors("AllowReactApp");
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthorization();
 
