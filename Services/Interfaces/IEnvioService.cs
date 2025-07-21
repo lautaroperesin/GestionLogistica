@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.DTOs.Filters;
 using GestionLogisticaBackend.DTOs.Pagination;
 using LogisticaBackend.Models;
 
@@ -6,7 +7,7 @@ namespace GestionLogisticaBackend.Services.Interfaces
 {
     public interface IEnvioService
     {
-        Task<PagedResult<EnvioDto>> GetEnviosAsync(PaginationParams pagParams);
+        Task<PagedResult<EnvioDto>> GetEnviosAsync(EnvioFilterDto filtros);
         Task<EnvioDto?> GetEnvioByIdAsync(int id);
         Task<EnvioDto> CreateEnvioAsync(CreateEnvioDto envioDto);
         Task<EnvioDto?> UpdateEnvioAsync(int id, UpdateEnvioDto envioDto);

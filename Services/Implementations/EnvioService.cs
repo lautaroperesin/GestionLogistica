@@ -2,6 +2,7 @@
 using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.DTOs.Filters;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.DTOs.Vehiculo;
@@ -22,15 +23,20 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<PagedResult<EnvioDto>> GetEnviosAsync(PaginationParams pagParams)
+        public async Task<PagedResult<EnvioDto>> GetEnviosAsync(EnvioFilterDto filtros)
         {
-            var query = GetEnvioWithIncludes().OrderBy(e => e.FechaCreacionEnvio);
+            var query = GetEnvioWithIncludes();
+
+            // Aplicar filtros a la query
+            query = ApplyFilters(query, filtros);
+
+            query = query.OrderByDescending(e => e.FechaCreacionEnvio);
 
             var totalItems = await query.CountAsync();
 
             var envios = await query
-                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
-                .Take(pagParams.PageSize)
+                .Skip((filtros.PageNumber - 1) * filtros.PageSize)
+                .Take(filtros.PageSize)
                 .ToListAsync();
 
             var enviosDto = envios.ToDtoList();
@@ -39,8 +45,8 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 Items = enviosDto,
                 TotalItems = totalItems,
-                PageNumber = pagParams.PageNumber,
-                PageSize = pagParams.PageSize
+                PageNumber = filtros.PageNumber,
+                PageSize = filtros.PageSize
             };
         }
 
@@ -130,5 +136,47 @@ namespace GestionLogisticaBackend.Services.Implementations
                 .Include(e => e.TipoCarga);
         }
 
+        // aplicar filtros a la query
+        private IQueryable<Envio> ApplyFilters(IQueryable<Envio> query, EnvioFilterDto filtros)
+        {
+            if (!string.IsNullOrEmpty(filtros.NumeroSeguimiento))
+            {
+                query = query.Where(e => e.NumeroSeguimiento.Contains(filtros.NumeroSeguimiento));
+            }
+            if (filtros.FechaSalidaDesde.HasValue)
+            {
+                query = query.Where(e => e.FechaCreacionEnvio >= filtros.FechaSalidaDesde.Value);
+            }
+            if (filtros.FechaSalidaHasta.HasValue)
+            {
+                query = query.Where(e => e.FechaCreacionEnvio <= filtros.FechaSalidaHasta.Value);
+            }
+            if (filtros.EstadoEnvio.HasValue)
+            {
+                query = query.Where(e => e.IdEstado == filtros.EstadoEnvio.Value);
+            }
+            if (filtros.IdConductor.HasValue)
+            {
+                query = query.Where(e => e.IdConductor == filtros.IdConductor.Value);
+            }
+            if (filtros.IdCliente.HasValue)
+            {
+                query = query.Where(e => e.IdCliente == filtros.IdCliente.Value);
+            }
+            if (filtros.IdVehiculo.HasValue)
+            {
+                query = query.Where(e => e.IdVehiculo == filtros.IdVehiculo.Value);
+            }
+            if (!string.IsNullOrEmpty(filtros.Origen))
+            {
+                query = query.Where(e => e.Origen.Localidad.Nombre.Contains(filtros.Origen));
+            }
+            if (!string.IsNullOrEmpty(filtros.Destino))
+            {
+                query = query.Where(e => e.Destino.Localidad.Nombre.Contains(filtros.Destino));
+            }
+
+            return query;
+        }
     }
 }
