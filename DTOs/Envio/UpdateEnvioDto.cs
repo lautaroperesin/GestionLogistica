@@ -19,9 +19,6 @@ namespace GestionLogisticaBackend.DTOs.Envio
         [DataType(DataType.DateTime)]
         public DateTime? FechaSalida { get; set; }
 
-        [Required(ErrorMessage = "El estado es requerido")]
-        public int IdEstado { get; set; }
-
         [Required(ErrorMessage = "El peso es requerido")]
         public decimal PesoKg { get; set; }
 

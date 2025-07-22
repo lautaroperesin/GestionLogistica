@@ -94,7 +94,6 @@ namespace GestionLogisticaBackend.Extensions
 
             envio.IdOrigen = dto.IdOrigen;
             envio.IdDestino = dto.IdDestino;
-            envio.IdEstado = dto.IdEstado;
             envio.IdVehiculo = dto.IdVehiculo;
             envio.IdConductor = dto.IdConductor;
             envio.IdCliente = dto.IdCliente;

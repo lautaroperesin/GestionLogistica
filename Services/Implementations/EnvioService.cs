@@ -145,11 +145,11 @@ namespace GestionLogisticaBackend.Services.Implementations
             }
             if (filtros.FechaSalidaDesde.HasValue)
             {
-                query = query.Where(e => e.FechaCreacionEnvio >= filtros.FechaSalidaDesde.Value);
+                query = query.Where(e => e.FechaSalida >= filtros.FechaSalidaDesde.Value);
             }
             if (filtros.FechaSalidaHasta.HasValue)
             {
-                query = query.Where(e => e.FechaCreacionEnvio <= filtros.FechaSalidaHasta.Value);
+                query = query.Where(e => e.FechaSalida <= filtros.FechaSalidaHasta.Value);
             }
             if (filtros.EstadoEnvio.HasValue)
             {
