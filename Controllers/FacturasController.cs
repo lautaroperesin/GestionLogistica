@@ -10,6 +10,7 @@ using LogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Interfaces;
 using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.DTOs.Filters;
 
 namespace GestionLogisticaBackend.Controllers
 {
@@ -26,9 +27,9 @@ namespace GestionLogisticaBackend.Controllers
 
         // GET: api/Facturas
         [HttpGet]
-        public async Task<ActionResult<PagedResult<FacturaDto>>> GetFacturas([FromQuery] PaginationParams pagParams)
+        public async Task<ActionResult<PagedResult<FacturaDto>>> GetFacturas([FromQuery] FacturaFilterDto filtros)
         {
-            var facturas = await _facturaService.GetFacturasAsync(pagParams);
+            var facturas = await _facturaService.GetFacturasAsync(filtros);
 
             return Ok(facturas);
         }

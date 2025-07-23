@@ -1,6 +1,7 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Envio;
 using GestionLogisticaBackend.DTOs.Factura;
+using GestionLogisticaBackend.DTOs.Filters;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.Enums;
@@ -21,15 +22,19 @@ namespace GestionLogisticaBackend.Services.Implementations
             _context = context;
         }
 
-        public async Task<PagedResult<FacturaDto>> GetFacturasAsync(PaginationParams pagParams)
+        public async Task<PagedResult<FacturaDto>> GetFacturasAsync(FacturaFilterDto filtros)
         {
             var query = GetFacturaWithIncludes();
+
+            query = ApplyFilters(query, filtros);
+
+            query = query.OrderByDescending(f => f.FechaEmision);
 
             var totalItems = await query.CountAsync();
 
             var facturas = await query
-                .Skip((pagParams.PageNumber - 1) * pagParams.PageSize)
-                .Take(pagParams.PageSize)
+                .Skip((filtros.PageNumber - 1) * filtros.PageSize)
+                .Take(filtros.PageSize)
                 .ToListAsync();
 
             var facturasDto = facturas.ToDtoList();
@@ -38,8 +43,8 @@ namespace GestionLogisticaBackend.Services.Implementations
             {
                 Items = facturasDto,
                 TotalItems = totalItems,
-                PageNumber = pagParams.PageNumber,
-                PageSize = pagParams.PageSize
+                PageNumber = filtros.PageNumber,
+                PageSize = filtros.PageSize
             };
         }
 
@@ -98,13 +103,6 @@ namespace GestionLogisticaBackend.Services.Implementations
             return true;
         }
 
-        public async Task<List<FacturaDto>> GetFacturasPorEstadoAsync(EstadoFactura estado)
-        {
-            var facturas = await GetFacturaWithIncludes().ToListAsync();
-
-            return (List<FacturaDto>)facturas.ToDtoList();
-        }
-
         public async Task<bool> ActualizarEstadoFacturaAsync(int facturaId, EstadoFactura nuevoEstado)
         {
             var factura = await _context.Facturas.FindAsync(facturaId);
@@ -132,8 +130,32 @@ namespace GestionLogisticaBackend.Services.Implementations
                                 .ThenInclude(p => p.Pais)
                 .Include(f => f.Envio.Estado)
                 .Include(f => f.Envio.TipoCarga)
-                .Include(f => f.Cliente)
-                .OrderBy(f => f.FechaEmision);
+                .Include(f => f.Cliente);
+        }
+
+        private IQueryable<Factura> ApplyFilters(IQueryable<Factura> query, FacturaFilterDto filtros)
+        {
+            if (!string.IsNullOrEmpty(filtros.NumeroFactura))
+            {
+                query = query.Where(f => f.NumeroFactura.Contains(filtros.NumeroFactura));
+            }
+            if (filtros.EstadoFactura.HasValue)
+            {
+                query = query.Where(f => f.Estado == filtros.EstadoFactura.Value);
+            }
+            if (filtros.FechaEmisionDesde.HasValue)
+            {
+                query = query.Where(f => f.FechaEmision >= filtros.FechaEmisionDesde.Value);
+            }
+            if (filtros.FechaEmisionHasta.HasValue)
+            {
+                query = query.Where(f => f.FechaEmision <= filtros.FechaEmisionHasta.Value);
+            }
+            if (filtros.IdCliente.HasValue)
+            {
+                query = query.Where(f => f.Cliente.IdCliente == filtros.IdCliente.Value);
+            }
+            return query;
         }
     }
 }
