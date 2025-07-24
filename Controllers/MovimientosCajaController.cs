@@ -26,18 +26,6 @@ namespace GestionLogisticaBackend.Controllers
             return Ok(movimientos);
         }
 
-        // get movimintos by factura
-        [HttpGet("factura/{idFactura}")]
-        public async Task<ActionResult<IEnumerable<MovimientoCajaDto>>> GetMovimientosByFactura(int idFactura)
-        {
-            var movimientos = await _movimientoCajaService.GetMovimientosByFacturaAsync(idFactura);
-            if (movimientos == null || !movimientos.Any())
-            {
-                return NotFound($"No se encontraron movimientos de caja para la factura con ID {idFactura}.");
-            }
-            return Ok(movimientos);
-        }
-
         // GET: api/MovimientosCaja/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MovimientoCajaDto>> GetMovimiento(int id)
@@ -61,25 +49,6 @@ namespace GestionLogisticaBackend.Controllers
             await _movimientoCajaService.CreateMovimientoAsync(movimientoCaja);
 
             return CreatedAtAction(nameof(GetMovimiento), new { id = movimientoCaja.IdMetodoPago }, movimientoCaja);
-        }
-
-        // PUT: api/MovimientosCaja/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovimiento(int id, MovimientoCajaDto movimientoCaja)
-        {
-            if (id != movimientoCaja.IdMovimiento)
-            {
-                return BadRequest("El ID del movimiento de caja no coincide con el ID proporcionado en la URL.");
-            }
-
-            var existingMovimiento = await _movimientoCajaService.GetMovimientoByIdAsync(id);
-            if (existingMovimiento == null)
-            {
-                return NotFound($"No se encontró el movimiento de caja con ID {id}.");
-            }
-
-            await _movimientoCajaService.UpdateMovimientoAsync(movimientoCaja);
-            return NoContent();
         }
 
         // DELETE: api/MovimientosCaja/5

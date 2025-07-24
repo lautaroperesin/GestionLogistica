@@ -118,6 +118,8 @@ namespace GestionLogisticaBackend.Services.Implementations
         private IQueryable<Factura> GetFacturaWithIncludes()
         {
             return _context.Facturas
+                .Include(f => f.MovimientosCaja)
+                 .ThenInclude(m => m.MetodoPago)
                 .Include(f => f.Envio)
                     .ThenInclude(e => e.Origen)
                         .ThenInclude(o => o.Localidad)

@@ -64,5 +64,7 @@ namespace LogisticaBackend.Models
 
         [NotMapped]
         public decimal SaldoPendiente => Total - TotalPagado;
+        [NotMapped]
+        public bool EstaPagada => SaldoPendiente <= 0;
     }
 }

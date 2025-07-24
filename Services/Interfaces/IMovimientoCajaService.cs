@@ -8,8 +8,6 @@ namespace GestionLogisticaBackend.Services.Interfaces
         Task<PagedResult<MovimientoCajaDto>> GetMovimientosAsync(PaginationParams pagParams);
         Task<MovimientoCajaDto> GetMovimientoByIdAsync(int id);
         Task CreateMovimientoAsync(CreateMovimientoCajaDto movimientoCaja);
-        Task UpdateMovimientoAsync(MovimientoCajaDto movimientoCaja);
         Task DeleteMovimientoAsync(int id);
-        Task<IEnumerable<MovimientoCajaDto>> GetMovimientosByFacturaAsync(int idFactura);
     }
 }

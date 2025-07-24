@@ -20,10 +20,14 @@ namespace GestionLogisticaBackend.Extensions
                 NumeroFactura = factura.NumeroFactura,
                 FechaEmision = factura.FechaEmision,
                 FechaVencimiento = factura.FechaVencimiento,
+                Estado = factura.Estado,
                 Subtotal = factura.Subtotal,
                 Iva = factura.Iva,
                 Total = factura.Total,
-                Estado = factura.Estado
+                TotalPagado = factura.MovimientosCaja.Sum(m => m.Monto),
+                SaldoPendiente = factura.Total - factura.MovimientosCaja.Sum(m => m.Monto),
+                EstaPagada = factura.EstaPagada,
+                MovimientosCaja = factura.MovimientosCaja.Select(m => m.ToMovimientoSinFacturaDto()).ToList()
             };
         }
 
