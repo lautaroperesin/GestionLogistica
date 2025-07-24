@@ -24,8 +24,8 @@ namespace GestionLogisticaBackend.Extensions
                 Subtotal = factura.Subtotal,
                 Iva = factura.Iva,
                 Total = factura.Total,
-                TotalPagado = factura.MovimientosCaja.Sum(m => m.Monto),
-                SaldoPendiente = factura.Total - factura.MovimientosCaja.Sum(m => m.Monto),
+                TotalPagado = factura.TotalPagado,
+                SaldoPendiente = factura.SaldoPendiente,
                 EstaPagada = factura.EstaPagada,
                 MovimientosCaja = factura.MovimientosCaja.Select(m => m.ToMovimientoSinFacturaDto()).ToList()
             };

@@ -7,6 +7,7 @@ using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Models;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
+using LogisticaBackend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionLogisticaBackend.Services.Implementations
@@ -116,34 +117,47 @@ namespace GestionLogisticaBackend.Services.Implementations
                 throw new KeyNotFoundException($"No se encontró un movimiento de caja con ID {id}.");
             }
 
+            var facturaId = movimiento.IdFactura;
+
             movimiento.Deleted = true;
             await _context.SaveChangesAsync();
+
+            // Actualizar el estado de la factura después de eliminar el movimiento
+            await ActualizarEstadoFactura(facturaId);
         }
 
         // Método auxiliar para actualizar el estado de la factura
         private async Task ActualizarEstadoFactura(int facturaId)
         {
             var factura = await _context.Facturas
-                .Include(f => f.MovimientosCaja)
                 .FirstOrDefaultAsync(f => f.IdFactura == facturaId);
 
             if (factura == null) return;
 
-            decimal totalPagado = factura.MovimientosCaja.Sum(m => m.Monto);
-            decimal saldoPendiente = factura.Total - totalPagado;
+            factura.MovimientosCaja = await _context.MovimientosCaja
+                .Where(m => m.IdFactura == facturaId)
+                .ToListAsync();
+
+            foreach (var m in factura.MovimientosCaja)
+            {
+                Debug.Print($">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<Id: {m.IdMovimiento}, Deleted: {m.Deleted}, Monto: {m.Monto}");
+            }
+
+            decimal totalPagadoActual = factura.TotalPagado;
+            decimal saldoPendiente = factura.SaldoPendiente;
 
             // Actualizar estado basado en los pagos
-            if (saldoPendiente <= 0)
+            if (totalPagadoActual == 0)
+            {
+                factura.Estado = EstadoFactura.Emitida;
+            }
+            else if (saldoPendiente <= 0)
             {
                 factura.Estado = EstadoFactura.Pagada;
             }
-            else if (totalPagado > 0)
-            {
-                factura.Estado = EstadoFactura.ParcialmentePagada;
-            }
             else
             {
-                factura.Estado = EstadoFactura.Emitida;
+                factura.Estado = EstadoFactura.ParcialmentePagada;
             }
 
             await _context.SaveChangesAsync();
