@@ -48,7 +48,7 @@ namespace GestionLogisticaBackend.Controllers
             }
             await _movimientoCajaService.CreateMovimientoAsync(movimientoCaja);
 
-            return CreatedAtAction(nameof(GetMovimiento), new { id = movimientoCaja.IdMetodoPago }, movimientoCaja);
+            return CreatedAtAction(nameof(GetMovimiento), movimientoCaja);
         }
 
         // DELETE: api/MovimientosCaja/5
