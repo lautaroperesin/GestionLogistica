@@ -50,6 +50,7 @@ builder.Services.AddScoped<IFacturaService, FacturaService>();
 builder.Services.AddScoped<IMetodoPagoService, MetodoPagoService>();
 builder.Services.AddScoped<IMovimientoCajaService, MovimientoCajaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<DashboardService>();
 
 // Configurar Entity Framework con MySQL
 builder.Services.AddDbContext<LogisticaContext>(options =>
