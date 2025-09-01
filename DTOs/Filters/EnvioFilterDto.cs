@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.Enums;
 
 namespace GestionLogisticaBackend.DTOs.Filters
 {
@@ -9,7 +10,7 @@ namespace GestionLogisticaBackend.DTOs.Filters
         public int? IdVehiculo { get; set; }
         public DateTime? FechaSalidaDesde { get; set; }
         public DateTime? FechaSalidaHasta { get; set; }
-        public int? EstadoEnvio { get; set; }
+        public EstadoEnvioEnum? EstadoEnvio { get; set; }
         public string? NumeroSeguimiento { get; set; }
         public string? Origen { get; set; }
         public string? Destino { get; set; }

@@ -11,6 +11,7 @@ using GestionLogisticaBackend.Services.Interfaces;
 using GestionLogisticaBackend.DTOs.Envio;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.DTOs.Filters;
+using GestionLogisticaBackend.Enums;
 
 namespace GestionLogisticaBackend.Controllers
 {
@@ -101,11 +102,11 @@ namespace GestionLogisticaBackend.Controllers
 
         // actualizar estado del envio
         [HttpPatch("{id}/estado/")]
-        public async Task<IActionResult> UpdateEnvioEstado(int id, [FromBody] EstadoEnvioDto dto)
+        public async Task<IActionResult> UpdateEnvioEstado(int id, [FromBody] EstadoEnvioEnum nuevoEstado)
         {
             try
             {
-                await _envioService.UpdateEnvioEstadoAsync(id, dto.IdEstado);
+                await _envioService.UpdateEnvioEstadoAsync(id, nuevoEstado);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

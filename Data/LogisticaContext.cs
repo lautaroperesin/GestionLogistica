@@ -12,7 +12,6 @@ namespace LogisticaBackend.Data
         public DbSet<Conductor> Conductores { get; set; }
         public DbSet<Envio> Envios { get; set; }
         public DbSet<Factura> Facturas { get; set; }
-        public DbSet<EstadoEnvio> EstadosEnvio { get; set; }
         public DbSet<Localidad> Localidades { get; set; }
         public DbSet<Provincia> Provincias { get; set; }
         public DbSet<Pais> Paises { get; set; }
@@ -106,18 +105,6 @@ namespace LogisticaBackend.Data
             modelBuilder.Entity<Factura>().Property(f => f.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Ubicacion>().Property(u => u.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<MovimientoCaja>().Property(m => m.Deleted).HasDefaultValue(false);
-
-
-            // Seed data para estados
-            modelBuilder.Entity<EstadoEnvio>().HasData(
-                new EstadoEnvio { IdEstado = 1, Nombre = "Pendiente" },
-                new EstadoEnvio { IdEstado = 2, Nombre = "En preparación" },
-                new EstadoEnvio { IdEstado = 3, Nombre = "En tránsito" },
-                new EstadoEnvio { IdEstado = 4, Nombre = "Entregado" },
-                new EstadoEnvio { IdEstado = 5, Nombre = "Demorado" },
-                new EstadoEnvio { IdEstado = 6, Nombre = "Incidencia" },
-                new EstadoEnvio { IdEstado = 7, Nombre = "Cancelado" }
-            );
         }
     }
 }

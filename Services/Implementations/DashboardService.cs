@@ -31,19 +31,16 @@ namespace GestionLogisticaBackend.Services.Implementations
                 .CountAsync(e => e.FechaSalida.Value.Month == mesActual && e.FechaSalida.Value.Year == anioActual);
 
             // En tránsito
-            var enTransito = await _context.Envios.CountAsync(e => e.IdEstado == 3);
+            var enTransito = await _context.Envios.CountAsync(e => e.Estado == EstadoEnvioEnum.EnTransito);
 
             // Entregados
-            var entregados = await _context.Envios.CountAsync(e => e.IdEstado == 4);
+            var entregados = await _context.Envios.CountAsync(e => e.Estado == EstadoEnvioEnum.Entregado);
 
             // Envíos pendientes
-            var pendientes = await _context.Envios.CountAsync(e => e.IdEstado == 1);
-
-            // En preparacion
-            var enPreparacion = await _context.Envios.CountAsync(e => e.IdEstado == 2);
+            var pendientes = await _context.Envios.CountAsync(e => e.Estado == EstadoEnvioEnum.Pendiente);
 
             // cancelados/incidentes/demorados
-            var cancelados = await _context.Envios.CountAsync(e => e.IdEstado == 5 || e.IdEstado == 6 || e.IdEstado == 7);
+            var cancelados = await _context.Envios.CountAsync(e => e.Estado == EstadoEnvioEnum.None || e.Estado == EstadoEnvioEnum.Demorado || e.Estado == EstadoEnvioEnum.Cancelado);
 
             // Ingresos del mes actual (ej: facturas cobradas - movimientos realizados)
             var ingresosMes = await _context.MovimientosCaja
@@ -78,7 +75,6 @@ namespace GestionLogisticaBackend.Services.Implementations
                 EnviosEnTransito = enTransito,
                 EnviosEntregados = entregados,
                 EnviosPendientes = pendientes,
-                EnviosEnPreparacion = enPreparacion,
                 EnviosCancelados = cancelados,
                 EnviosEsteMes = totalEnviosMes,
                 IngresosEsteMes = ingresosMes,
@@ -113,7 +109,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                 Cliente = e.Cliente.Nombre,
                 Origen = e.Origen.Localidad.Nombre,
                 Destino = e.Destino.Localidad.Nombre,
-                Estado = e.Estado.Nombre,
+                Estado = e.Estado.ToString(),
             });
 
             return enviosRecientesDto;

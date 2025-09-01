@@ -6,6 +6,7 @@ using GestionLogisticaBackend.DTOs.Filters;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.DTOs.Vehiculo;
+using GestionLogisticaBackend.Enums;
 using GestionLogisticaBackend.Extensions;
 using GestionLogisticaBackend.Services.Interfaces;
 using LogisticaBackend.Data;
@@ -107,14 +108,14 @@ namespace GestionLogisticaBackend.Services.Implementations
         }
 
         // actualizar estado del envio - seria un patch en el controller
-        public async Task UpdateEnvioEstadoAsync(int id, int nuevoEstadoId)
+        public async Task UpdateEnvioEstadoAsync(int id, EstadoEnvioEnum nuevoEstado)
         {
             var envio = await _context.Envios.FindAsync(id);
             if (envio == null)
             {
                 throw new KeyNotFoundException($"No se encontró el envío con ID {id}.");
             }
-            envio.IdEstado = nuevoEstadoId;
+            envio.Estado = nuevoEstado;
             await _context.SaveChangesAsync();
         }
 
@@ -153,7 +154,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             }
             if (filtros.EstadoEnvio.HasValue)
             {
-                query = query.Where(e => e.IdEstado == filtros.EstadoEnvio.Value);
+                query = query.Where(e => e.Estado == filtros.EstadoEnvio);
             }
             if (filtros.IdConductor.HasValue)
             {

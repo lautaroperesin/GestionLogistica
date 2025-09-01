@@ -2,6 +2,7 @@
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.DTOs.Vehiculo;
+using GestionLogisticaBackend.Enums;
 using LogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.DTOs.Envio
@@ -14,7 +15,7 @@ namespace GestionLogisticaBackend.DTOs.Envio
         public string? NumeroSeguimiento { get; set; }
         public DateTime FechaCreacionEnvio { get; set; }
         public DateTime? FechaSalida { get; set; }
-        public EstadoEnvioDto Estado { get; set; } = new();
+        public EstadoEnvioEnum Estado { get; set; }
         public decimal PesoKg { get; set; }
         public decimal VolumenM3 { get; set; }
         public string? Descripcion { get; set; }

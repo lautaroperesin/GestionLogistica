@@ -1,6 +1,7 @@
 ﻿using GestionLogisticaBackend.DTOs.Envio;
 using GestionLogisticaBackend.DTOs.Filters;
 using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.Enums;
 using LogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.Services.Interfaces
@@ -12,6 +13,6 @@ namespace GestionLogisticaBackend.Services.Interfaces
         Task<EnvioDto> CreateEnvioAsync(CreateEnvioDto envioDto);
         Task<EnvioDto?> UpdateEnvioAsync(int id, UpdateEnvioDto envioDto);
         Task<bool> DeleteEnvioAsync(int id);
-        Task UpdateEnvioEstadoAsync(int id, int nuevoEstadoId);
+        Task UpdateEnvioEstadoAsync(int id, EstadoEnvioEnum nuevoEstado);
     }
 }

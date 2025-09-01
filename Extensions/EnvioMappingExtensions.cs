@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.Enums;
 using Humanizer;
 using LogisticaBackend.Models;
 
@@ -26,11 +27,7 @@ namespace GestionLogisticaBackend.Extensions
                 CostoTotal = envio.CostoTotal,
                 Origen = envio.Origen.ToDto(),
                 Destino = envio.Destino.ToDto(),
-                Estado = new EstadoEnvioDto
-                {
-                    IdEstado = envio.Estado.IdEstado,
-                    Nombre = envio.Estado.Nombre
-                },
+                Estado = envio.Estado,
                 Vehiculo = envio.Vehiculo.ToDto(),
                 Conductor = envio.Conductor.ToDto(),
                 Cliente = envio.Cliente.ToDto(),
@@ -69,7 +66,7 @@ namespace GestionLogisticaBackend.Extensions
                 CostoTotal = dto.CostoTotal,
                 IdOrigen = dto.IdOrigen,
                 IdDestino = dto.IdDestino,
-                IdEstado = 1,
+                Estado = EstadoEnvioEnum.Pendiente,
                 IdVehiculo = dto.IdVehiculo,
                 IdConductor = dto.IdConductor,
                 IdCliente = dto.IdCliente,

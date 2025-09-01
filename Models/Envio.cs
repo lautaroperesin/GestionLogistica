@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using GestionLogisticaBackend.Enums;
 
 namespace LogisticaBackend.Models
 {
@@ -31,8 +32,8 @@ namespace LogisticaBackend.Models
         public DateTime? FechaSalida { get; set; }
 
         [Required]
-        [Column("id_estado_envio")]
-        public int IdEstado { get; set; }
+        [Column("estado_envio")]
+        public virtual EstadoEnvioEnum Estado { get; set; } = EstadoEnvioEnum.None;
 
         [Required]
         [Column("peso_kg", TypeName = "decimal(10,2)")]
@@ -73,9 +74,6 @@ namespace LogisticaBackend.Models
 
         [ForeignKey("IdDestino")]
         public virtual Ubicacion Destino { get; set; } = null!;
-
-        [ForeignKey("IdEstado")]
-        public virtual EstadoEnvio Estado { get; set; } = null!;
 
         [ForeignKey("IdVehiculo")]
         public virtual Vehiculo Vehiculo { get; set; } = null!;
