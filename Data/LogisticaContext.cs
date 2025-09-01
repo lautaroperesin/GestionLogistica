@@ -19,7 +19,6 @@ namespace LogisticaBackend.Data
         public DbSet<Ubicacion> Ubicaciones { get; set; }
         public DbSet<Vehiculo> Vehiculos { get; set; }
         public DbSet<TipoCarga> TiposCarga { get; set; }
-        public DbSet<MetodoPago> MetodosPago { get; set; }
         public DbSet<MovimientoCaja> MovimientosCaja { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
@@ -118,15 +117,6 @@ namespace LogisticaBackend.Data
                 new EstadoEnvio { IdEstado = 5, Nombre = "Demorado" },
                 new EstadoEnvio { IdEstado = 6, Nombre = "Incidencia" },
                 new EstadoEnvio { IdEstado = 7, Nombre = "Cancelado" }
-            );
-
-            // Seed data para métodos de pago
-            modelBuilder.Entity<MetodoPago>().HasData(
-                new MetodoPago { IdMetodoPago = 1, Nombre = "Efectivo" },
-                new MetodoPago { IdMetodoPago = 2, Nombre = "Transferencia"},
-                new MetodoPago { IdMetodoPago = 3, Nombre = "Cheque" },
-                new MetodoPago { IdMetodoPago = 4, Nombre = "Tarjeta de Crédito" },
-                new MetodoPago { IdMetodoPago = 5, Nombre = "Tarjeta de Débito" }
             );
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GestionLogisticaBackend.Enums;
 using LogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.Models
@@ -24,8 +25,8 @@ namespace GestionLogisticaBackend.Models
         public decimal Monto { get; set; }
 
         [Required]
-        [Column("id_metodo_pago")]
-        public int IdMetodoPago { get; set; }
+        [Column("metodo_pago")]
+        public MetodoPagoEnum MetodoPago { get; set; } = MetodoPagoEnum.NoDefinido;
 
         [Column("observaciones")]
         public string? Observaciones { get; set; }
@@ -36,8 +37,5 @@ namespace GestionLogisticaBackend.Models
         // Navegación
         [ForeignKey("IdFactura")]
         public virtual Factura Factura { get; set; } = null!;
-
-        [ForeignKey("IdMetodoPago")]
-        public virtual MetodoPago MetodoPago { get; set; } = null!;
     }
 }

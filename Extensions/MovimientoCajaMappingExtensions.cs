@@ -1,5 +1,4 @@
-﻿using GestionLogisticaBackend.DTOs.MetodoPago;
-using GestionLogisticaBackend.DTOs.MovimientoCaja;
+﻿using GestionLogisticaBackend.DTOs.MovimientoCaja;
 using GestionLogisticaBackend.Models;
 
 namespace GestionLogisticaBackend.Extensions
@@ -19,11 +18,7 @@ namespace GestionLogisticaBackend.Extensions
                 Factura = movimiento.Factura.ToDto(),
                 FechaPago = movimiento.FechaPago,
                 Monto = movimiento.Monto,
-                MetodoPago = new MetodoPagoDto
-                {
-                    Id = movimiento.MetodoPago.IdMetodoPago,
-                    Nombre = movimiento.MetodoPago.Nombre,
-                },
+                MetodoPago = movimiento.MetodoPago,
                 Observaciones = movimiento.Observaciones
             };
         }
@@ -36,11 +31,7 @@ namespace GestionLogisticaBackend.Extensions
                 IdMovimiento = movimiento.IdMovimiento,
                 FechaPago = movimiento.FechaPago,
                 Monto = movimiento.Monto,
-                MetodoPago = new MetodoPagoDto
-                {
-                    Id = movimiento.MetodoPago.IdMetodoPago,
-                    Nombre = movimiento.MetodoPago.Nombre,
-                },
+                MetodoPago = movimiento.MetodoPago
             };
         }
 
@@ -64,7 +55,7 @@ namespace GestionLogisticaBackend.Extensions
                 IdFactura = dto.IdFactura,
                 FechaPago = dto.FechaPago,
                 Monto = dto.Monto,
-                IdMetodoPago = dto.IdMetodoPago,
+                MetodoPago = dto.MetodoPago,
                 Observaciones = dto.Observaciones
             };
         }

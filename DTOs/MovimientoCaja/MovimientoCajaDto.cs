@@ -1,5 +1,4 @@
 ﻿using GestionLogisticaBackend.DTOs.Factura;
-using GestionLogisticaBackend.DTOs.MetodoPago;
 
 namespace GestionLogisticaBackend.DTOs.MovimientoCaja
 {
