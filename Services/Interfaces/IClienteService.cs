@@ -11,5 +11,7 @@ namespace GestionLogisticaBackend.Services.Interfaces
         Task<ClienteDto> CreateClienteAsync(CreateClienteDto clienteDto);
         Task<bool> UpdateClienteAsync(UpdateClienteDto clienteDto);
         Task<bool> DeleteClienteAsync(int id);
+        Task<bool> RestoreClienteAsync(int id);
+        Task<IEnumerable<ClienteDto>> GetClientesEliminadosAsync();
     }
 }

@@ -90,5 +90,25 @@ namespace GestionLogisticaBackend.Services.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
+
+        // obtener clientes eliminados
+        public async Task<IEnumerable<ClienteDto>> GetClientesEliminadosAsync()
+        {
+            var clientesEliminados = await _context.Clientes
+                .IgnoreQueryFilters()
+                .Where(c => c.Deleted)
+                .ToListAsync();
+            return clientesEliminados.ToDtoList();
+        }
+
+        // restaurar cliente
+        public async Task<bool> RestoreClienteAsync(int id)
+        {
+            var cliente = await _context.Clientes.IgnoreQueryFilters().FirstOrDefaultAsync(c => c.IdCliente.Equals(id));
+            if (cliente == null) return false;
+            cliente.Deleted = false;
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

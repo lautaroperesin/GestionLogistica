@@ -82,5 +82,25 @@ namespace LogisticaBackend.Controllers
 
             return NoContent();
         }
+
+        // GET: api/Clientes/eliminados
+        [HttpGet("eliminados")]
+        public async Task<ActionResult<PagedResult<ClienteDto>>> GetClientesEliminados()
+        {
+            var clientesEliminados = await _clienteService.GetClientesEliminadosAsync();
+            return Ok(clientesEliminados);
+        }
+
+        // restaurar cliente
+        [HttpPost("restore/{id}")]
+        public async Task<IActionResult> RestoreCliente(int id)
+        {
+            var restored = await _clienteService.RestoreClienteAsync(id);
+            if (!restored)
+            {
+                return NotFound("Cliente no encontrado o no se pudo restaurar.");
+            }
+            return NoContent();
+        }
     }
 }
