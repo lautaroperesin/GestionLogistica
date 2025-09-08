@@ -11,7 +11,7 @@ namespace GestionLogisticaBackend.DTOs.Factura
         public int IdFactura { get; set; }
         public EnvioDto Envio { get; set; } = new EnvioDto();
         public ClienteDto Cliente { get; set; } = new ClienteDto();
-        public EstadoFactura Estado { get; set; }
+        public EstadoFacturaEnum Estado { get; set; }
         public string NumeroFactura { get; set; } = string.Empty;
         public DateTime FechaEmision { get; set; }
         public DateTime? FechaVencimiento { get; set; }

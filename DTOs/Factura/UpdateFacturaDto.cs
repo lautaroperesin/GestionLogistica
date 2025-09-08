@@ -22,7 +22,7 @@ namespace GestionLogisticaBackend.DTOs.Factura
         public DateTime FechaEmision { get; set; }
         public DateTime? FechaVencimiento { get; set; }
 
-        public EstadoFactura Estado { get; set; }
+        public EstadoFacturaEnum Estado { get; set; }
 
         [Required(ErrorMessage = "El subtotal es requerido")]
         public decimal Subtotal { get; set; }

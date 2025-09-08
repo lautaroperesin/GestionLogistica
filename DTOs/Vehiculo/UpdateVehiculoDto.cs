@@ -23,7 +23,7 @@ namespace GestionLogisticaBackend.DTOs.Vehiculo
         public decimal CapacidadCarga { get; set; }
 
         [Required(ErrorMessage = "El estado del vehículo es requerido")]
-        public EstadoVehiculo Estado { get; set; }
+        public EstadoVehiculoEnum Estado { get; set; }
 
         [Required(ErrorMessage = "La fecha de última inspección es requerida")]
         public DateTime UltimaInspeccion { get; set; }

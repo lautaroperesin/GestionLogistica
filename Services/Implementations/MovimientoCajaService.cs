@@ -77,7 +77,7 @@ namespace GestionLogisticaBackend.Services.Implementations
                     throw new KeyNotFoundException($"No se encontró una factura con ID {movimientoCajaDto.IdFactura}.");
 
                 // Verificar que la factura no esté ya completamente pagada
-                if (factura.Estado == EstadoFactura.Pagada)
+                if (factura.Estado == EstadoFacturaEnum.Pagada)
                     throw new InvalidOperationException("No se pueden agregar pagos a una factura ya pagada completamente.");
 
                 // Calcular saldo pendiente actual
@@ -149,15 +149,15 @@ namespace GestionLogisticaBackend.Services.Implementations
             // Actualizar estado basado en los pagos
             if (totalPagadoActual == 0)
             {
-                factura.Estado = EstadoFactura.Emitida;
+                factura.Estado = EstadoFacturaEnum.Emitida;
             }
             else if (saldoPendiente <= 0)
             {
-                factura.Estado = EstadoFactura.Pagada;
+                factura.Estado = EstadoFacturaEnum.Pagada;
             }
             else
             {
-                factura.Estado = EstadoFactura.ParcialmentePagada;
+                factura.Estado = EstadoFacturaEnum.ParcialmentePagada;
             }
 
             await _context.SaveChangesAsync();

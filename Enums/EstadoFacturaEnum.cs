@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace GestionLogisticaBackend.Enums
 {
-    public enum EstadoFactura
+    public enum EstadoFacturaEnum
     {
         Borrador = 0,
         Emitida = 1,

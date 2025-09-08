@@ -32,7 +32,7 @@ namespace LogisticaBackend.Models
 
         [Required]
         [Column("estado_vehiculo")]
-        public EstadoVehiculo Estado { get; set; } = EstadoVehiculo.Disponible;
+        public EstadoVehiculoEnum Estado { get; set; } = EstadoVehiculoEnum.Disponible;
 
         [Required]
         [Column("ultima_inspeccion")]

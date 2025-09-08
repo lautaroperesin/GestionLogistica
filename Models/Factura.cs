@@ -33,7 +33,7 @@ namespace LogisticaBackend.Models
         public DateTime? FechaVencimiento { get; set; }
 
         [Column("estado")]
-        public EstadoFactura Estado { get; set; }
+        public EstadoFacturaEnum Estado { get; set; }
 
         [Required]
         [Column("subtotal", TypeName = "decimal(12,2)")]

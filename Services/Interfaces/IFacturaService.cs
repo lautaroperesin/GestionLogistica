@@ -12,6 +12,6 @@ namespace GestionLogisticaBackend.Services.Interfaces
         Task<FacturaDto> CreateFacturaAsync(CreateFacturaDto facturaDto);
         Task<FacturaDto?> UpdateFacturaAsync(int id, UpdateFacturaDto facturaDto);
         Task<bool>DeleteFacturaAsync(int id);
-        Task<bool> ActualizarEstadoFacturaAsync(int facturaId, EstadoFactura nuevoEstado);
+        Task<bool> ActualizarEstadoFacturaAsync(int facturaId, EstadoFacturaEnum nuevoEstado);
     }
 }

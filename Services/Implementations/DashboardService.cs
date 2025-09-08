@@ -53,7 +53,7 @@ namespace GestionLogisticaBackend.Services.Implementations
 
             // facturacion pendiente
             var facturacionPendiente = await _context.Facturas
-                .Where(f => f.Estado == EstadoFactura.Emitida || f.Estado == EstadoFactura.ParcialmentePagada)
+                .Where(f => f.Estado == EstadoFacturaEnum.Emitida || f.Estado == EstadoFacturaEnum.ParcialmentePagada)
                     .Select(f => new
                     {
                         f.Total,
@@ -66,9 +66,9 @@ namespace GestionLogisticaBackend.Services.Implementations
             var totalClientes = await _context.Clientes.CountAsync();
 
             // Flota activa vs total
-            var flotaDisponible = await _context.Vehiculos.CountAsync(v => v.Estado == EstadoVehiculo.Disponible);
+            var flotaDisponible = await _context.Vehiculos.CountAsync(v => v.Estado == EstadoVehiculoEnum.Disponible);
             var flotaTotal = await _context.Vehiculos.CountAsync();
-            var flotaEnMantenimiento = await _context.Vehiculos.CountAsync(v => v.Estado == EstadoVehiculo.EnMantenimiento);
+            var flotaEnMantenimiento = await _context.Vehiculos.CountAsync(v => v.Estado == EstadoVehiculoEnum.EnMantenimiento);
 
             return new DashboardStatsDto
             {

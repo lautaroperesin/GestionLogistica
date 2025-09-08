@@ -103,7 +103,7 @@ namespace GestionLogisticaBackend.Services.Implementations
             return true;
         }
 
-        public async Task<bool> ActualizarEstadoFacturaAsync(int facturaId, EstadoFactura nuevoEstado)
+        public async Task<bool> ActualizarEstadoFacturaAsync(int facturaId, EstadoFacturaEnum nuevoEstado)
         {
             var factura = await _context.Facturas.FindAsync(facturaId);
 

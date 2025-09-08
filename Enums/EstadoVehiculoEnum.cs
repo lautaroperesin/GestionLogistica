@@ -1,6 +1,6 @@
 ﻿namespace GestionLogisticaBackend.Enums
 {
-    public enum EstadoVehiculo
+    public enum EstadoVehiculoEnum
     {
         Disponible = 1,
         EnViaje = 2,
