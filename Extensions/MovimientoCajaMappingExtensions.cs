@@ -23,18 +23,6 @@ namespace GestionLogisticaBackend.Extensions
             };
         }
 
-        public static MovimientoSinFacturaDto ToMovimientoSinFacturaDto(this MovimientoCaja movimiento)
-        {
-            if (movimiento == null) return null!;
-            return new MovimientoSinFacturaDto
-            {
-                IdMovimiento = movimiento.IdMovimiento,
-                FechaPago = movimiento.FechaPago,
-                Monto = movimiento.Monto,
-                MetodoPago = movimiento.MetodoPago
-            };
-        }
-
         /// <summary>
         /// Mapea una colección de entidad a una colección de DTO.
         /// </summary>

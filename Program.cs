@@ -5,6 +5,8 @@ using LogisticaBackend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Service.Interfaces;
+using Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +52,7 @@ builder.Services.AddScoped<IEnvioService, EnvioService>();
 builder.Services.AddScoped<IFacturaService, FacturaService>();
 builder.Services.AddScoped<IMovimientoCajaService, MovimientoCajaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddScoped<DashboardService>();
 
 // Configurar Entity Framework con MySQL

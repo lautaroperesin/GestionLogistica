@@ -21,6 +21,6 @@ namespace GestionLogisticaBackend.DTOs.Factura
         public decimal TotalPagado { get; set; }
         public decimal SaldoPendiente { get; set; }
         public bool EstaPagada { get; set; }
-        public IEnumerable<MovimientoSinFacturaDto> MovimientosCaja { get; set; } = new List<MovimientoSinFacturaDto>();
+        public IEnumerable<MovimientoCajaDto> MovimientosCaja { get; set; } = new List<MovimientoCajaDto>();
     }
 }
