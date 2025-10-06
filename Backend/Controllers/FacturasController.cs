@@ -2,20 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionLogisticaBackend.DTOs.Factura;
+using GestionLogisticaBackend.DTOs.Filters;
+using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.Services.Interfaces;
+using LogisticaBackend.Data;
+using LogisticaBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LogisticaBackend.Data;
-using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services.Interfaces;
-using GestionLogisticaBackend.DTOs.Factura;
-using GestionLogisticaBackend.DTOs.Pagination;
-using GestionLogisticaBackend.DTOs.Filters;
 
 namespace GestionLogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FacturasController : ControllerBase
     {
         private readonly IFacturaService _facturaService;

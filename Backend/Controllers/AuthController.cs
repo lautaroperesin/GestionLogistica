@@ -1,58 +1,53 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using GestionLogisticaBackend.DTOs.Auth;
+﻿using Firebase.Auth;
+using Firebase.Auth.Providers;
 using GestionLogisticaBackend.DTOs.Usuario;
-using GestionLogisticaBackend.Enums;
-using GestionLogisticaBackend.Models;
-using GestionLogisticaBackend.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
-namespace GestionLogisticaBackend.Controllers
+namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        FirebaseAuthClient firebaseAuthClient;
+        IConfiguration _configuration;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IConfiguration configuration)
         {
-            _authService = authService;
+            _configuration = configuration;
+            SetFirebaseConfig();
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<Usuario>> Register(CreateUsuarioDto usuarioDto)
+        private void SetFirebaseConfig()
         {
-            var user = await _authService.RegisterAsync(usuarioDto);
-            if (user is null)
-                return BadRequest("El usuario ya existe o hubo un error al registrarlo.");
+            // Configuración de Firebase con proveedor de autenticación por correo electrónico y anónimo
+            var config = new FirebaseAuthConfig
+            {
+                ApiKey = _configuration["ApiKeyFirebase"],
+                AuthDomain = _configuration["AuthDomainFirebase"],
+                Providers = new FirebaseAuthProvider[]
+                {
+                    new EmailProvider()
 
-            return Ok(user);
+                },
+            };
+
+            firebaseAuthClient = new FirebaseAuthClient(config);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login(UsuarioDto usuarioDto)
+        public async Task<IActionResult> Login([FromBody] UsuarioDto login)
         {
-            var result = await _authService.LoginAsync(usuarioDto);
-            if (result is null)
-                return Unauthorized("Credenciales inválidas.");
-
-            return Ok(result);
-        }
-
-        [HttpPost("refresh-token")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto refreshTokenRequest)
-        {
-            var result = await _authService.RefreshTokensAsync(refreshTokenRequest);
-            if (result is null || result.AccessToken is null || result.RefreshToken is null)
-                return Unauthorized("Refresh token inválido o expirado.");
-
-            return Ok(result);
+            try
+            {
+                var credential = await firebaseAuthClient.SignInWithEmailAndPasswordAsync(login.Email, login.Password);
+                return Ok(credential.User.GetIdTokenAsync().Result);
+            }
+            catch (FirebaseAuthException ex)
+            {
+                return Unauthorized(new { message = $"Credenciales inválidas. Error: {ex.Reason.ToString()}" });
+            }
         }
     }
 }

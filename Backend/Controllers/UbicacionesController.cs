@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.DTOs.Ubicacion;
+using GestionLogisticaBackend.Services.Interfaces;
+using LogisticaBackend.Data;
+using LogisticaBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LogisticaBackend.Data;
-using LogisticaBackend.Models;
-using GestionLogisticaBackend.DTOs.Ubicacion;
-using GestionLogisticaBackend.Services.Implementations;
-using GestionLogisticaBackend.Services.Interfaces;
-using GestionLogisticaBackend.DTOs.Pagination;
 
 namespace LogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UbicacionesController : ControllerBase
     {
         private readonly IUbicacionService _ubicacionService;

@@ -82,7 +82,7 @@ appsettings.Development.json
 appsettings.Staging.json
 appsettings.Production.json
 secrets.json
-
+.env
 
 #############
 # Optional (según tu proyecto)

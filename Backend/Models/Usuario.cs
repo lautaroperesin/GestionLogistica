@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using GestionLogisticaBackend.Enums;
+using Service.Enums;
 
 namespace GestionLogisticaBackend.Models
 {
@@ -23,28 +24,17 @@ namespace GestionLogisticaBackend.Models
 
         [Required]
         [MaxLength(255)]
-        [Column("password_hash")]
-        public string PasswordHash { get; set; } = null!;
+        [Column("password")]
+        public string Password { get; set; } = null!;
 
         [Required]
-        [Column("rol_usuario")]
-        public string RolUsuario { get; set; } = "Admin";
-
-        [Column("activo")]
-        public bool Activo { get; set; } = true;
-
-        [Column("ultimo_acceso")]
-        public DateTime? UltimoAcceso { get; set; }
-
-        [Required]
-        [Column("fecha_alta")]
-        public DateTime FechaAlta { get; set; } = DateTime.Now;
-
-        [Column("refresh_token")]
-        public string? RefreshToken { get; set; }
-
-        [Column("fecha_expiracion_refresh_token")]
-        public DateTime? FechaExpiracionRefreshToken { get; set; }
+        public TipoRolEnum TipoRol { get; set; } = TipoRolEnum.Admin;
+        public DateTime FechaRegistracion { get; set; } = DateTime.Now;
+        public string Dni { get; set; } = string.Empty;
+        public string Domicilio { get; set; } = string.Empty;
+        public string Telefono { get; set; } = string.Empty;
+        public string Observacion { get; set; } = string.Empty;
+        public bool isDeleted { get; set; } = false;
 
     }
 }

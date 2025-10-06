@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:GestionLogisticaApp.ViewModels"
+             x:Class="GestionLogisticaApp.EnviosPage"
+             Title="Envios">
+    <ContentPage.BindingContext>
+        <viewModels:EnviosViewModel />
+    </ContentPage.BindingContext>
+    <StackLayout Padding="20">
+        <Label Text="Mis Envios" FontSize="24" HorizontalOptions="Center"/>
+        <HorizontalStackLayout Spacing="10" Padding="0,10">
+            <Entry Placeholder="Numero de seguimiento" Text="{Binding SearchNumero}" />
+            <Button Text="Buscar" Command="{Binding SearchCommand}" />
+        </HorizontalStackLayout>
+        <CollectionView ItemsSource="{Binding Envios}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BorderColor="Gray" Margin="5">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold"/>
+                            <Label Text="{Binding Estado}" />
+                            <Label Text="{Binding FechaSalida, StringFormat='Salida: {0:dd/MM/yyyy}'}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

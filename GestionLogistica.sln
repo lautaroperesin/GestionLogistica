@@ -5,6 +5,10 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionLogisticaBackend", "Backend\GestionLogisticaBackend.csproj", "{D838D8AD-5BA1-8B65-FCD8-E4E7DCC2088F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{1E943B8E-5652-4B36-AA3B-A0DFB05B4A8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionLogisticaApp", "GestionLogisticaApp\GestionLogisticaApp.csproj", "{46361C6A-BE0C-44AB-A2AF-98E71F76373B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,16 @@ Global
 		{D838D8AD-5BA1-8B65-FCD8-E4E7DCC2088F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D838D8AD-5BA1-8B65-FCD8-E4E7DCC2088F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D838D8AD-5BA1-8B65-FCD8-E4E7DCC2088F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E943B8E-5652-4B36-AA3B-A0DFB05B4A8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E943B8E-5652-4B36-AA3B-A0DFB05B4A8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E943B8E-5652-4B36-AA3B-A0DFB05B4A8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E943B8E-5652-4B36-AA3B-A0DFB05B4A8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

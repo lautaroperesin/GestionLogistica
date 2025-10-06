@@ -73,9 +73,13 @@ namespace LogisticaBackend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdUsuario"));
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("activo");
+                    b.Property<string>("Dni")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Domicilio")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -83,13 +87,8 @@ namespace LogisticaBackend.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("email");
 
-                    b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("fecha_alta");
-
-                    b.Property<DateTime?>("FechaExpiracionRefreshToken")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("fecha_expiracion_refresh_token");
+                    b.Property<DateTime>("FechaRegistracion")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -97,24 +96,25 @@ namespace LogisticaBackend.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("nombre");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Observacion")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)")
-                        .HasColumnName("password_hash");
+                        .HasColumnName("password");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("longtext")
-                        .HasColumnName("refresh_token");
-
-                    b.Property<string>("RolUsuario")
+                    b.Property<string>("Telefono")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("rol_usuario");
+                        .HasColumnType("longtext");
 
-                    b.Property<DateTime?>("UltimoAcceso")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("ultimo_acceso");
+                    b.Property<int>("TipoRol")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("IdUsuario");
 

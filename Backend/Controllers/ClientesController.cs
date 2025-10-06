@@ -7,15 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogisticaBackend.Data;
 using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services.Implementations;
 using GestionLogisticaBackend.Services.Interfaces;
 using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Pagination;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClientesController : ControllerBase
     {
         private readonly IClienteService _clienteService;

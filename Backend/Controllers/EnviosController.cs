@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.DTOs.Filters;
+using GestionLogisticaBackend.DTOs.Pagination;
+using GestionLogisticaBackend.Enums;
+using GestionLogisticaBackend.Services.Interfaces;
+using LogisticaBackend.Data;
+using LogisticaBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LogisticaBackend.Data;
-using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services.Interfaces;
-using GestionLogisticaBackend.DTOs.Envio;
-using GestionLogisticaBackend.DTOs.Pagination;
-using GestionLogisticaBackend.DTOs.Filters;
-using GestionLogisticaBackend.Enums;
 
 namespace GestionLogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EnviosController : ControllerBase
     {
         private readonly IEnvioService _envioService;

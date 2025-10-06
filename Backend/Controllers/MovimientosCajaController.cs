@@ -1,6 +1,7 @@
 ﻿using GestionLogisticaBackend.DTOs.MovimientoCaja;
 using GestionLogisticaBackend.DTOs.Pagination;
 using GestionLogisticaBackend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace GestionLogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MovimientosCajaController : ControllerBase
     {
         private readonly IMovimientoCajaService _movimientoCajaService;

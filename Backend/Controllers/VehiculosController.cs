@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionLogisticaBackend.DTOs.Vehiculo;
+using GestionLogisticaBackend.Services.Interfaces;
+using LogisticaBackend.Data;
+using LogisticaBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LogisticaBackend.Data;
-using LogisticaBackend.Models;
-using GestionLogisticaBackend.Services.Implementations;
-using GestionLogisticaBackend.Services.Interfaces;
-using GestionLogisticaBackend.DTOs.Vehiculo;
 
 namespace LogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class VehiculosController : ControllerBase
     {
         private readonly IVehiculoService _vehiculoService;

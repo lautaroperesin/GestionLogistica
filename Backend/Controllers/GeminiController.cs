@@ -6,6 +6,7 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GeminiController : ControllerBase
     {
         private readonly IGeminiService _geminiService;

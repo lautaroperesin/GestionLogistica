@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionLogisticaBackend.DTOs.Envio;
+using LogisticaBackend.Data;
+using LogisticaBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LogisticaBackend.Data;
-using LogisticaBackend.Models;
-using GestionLogisticaBackend.DTOs.Envio;
 
 namespace LogisticaBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TiposCargaController : ControllerBase
     {
         private readonly LogisticaContext _context;
