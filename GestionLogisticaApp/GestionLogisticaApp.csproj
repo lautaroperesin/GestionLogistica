@@ -70,12 +70,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\EnviosPorConductorPage.xaml.cs">
+	    <DependentUpon>EnviosPorConductorPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\EnviosPage.xaml.cs">
 	    <DependentUpon>EnviosPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Pages\EnviosPorConductorPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -64,8 +64,8 @@ namespace GestionLogisticaApp.ViewModels
             AccesosRapidos.Add(new AccesoRapidoItem
             {
                 Titulo = "Mis Envios",
-                Descripcion = "Ver historial envios",
-                //Ruta = "//EnviosPage",
+                Descripcion = "Ver envios asignados a un conductor",
+                Ruta = "//EnviosPorConductorPage",
                 Color = "#FF9800"
             });
         }

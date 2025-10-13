@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GestionLogisticaApp.ViewModels"
+             x:Class="GestionLogisticaApp.EnviosPorConductorPage"
+             Title="Envios por Conductor">
+
+    <ContentPage.BindingContext>
+        <vm:EnviosPorConductorViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="12">
+            <Label Text="Seleccionar conductor" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding Conductores}" ItemDisplayBinding="{Binding Nombre}" SelectedItem="{Binding SelectedConductor, Mode=TwoWay}" />
+
+            <Button Text="Cargar envíos" Command="{Binding ConductorSelectedCommand}" />
+
+            <Label Text="Pendientes" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding EnviosPendientes}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
+                            <StackLayout>
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="En tránsito" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding EnviosEnTransito}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
+                            <StackLayout>
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="Entregados" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding EnviosEntregados}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
+                            <StackLayout>
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="Demorados" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding EnviosDemorados}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
+                            <StackLayout>
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="Cancelados" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding EnviosCancelados}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
+                            <StackLayout>
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -38,11 +38,18 @@
             Route="MainPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Mis Envios" Icon="book.png" IsVisible="{Binding MenuVisible}">
+    <FlyoutItem Title="Buscar Envio" Icon="book.png" IsVisible="{Binding MenuVisible}">
         <ShellContent
             Title="Envios"
             ContentTemplate="{DataTemplate local:EnviosPage}"
             Route="EnviosPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Mis Envios" Icon="book.png" IsVisible="{Binding MenuVisible}">
+        <ShellContent
+            Title="Envios por Conductor"
+            ContentTemplate="{DataTemplate local:EnviosPorConductorPage}"
+            Route="EnviosPorConductorPage" />
     </FlyoutItem>
 
     <!-- Footer del Flyout con opción de logout -->
