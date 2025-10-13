@@ -39,5 +39,17 @@ namespace Shared.ApiServices
                 throw new Exception($"Error en UsuarioService al obtener por email: {ex.Message}");
             }
         }
+
+        // add usuario
+        public async Task AddAsync(CreateUsuarioDto createUsuarioDto)
+        {
+            SetAuthorizationHeader();
+            var response = await _httpClient.PostAsJsonAsync(_endpoint, createUsuarioDto);
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al agregar el usuario: {response.StatusCode} - {content}");
+            }
+        }
     }
 }

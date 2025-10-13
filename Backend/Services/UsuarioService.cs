@@ -38,5 +38,19 @@ namespace GestionLogisticaBackend.Services
                 Password = usuario.Password,
             };
         }
+
+        // add usuario
+        public async Task AddAsync(CreateUsuarioDto createUsuarioDto)
+        {
+            var usuario = new Usuario
+            {
+                Nombre = createUsuarioDto.Nombre,
+                Email = createUsuarioDto.Email,
+                Password = createUsuarioDto.Password,
+                TipoRol = createUsuarioDto.Rol
+            };
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+        }
     }
 }

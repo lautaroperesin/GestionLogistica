@@ -97,8 +97,8 @@ namespace GestionLogisticaApp.ViewModels
 
         private async void OnForgotPassword()
         {
-            // Navegar a la página de recuperación o mostrar diálogo
-            await Application.Current?.MainPage?.DisplayAlert("Recuperar contraseña", "Funcionalidad de recuperar contraseña no implementada aún.", "OK");
+            await Application.Current?.MainPage?.Navigation?.PushAsync(new RecuperarPasswordPage());
+
         }
 
         private async void OnRegister()

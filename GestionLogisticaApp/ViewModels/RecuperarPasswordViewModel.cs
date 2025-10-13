@@ -1,15 +1,19 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GestionLogisticaBackend.DTOs.Usuario;
+using GestionLogisticaBackend.Services.Interfaces;
 using Service.Interfaces;
 using Service.Services;
+using Shared.ApiServices;
 
 namespace GestionLogisticaApp.ViewModels
 {
     public partial class RecuperarPasswordViewModel : ObservableObject
     {
-        //AuthService _authService = new();
+        AuthApiService _authService = new();
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(EnviarCommand))]
         private string mail = string.Empty;
 
         [ObservableProperty]
@@ -32,7 +36,7 @@ namespace GestionLogisticaApp.ViewModels
 
         private bool CanEnviar()
         {
-            return !IsBusy && !string.IsNullOrWhiteSpace(mail);
+            return !string.IsNullOrWhiteSpace(Mail);
         }
 
         private async Task OnEnviar()
@@ -52,6 +56,13 @@ namespace GestionLogisticaApp.ViewModels
                     return;
                 }
 
+                UsuarioDto loginReset = new UsuarioDto
+                {
+                    Email = Mail,
+                    Password = "" // Placeholder, el backend debe manejar esto adecuadamente
+                };
+
+                await _authService.ResetPassword(loginReset);
 
 
                 await OnVolver();

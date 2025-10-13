@@ -54,8 +54,8 @@
             <!-- Footer informativo -->
             <StackLayout Orientation="Vertical" Spacing="10" Margin="0,20,0,0">
                 <BoxView Color="#E0E0E0" HeightRequest="1"/>
-                <Label Text="Instituto Superior Politécnico" FontSize="14" TextColor="#666" HorizontalOptions="Center"/>
-                <Label Text="Sistema de Gestión Bibliotecaria" FontSize="12" TextColor="#999" HorizontalOptions="Center"/>
+                <Label Text="ISP N°20" FontSize="14" TextColor="#666" HorizontalOptions="Center"/>
+                <Label Text="Sistema de Gestión Logistica" FontSize="12" TextColor="#999" HorizontalOptions="Center"/>
             </StackLayout>
 
         </StackLayout>

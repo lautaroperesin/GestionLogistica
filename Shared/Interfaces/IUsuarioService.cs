@@ -11,5 +11,6 @@ namespace Shared.Interfaces
     public interface IUsuarioService
     {
         public Task<UsuarioDto?> GetUserByEmailAsync(string email);
+        public Task AddAsync(CreateUsuarioDto createUsuarioDto);
     }
 }

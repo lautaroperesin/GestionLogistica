@@ -5,6 +5,7 @@ using GestionLogisticaBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces;
 
 namespace GestionLogisticaBackend.Controllers
@@ -39,5 +40,30 @@ namespace GestionLogisticaBackend.Controllers
                 return StatusCode(500, new { message = $"Error al obtener el usuario. Error: {ex.Message}" });
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult<Usuario>> PostUsuario(CreateUsuarioDto usuario)
+        {
+            try
+            {
+                await _usuarioService.AddAsync(usuario);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al crear el usuario. Error: {ex.Message}" });
+            }
+
+            var usuarioCreado = await _usuarioService.GetUserByEmailAsync(usuario.Email);
+
+            if (usuarioCreado == null)
+            {
+                // If we couldn't retrieve the created user, return a generic OK to avoid CreatedAtAction routing errors
+                return Ok(usuario);
+            }
+
+            // Use the existing GetUserByEmail action as the location for CreatedAtAction
+            return CreatedAtAction(nameof(GetUserByEmail), new { email = usuarioCreado.Email }, usuarioCreado);
+        }
+
     }
 }

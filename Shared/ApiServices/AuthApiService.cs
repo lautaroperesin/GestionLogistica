@@ -63,11 +63,10 @@ namespace Shared.ApiServices
             }
             try
             {
-                var UrlApi = Properties.Resources.urlApi;
+                var urlApi = Properties.Resources.urlApi;
                 var endpointAuth = ApiEndpoints.GetEndpoint("Login");
                 var client = new HttpClient();
-                SetAuthorizationHeader(client);
-                var response = await client.PostAsJsonAsync($"{UrlApi}{endpointAuth}/resetpassword/", login);
+                var response = await client.PostAsJsonAsync($"{urlApi}{endpointAuth}/resetpassword/", login);
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
@@ -81,7 +80,7 @@ namespace Shared.ApiServices
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al resetear" + ex.Message);
+                throw new Exception("Error al resetear la contraseña" + ex.Message);
             }
         }
 
