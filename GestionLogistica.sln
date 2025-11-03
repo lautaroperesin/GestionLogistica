@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionLogisticaApp", "GestionLogisticaApp\GestionLogisticaApp.csproj", "{46361C6A-BE0C-44AB-A2AF-98E71F76373B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionLogisticaWeb", "GestionLogisticaWeb\GestionLogisticaWeb.csproj", "{CABD7F02-A040-4942-AE0B-3AA781776E75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46361C6A-BE0C-44AB-A2AF-98E71F76373B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{CABD7F02-A040-4942-AE0B-3AA781776E75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CABD7F02-A040-4942-AE0B-3AA781776E75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CABD7F02-A040-4942-AE0B-3AA781776E75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CABD7F02-A040-4942-AE0B-3AA781776E75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

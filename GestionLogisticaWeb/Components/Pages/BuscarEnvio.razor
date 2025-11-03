@@ -1,0 +1,33 @@
+﻿@page "/buscar-envio"
+@inject NavigationManager Navigation
+@inject IEnvioService _envioService
+@rendermode InteractiveServer
+
+@if(Envio == null)
+{
+    <p><em>Cargando...</em></p>
+}
+
+
+
+@code {
+    private PagedResult<EnvioDto> Envio { get; set; } = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //await Buscar(new EnvioFilterDto() { NumeroSeguimiento = "" });
+        }
+    }
+
+    private async Task Buscar(EnvioFilterDto filtro)
+    {
+        StateHasChanged();
+
+        var res = await _envioService.GetEnviosAsync(filtro);
+        Envio = res ?? new PagedResult<EnvioDto>();
+
+        StateHasChanged();
+    }
+}

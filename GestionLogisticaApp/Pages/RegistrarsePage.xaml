@@ -11,7 +11,7 @@
         <VerticalStackLayout Margin="20">
             <Label 
              FontSize="Title"
-             Text="Crear una nueva cuenta en Biblio"
+             Text="Crear una nueva cuenta"
              VerticalOptions="Center" 
              HorizontalOptions="Center" />
             <!-- Botón volver -->
