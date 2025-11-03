@@ -3,31 +3,93 @@
 @inject IEnvioService _envioService
 @rendermode InteractiveServer
 
-@if(Envio == null)
-{
-    <p><em>Cargando...</em></p>
-}
-
-
-
-@code {
-    private PagedResult<EnvioDto> Envio { get; set; } = new();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+<div class="container mt-5">
+    <h1 class="mb-4">Buscar Envío</h1>
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <input type="text" class="form-control" @bind="NumeroSeguimiento" placeholder="Ingrese el número de seguimiento" />
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100" @onclick="Buscar" disabled="@(string.IsNullOrWhiteSpace(NumeroSeguimiento) || IsLoading)">
+                @if (IsLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    @("Buscando...")
+                }
+                else
+                {
+                    @("Buscar")
+                }
+            </button>
+        </div>
+    </div>
+    @if (IsLoading)
     {
-        if (firstRender)
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+    else if (Envio != null)
+    {
+        if (Envio.Items.Any())
         {
-            //await Buscar(new EnvioFilterDto() { NumeroSeguimiento = "" });
+            <div class="card">
+                <div class="card-header">
+                    <h5>Resultado de la Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Número Seguimiento</th>
+                                <th>Estado</th>
+                                <th>Origen</th>
+                                <th>Destino</th>
+                                <th>Cliente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var envio in Envio.Items)
+                            {
+                                <tr>
+                                    <td>@envio.NumeroSeguimiento</td>
+                                    <td>@envio.Estado</td>
+                                    <td>@envio.Origen?.DireccionCompleta</td>
+                                    <td>@envio.Destino?.DireccionCompleta</td>
+                                    <td>@envio.Cliente?.Nombre</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning" role="alert">
+                No se encontró ningún envío con el número de seguimiento proporcionado.
+            </div>
         }
     }
+</div>
 
-    private async Task Buscar(EnvioFilterDto filtro)
+@code {
+    private PagedResult<EnvioDto>? Envio { get; set; }
+    private string NumeroSeguimiento { get; set; } = "";
+    private bool IsLoading { get; set; } = false;
+
+    private async Task Buscar()
     {
+        IsLoading = true;
         StateHasChanged();
 
+        var filtro = new EnvioFilterDto { NumeroSeguimiento = NumeroSeguimiento };
         var res = await _envioService.GetEnviosAsync(filtro);
-        Envio = res ?? new PagedResult<EnvioDto>();
+        Envio = res;
 
+        IsLoading = false;
         StateHasChanged();
     }
 }
