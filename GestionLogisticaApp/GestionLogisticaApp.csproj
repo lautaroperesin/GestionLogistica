@@ -70,6 +70,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\EnvioDetallePage.xaml.cs">
+	    <DependentUpon>EnvioDetallePage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\EnviosPorConductorPage.xaml.cs">
 	    <DependentUpon>EnviosPorConductorPage.xaml</DependentUpon>
 	  </Compile>
@@ -79,6 +82,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Pages\EnvioDetallePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\EnviosPorConductorPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

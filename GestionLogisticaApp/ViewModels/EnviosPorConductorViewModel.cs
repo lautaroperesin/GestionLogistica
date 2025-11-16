@@ -9,6 +9,9 @@ using GestionLogisticaBackend.DTOs.Filters;
 using GestionLogisticaBackend.Enums;
 using Shared.ApiServices;
 using Service.Services;
+using Microsoft.Maui.Controls;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace GestionLogisticaApp.ViewModels
 {
@@ -43,14 +46,19 @@ namespace GestionLogisticaApp.ViewModels
 
         public IRelayCommand LoadConductoresCommand { get; }
         public IRelayCommand ConductorSelectedCommand { get; }
+        public IRelayCommand<EnvioDto> ViewDetalleCommand { get; }
+        public IRelayCommand TestCommand { get; }
 
         public EnviosPorConductorViewModel()
         {
+            Debug.Print("EnviosPorConductorViewModel created");
             _envioService = new EnvioApiService();
             _conductorService = new ConductorApiService();
 
             LoadConductoresCommand = new RelayCommand(async () => await LoadConductoresAsync());
             ConductorSelectedCommand = new RelayCommand(async () => await LoadEnviosForSelectedConductorAsync());
+            ViewDetalleCommand = new RelayCommand<EnvioDto>(ViewDetalle);
+            TestCommand = new RelayCommand(() => Debug.Print("Test command executed"));
             InitializeAsync();
         }
 
@@ -146,6 +154,11 @@ namespace GestionLogisticaApp.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private async void ViewDetalle(EnvioDto envio)
+        {
+            await Shell.Current.GoToAsync($"EnvioDetallePage?envioId={envio.IdEnvio}");
         }
     }
 }

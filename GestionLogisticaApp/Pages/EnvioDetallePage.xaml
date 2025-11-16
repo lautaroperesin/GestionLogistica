@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GestionLogisticaApp.EnvioDetallePage"
+             Title="Detalle de Envío">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="12">
+            <Label Text="Número de Seguimiento" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.NumeroSeguimiento}" />
+
+            <Label Text="Estado" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.Estado}" />
+
+            <Label Text="Fecha de Creación" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.FechaCreacionEnvio, StringFormat='{0:dd/MM/yyyy HH:mm}'}" />
+
+            <Label Text="Fecha de Salida" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.FechaSalida, StringFormat='{0:dd/MM/yyyy HH:mm}'}" />
+
+            <Label Text="Peso (Kg)" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.PesoKg, StringFormat='{0:F2}'}" />
+
+            <Label Text="Volumen (M³)" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.VolumenM3, StringFormat='{0:F2}'}" />
+
+            <Label Text="Descripción" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.Descripcion}" />
+
+            <Label Text="Costo Total" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.CostoTotal, StringFormat='C'}" />
+
+            <Label Text="Origen" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.Origen.DireccionCompleta}" />
+
+            <Label Text="Destino" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.Destino.DireccionCompleta}" />
+
+            <Label Text="Vehículo" FontAttributes="Bold" />
+            <VerticalStackLayout>
+                <Label Text="{Binding Envio.Vehiculo.Marca}" />
+                <Label Text="{Binding Envio.Vehiculo.Modelo}" />
+                <Label Text="{Binding Envio.Vehiculo.Patente}" />
+                <Label Text="{Binding Envio.Vehiculo.Estado}" />
+            </VerticalStackLayout>
+
+            <Label Text="Conductor" FontAttributes="Bold" />
+            <VerticalStackLayout>
+                <Label Text="{Binding Envio.Conductor.Nombre}" />
+                <Label Text="{Binding Envio.Conductor.Dni}" />
+                <Label Text="{Binding Envio.Conductor.Telefono}" />
+                <Label Text="{Binding Envio.Conductor.Email}" />
+            </VerticalStackLayout>
+
+            <Label Text="Cliente" FontAttributes="Bold" />
+            <VerticalStackLayout>
+                <Label Text="{Binding Envio.Cliente.Nombre}" />
+                <Label Text="{Binding Envio.Cliente.Email}" />
+                <Label Text="{Binding Envio.Cliente.Telefono}" />
+            </VerticalStackLayout>
+
+            <Label Text="Tipo de Carga" FontAttributes="Bold" />
+            <Label Text="{Binding Envio.TipoCarga.Nombre}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

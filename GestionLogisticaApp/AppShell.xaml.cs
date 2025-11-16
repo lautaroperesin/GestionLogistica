@@ -1,5 +1,6 @@
 ﻿using GestionLogisticaApp.ViewModels;
 using GestionLogisticaBackend.DTOs.Usuario;
+using GestionLogisticaApp.Pages;
 
 namespace GestionLogisticaApp
 {
@@ -10,6 +11,7 @@ namespace GestionLogisticaApp
         public AppShell()
         {
             InitializeComponent();
+            Routing.RegisterRoute("EnvioDetallePage", typeof(EnvioDetallePage));
         }
 
         // Método público para cambiar el estado de login desde otras páginas
