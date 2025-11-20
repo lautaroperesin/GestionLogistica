@@ -4,57 +4,85 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using GestionLogisticaBackend.DTOs.Usuario;
+using GestionLogisticaBackend.Services.Interfaces;
+using Service.Services;
+using Shared.Interfaces;
 using Shared.Utils;
 
 namespace Shared.ApiServices
 {
-    public class AuthApiService
+    public class AuthApiService : IAuthService
     {
-        private readonly HttpClient _httpClient;
-        public AuthApiService(HttpClient? httpClient = null)
+        public AuthApiService()
         {
-            _httpClient = httpClient ?? new HttpClient();
         }
 
-        protected void SetAuthorizationHeader(HttpClient _httpClient)
+        public async Task<bool> CreateUserWithEmailAndPasswordAsync(string email, string password, string nombre)
         {
-            if (!string.IsNullOrEmpty(AuthTokenStore.Token))
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthTokenStore.Token);
-            else
-                throw new ArgumentException("Token no definido.", nameof(AuthTokenStore.Token));
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(nombre))
+            {
+                throw new ArgumentException("Email, password o nombre no pueden ser nulos o vacíos.");
+            }
+            try
+            {
+                var UrlApi = Properties.Resources.urlApi;
+                var endpointAuth = ApiEndpoints.GetEndpoint("Login");
+                var client = new HttpClient();
+                var newUser = new CreateUsuarioDto { Email = email, Password = password, Nombre = nombre };
+                var response = await client.PostAsJsonAsync($"{UrlApi}{endpointAuth}/register/", newUser);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    // Guardar el resultado en AuthTokenStore
+                    AuthTokenStore.Token = result;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear usuario" + ex.Message);
+            }
+
         }
+
+        //si no recibo el objeto IConfiguration en el constructor, creo un constructor vacio que instancie uno y lea el archivo appsettings.json
+
 
         public async Task<string?> Login(UsuarioDto? login)
         {
             if (login == null)
             {
-                throw new ArgumentException("El objeto login es nulo.");
+                throw new ArgumentException("El objeto login no llego.");
             }
-
             try
             {
                 var urlApi = Properties.Resources.urlApi;
                 var endpointAuth = ApiEndpoints.GetEndpoint("Login");
-                var response = await _httpClient.PostAsJsonAsync($"{urlApi}{endpointAuth}/login", login);
-
+                var client = new HttpClient();
+                var response = await client.PostAsJsonAsync($"{urlApi}{endpointAuth}/login/", login);
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
+                    // Guardar el resultado en AuthTokenStore
                     AuthTokenStore.Token = result;
                     return null;
                 }
                 else
                 {
-                    // Retornar el mensaje de error desde la respuesta
-                    return await response.Content.ReadAsStringAsync();
+                    //si no es exitoso, devuelvo el mensaje de error
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return errorContent;
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error en AuthService al loguearse: {ex.Message}");
+                throw new Exception("Error al loguearse->: " + ex.Message);
             }
         }
-
         public async Task<bool> ResetPassword(UsuarioDto? login)
         {
             if (login == null)
@@ -69,8 +97,6 @@ namespace Shared.ApiServices
                 var response = await client.PostAsJsonAsync($"{urlApi}{endpointAuth}/resetpassword/", login);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-
                     return true;
                 }
                 else
@@ -80,32 +106,23 @@ namespace Shared.ApiServices
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al resetear la contraseña" + ex.Message);
+                throw new Exception("Error al resetear el password->: " + ex.Message);
             }
         }
-
-        public async Task<bool> CreateUserWithEmailAndPassword(string email, string password, string nombre)
+        public async Task<bool> DeleteUser(UsuarioDto? login)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(nombre))
+            if (login == null)
             {
-                throw new ArgumentException("Email, password o nombre no pueden ser nulos o vacíos.");
+                throw new ArgumentException("El objeto login no llego.");
             }
             try
             {
-                var UrlApi = Properties.Resources.urlApi;
+                var urlApi = Properties.Resources.urlApi;
                 var endpointAuth = ApiEndpoints.GetEndpoint("Login");
                 var client = new HttpClient();
-                var newUser = new UsuarioDto
-                {
-                    Email = email,
-                    Password = password,
-                    //Nombre = nombre
-                };
-                var response = await client.PostAsJsonAsync($"{UrlApi}{endpointAuth}/register/", newUser);
+                var response = await client.PostAsJsonAsync($"{urlApi}{endpointAuth}/deleteuser/", login);
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    AuthTokenStore.Token = result;
                     return true;
                 }
                 else
@@ -115,7 +132,7 @@ namespace Shared.ApiServices
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al crear usuario" + ex.Message);
+                throw new Exception("Error al eliminar el usuario en firebase->: " + ex.Message);
             }
         }
     }

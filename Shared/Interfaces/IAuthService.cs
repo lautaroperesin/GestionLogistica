@@ -4,6 +4,8 @@ namespace GestionLogisticaBackend.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<bool> Login(UsuarioDto login);
+        Task<string?> Login(UsuarioDto login);
+        Task<bool> ResetPassword(UsuarioDto? login);
+        Task<bool> CreateUserWithEmailAndPasswordAsync(string email, string password, string nombre);
     }
 }

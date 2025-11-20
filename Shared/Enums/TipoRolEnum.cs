@@ -8,8 +8,8 @@ namespace Service.Enums
 {
     public enum TipoRolEnum
     {
-        Conductor,
-        Admin,
-        Cliente
+        Admin = 1,
+        Conductor = 2 ,
+        Cliente = 3
     }
 }

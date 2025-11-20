@@ -8,6 +8,6 @@ namespace GestionLogisticaBackend.DTOs.Usuario
         public string Nombre { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public TipoRolEnum Rol { get; set; } = TipoRolEnum.Conductor;
+        public TipoRolEnum Rol { get; set; }
     }
 }

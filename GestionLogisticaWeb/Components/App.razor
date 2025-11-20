@@ -5,7 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="GestionLogisticaWeb.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -16,10 +17,10 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <!-- Configuración de Firebase -->
     <script>
         const firebaseConfig = {
@@ -30,7 +31,7 @@
                   messagingSenderId: "155526294077",
                   appId: "1:155526294077:web:496145072a6b0096c7d854"
         };
-        firebase.initializeApp(firebaseConfig);
+         firebase.initializeApp(firebaseConfig);
         console.log(firebase);
         window.firebaseAuth = {
             getUserToken: async function () {
@@ -72,28 +73,27 @@
                     //Enviar correo de verificación
                     user.sendEmailVerification();
 
-                    return userCredential.user.uid;
+                    return { Error: "", UserUid: userCredential.user.uid};
 
 
 
                 } catch (error) {
                     console.error("Error en autenticación:", error.message);
-                    return null;
-                }
+                    return {Error: error.message, UserUid:""};
+                    }
 
             },
 
             signOut: async function () {
                 await firebase.auth().signOut();
             },
-
             recoveryPassword: async function (email) {
                 try {
                     await firebase.auth().sendPasswordResetEmail(email);
                     return true;
                 } catch (error) {
                     console.error("Error al enviar correo de recuperación:", error.message);
-                    return null;
+                    return false;
                 }
             },
 

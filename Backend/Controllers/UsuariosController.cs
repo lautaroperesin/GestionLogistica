@@ -65,5 +65,23 @@ namespace GestionLogisticaBackend.Controllers
             return CreatedAtAction(nameof(GetUserByEmail), new { email = usuarioCreado.Email }, usuarioCreado);
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult<bool>> LoginInSystem([FromBody] UsuarioDto usuarioDto)
+        {
+            try
+            {
+                var isValidUser = await _usuarioService.LoginInSystem(usuarioDto.Email, usuarioDto.Password);
+                if (isValidUser)
+                {
+                    return Ok(true);
+                }
+                return Unauthorized(new { message = "Credenciales inválidas." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al iniciar sesión. Error: {ex.Message}" });
+            }
+        }
+
     }
 }

@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Service.Interfaces;
 using Shared.Utils;
 
@@ -17,10 +18,12 @@ namespace Service.Services
         protected readonly string _endpoint;
         protected readonly JsonSerializerOptions _options;
         public static string? token;
+        private readonly IMemoryCache? _memoryCache;
 
-        public GenericApiService(HttpClient? httpClient = null)
+        public GenericApiService(HttpClient? httpClient = null, IMemoryCache? memoryCache = null)
         {
             _httpClient = httpClient ?? new HttpClient();
+            _memoryCache = memoryCache;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
             var typeName = typeof(T).Name;
@@ -37,16 +40,25 @@ namespace Service.Services
             // Usar el store centralizado para obtener el token, esto evita inconsistencias
             var currentToken = AuthTokenStore.Token ?? token;
 
+            // Si ya está configurado (por un DelegatingHandler), no hacer nada
+            if (_httpClient.DefaultRequestHeaders.Authorization is not null)
+                return;
+
+            // 1) Intentar leer desde IMemoryCache (configurado por FirebaseAuthService)
+            if (_memoryCache is not null && _memoryCache.TryGetValue("jwt", out string? cachedToken) && !string.IsNullOrWhiteSpace(cachedToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", cachedToken);
+                return;
+            }
+
+            // 2) Respaldo: variable estática (evitar uso si no es necesario)
             if (!string.IsNullOrEmpty(currentToken))
             {
-                if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                    _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {currentToken}");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", currentToken);
+                return;
             }
-            else
-            {
-                throw new Exception("Token de autenticación no proporcionado.");
-            }
+
+            throw new InvalidOperationException("El token JWT no está disponible para la autorización.");
         }
 
         public async Task<T?> AddAsync(T? entity)

@@ -2,65 +2,71 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GestionLogisticaApp.EnvioDetallePage"
-             Title="Detalle de Envío">
+             Title="Detalle de Envío"
+             BackgroundColor="White">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="12" Spacing="12">
-            <Label Text="Número de Seguimiento" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.NumeroSeguimiento}" />
+    <ScrollView BackgroundColor="White">
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Frame CornerRadius="10" BackgroundColor="#F8F9FA" BorderColor="#DEE2E6" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Número de Seguimiento" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.NumeroSeguimiento}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Estado" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.Estado}" />
+                    <Label Text="Estado" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.Estado}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Fecha de Creación" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.FechaCreacionEnvio, StringFormat='{0:dd/MM/yyyy HH:mm}'}" />
+                    <Label Text="Fecha de Creación" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.FechaCreacionEnvio, StringFormat='{0:dd/MM/yyyy}'}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Fecha de Salida" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.FechaSalida, StringFormat='{0:dd/MM/yyyy HH:mm}'}" />
+                    <Label Text="Fecha de Salida" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.FechaSalida, StringFormat='{0:dd/MM/yyyy}'}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Peso (Kg)" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.PesoKg, StringFormat='{0:F2}'}" />
+                    <Label Text="Peso (Kg)" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.PesoKg, StringFormat='{0:F2}'}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Volumen (M³)" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.VolumenM3, StringFormat='{0:F2}'}" />
+                    <Label Text="Volumen (M³)" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.VolumenM3, StringFormat='{0:F2}'}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Descripción" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.Descripcion}" />
+                    <Label Text="Descripción" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.Descripcion}" FontSize="14" TextColor="#495057" />
+                </VerticalStackLayout>
+            </Frame>
 
-            <Label Text="Costo Total" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.CostoTotal, StringFormat='C'}" />
+            <Frame CornerRadius="10" BackgroundColor="#F8F9FA" BorderColor="#DEE2E6" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Origen" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.Origen.DireccionCompleta}" FontSize="14" TextColor="#495057" />
 
-            <Label Text="Origen" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.Origen.DireccionCompleta}" />
+                    <Label Text="Destino" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.Destino.DireccionCompleta}" FontSize="14" TextColor="#495057" />
+                </VerticalStackLayout>
+            </Frame>
 
-            <Label Text="Destino" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.Destino.DireccionCompleta}" />
+            <Frame CornerRadius="10" BackgroundColor="#F8F9FA" BorderColor="#DEE2E6" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Vehículo" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.Vehiculo.Marca}" FontSize="14" TextColor="#495057" />
+                    <Label Text="{Binding Envio.Vehiculo.Modelo}" FontSize="14" TextColor="#495057" />
+                    <Label Text="{Binding Envio.Vehiculo.Patente}" FontSize="14" TextColor="#495057" />
+                    <Label Text="{Binding Envio.Vehiculo.Estado}" FontSize="14" TextColor="#495057" />
+                </VerticalStackLayout>
+            </Frame>
 
-            <Label Text="Vehículo" FontAttributes="Bold" />
-            <VerticalStackLayout>
-                <Label Text="{Binding Envio.Vehiculo.Marca}" />
-                <Label Text="{Binding Envio.Vehiculo.Modelo}" />
-                <Label Text="{Binding Envio.Vehiculo.Patente}" />
-                <Label Text="{Binding Envio.Vehiculo.Estado}" />
-            </VerticalStackLayout>
+            <Frame CornerRadius="10" BackgroundColor="#F8F9FA" BorderColor="#DEE2E6" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cliente" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.Cliente.Nombre}" FontSize="14" TextColor="#495057" />
+                    <Label Text="{Binding Envio.Cliente.Email}" FontSize="14" TextColor="#495057" />
+                    <Label Text="{Binding Envio.Cliente.Telefono}" FontSize="14" TextColor="#495057" />
+                </VerticalStackLayout>
+            </Frame>
 
-            <Label Text="Conductor" FontAttributes="Bold" />
-            <VerticalStackLayout>
-                <Label Text="{Binding Envio.Conductor.Nombre}" />
-                <Label Text="{Binding Envio.Conductor.Dni}" />
-                <Label Text="{Binding Envio.Conductor.Telefono}" />
-                <Label Text="{Binding Envio.Conductor.Email}" />
-            </VerticalStackLayout>
-
-            <Label Text="Cliente" FontAttributes="Bold" />
-            <VerticalStackLayout>
-                <Label Text="{Binding Envio.Cliente.Nombre}" />
-                <Label Text="{Binding Envio.Cliente.Email}" />
-                <Label Text="{Binding Envio.Cliente.Telefono}" />
-            </VerticalStackLayout>
-
-            <Label Text="Tipo de Carga" FontAttributes="Bold" />
-            <Label Text="{Binding Envio.TipoCarga.Nombre}" />
+            <Frame CornerRadius="10" BackgroundColor="#F8F9FA" BorderColor="#DEE2E6" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tipo de Carga" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
+                    <Label Text="{Binding Envio.TipoCarga.Nombre}" FontSize="14" TextColor="#495057" />
+                </VerticalStackLayout>
+            </Frame>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

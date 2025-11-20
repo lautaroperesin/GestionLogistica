@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Usuario;
+using Microsoft.Extensions.Caching.Memory;
 using Service.Interfaces;
 using Service.Services;
 using Shared.Interfaces;
@@ -17,7 +18,7 @@ namespace Shared.ApiServices
 {
     public class UsuarioApiService : GenericApiService<UsuarioDto>, IUsuarioService
     {
-        public UsuarioApiService(HttpClient? httpClient = null) : base(httpClient)
+        public UsuarioApiService(HttpClient? httpClient = null, IMemoryCache? memoryCache = null) : base(httpClient, memoryCache)
         {
         }
 
@@ -41,7 +42,7 @@ namespace Shared.ApiServices
         }
 
         // add usuario
-        public async Task AddAsync(CreateUsuarioDto createUsuarioDto)
+        public async Task<UsuarioDto> AddAsync(CreateUsuarioDto createUsuarioDto)
         {
             SetAuthorizationHeader();
             var response = await _httpClient.PostAsJsonAsync(_endpoint, createUsuarioDto);
@@ -50,6 +51,25 @@ namespace Shared.ApiServices
             {
                 throw new Exception($"Error al agregar el usuario: {response.StatusCode} - {content}");
             }
+
+            return JsonSerializer.Deserialize<UsuarioDto>(content, _options)!;
+        }
+
+        public async Task<bool> LoginInSystem(string email, string password)
+        {
+            var usuarioDto = new UsuarioDto
+            {
+                Email = email,
+                Password = password
+            };
+            var response = await _httpClient.PostAsJsonAsync($"{_endpoint}/login", usuarioDto);
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al iniciar sesión: {response.StatusCode}");
+            }
+            var result = JsonSerializer.Deserialize<bool>(content, _options);
+            return result;
         }
     }
 }

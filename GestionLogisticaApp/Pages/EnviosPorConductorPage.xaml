@@ -4,94 +4,98 @@
              xmlns:vm="clr-namespace:GestionLogisticaApp.ViewModels"
              xmlns:local="clr-namespace:GestionLogisticaApp"
              x:Class="GestionLogisticaApp.EnviosPorConductorPage"
-             Title="Envios por Conductor">
+             Title="Envios por Conductor"
+             BackgroundColor="White">
 
     <ContentPage.BindingContext>
         <vm:EnviosPorConductorViewModel />
     </ContentPage.BindingContext>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="12" Spacing="12">
-            <Label Text="Seleccionar conductor" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding Conductores}" ItemDisplayBinding="{Binding Nombre}" SelectedItem="{Binding SelectedConductor, Mode=TwoWay}" />
+    <ScrollView BackgroundColor="White">
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Frame CornerRadius="10" BackgroundColor="#F0F8FF" BorderColor="#B0C4DE" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Seleccionar conductor" FontAttributes="Bold" FontSize="18" TextColor="#333333" />
+                    <Picker ItemsSource="{Binding Conductores}" ItemDisplayBinding="{Binding Nombre}" SelectedItem="{Binding SelectedConductor, Mode=TwoWay}" BackgroundColor="#FFFFFF" TextColor="#333333" />
+                    <Button Text="Cargar envíos" Command="{Binding ConductorSelectedCommand}" BackgroundColor="#007BFF" TextColor="White" CornerRadius="5" />
+                </VerticalStackLayout>
+            </Frame>
 
-            <Button Text="Cargar envíos" Command="{Binding ConductorSelectedCommand}" />
-
-            <Label Text="Pendientes" FontAttributes="Bold" />
+            <Label Text="Pendientes" FontAttributes="Bold" FontSize="20" TextColor="#FFD700" />
             <CollectionView ItemsSource="{Binding EnviosPendientes}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
-                            <StackLayout>
-                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
-                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
-                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
-                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" />
-                            </StackLayout>
+                        <Frame CornerRadius="10" BackgroundColor="#FFFACD" BorderColor="#FFD700" Padding="15" Margin="0,5" HasShadow="True">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" FontSize="16" TextColor="#333333" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" BackgroundColor="#28A745" TextColor="White" CornerRadius="5" />
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Label Text="En tránsito" FontAttributes="Bold" />
+            <Label Text="En tránsito" FontAttributes="Bold" FontSize="20" TextColor="#1E90FF" />
             <CollectionView ItemsSource="{Binding EnviosEnTransito}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
-                            <StackLayout>
-                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
-                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
-                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
-                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" />
-                            </StackLayout>
+                        <Frame CornerRadius="10" BackgroundColor="#E0F6FF" BorderColor="#1E90FF" Padding="15" Margin="0,5" HasShadow="True">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" FontSize="16" TextColor="#333333" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" BackgroundColor="#28A745" TextColor="White" CornerRadius="5" />
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Label Text="Entregados" FontAttributes="Bold" />
+            <Label Text="Entregados" FontAttributes="Bold" FontSize="20" TextColor="#32CD32" />
             <CollectionView ItemsSource="{Binding EnviosEntregados}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
-                            <StackLayout>
-                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
-                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
-                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
-                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" />
-                            </StackLayout>
+                        <Frame CornerRadius="10" BackgroundColor="#F0FFF0" BorderColor="#32CD32" Padding="15" Margin="0,5" HasShadow="True">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" FontSize="16" TextColor="#333333" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" BackgroundColor="#28A745" TextColor="White" CornerRadius="5" />
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Label Text="Demorados" FontAttributes="Bold" />
+            <Label Text="Demorados" FontAttributes="Bold" FontSize="20" TextColor="#FF8C00" />
             <CollectionView ItemsSource="{Binding EnviosDemorados}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
-                            <StackLayout>
-                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
-                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
-                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
-                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" />
-                            </StackLayout>
+                        <Frame CornerRadius="10" BackgroundColor="#FFF8DC" BorderColor="#FF8C00" Padding="15" Margin="0,5" HasShadow="True">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" FontSize="16" TextColor="#333333" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" BackgroundColor="#28A745" TextColor="White" CornerRadius="5" />
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Label Text="Cancelados" FontAttributes="Bold" />
+            <Label Text="Cancelados" FontAttributes="Bold" FontSize="20" TextColor="#DC143C" />
             <CollectionView ItemsSource="{Binding EnviosCancelados}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="8" Margin="0,4" BorderColor="#DDD">
-                            <StackLayout>
-                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" />
-                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="12" />
-                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="12" />
-                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" />
-                            </StackLayout>
+                        <Frame CornerRadius="10" BackgroundColor="#FFF0F5" BorderColor="#DC143C" Padding="15" Margin="0,5" HasShadow="True">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding NumeroSeguimiento}" FontAttributes="Bold" FontSize="16" TextColor="#333333" />
+                                <Label Text="{Binding Origen.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Label Text="{Binding Destino.DireccionCompleta}" FontSize="14" TextColor="#666666" />
+                                <Button Text="Ver Detalle" Command="{Binding ViewDetalleCommand, Source={RelativeSource AncestorType={x:Type local:EnviosPorConductorPage}}}" CommandParameter="{Binding}" BackgroundColor="#28A745" TextColor="White" CornerRadius="5" />
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
