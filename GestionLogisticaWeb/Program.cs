@@ -17,6 +17,11 @@ builder.Services.AddScoped(typeof(IGenericApiService<>), typeof(GenericApiServic
 builder.Services.AddScoped<IEnvioService, EnvioApiService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioApiService>();
 builder.Services.AddScoped<IAuthService, AuthApiService>();
+builder.Services.AddScoped<IClienteService, ClienteApiService>();
+builder.Services.AddScoped<IVehiculoService, VehiculoApiService>();
+builder.Services.AddScoped<IConductorService, ConductorApiService>();
+builder.Services.AddScoped<IUbicacionService, UbicacionApiService>();
+
 builder.Services.AddSweetAlert2();
 builder.Services.AddMemoryCache();
 

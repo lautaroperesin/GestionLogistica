@@ -55,7 +55,7 @@ namespace GestionLogisticaApp.ViewModels
 
             try
             {
-                var user = await _authService.CreateUserWithEmailAndPassword(Mail, Password, Nombre);
+                var user = await _authService.CreateUserWithEmailAndPasswordAsync(Mail, Password, Nombre);
                 if (user == false)
                 {
                     await Application.Current.MainPage.DisplayAlert("Registrarse", "No se pudo crear el usuario", "OK");

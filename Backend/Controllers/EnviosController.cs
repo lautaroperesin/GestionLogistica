@@ -52,7 +52,7 @@ namespace GestionLogisticaBackend.Controllers
         // PUT: api/Envios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEnvio(int id, UpdateEnvioDto envioDto)
+        public async Task<IActionResult> PutEnvio(int id, EnvioDto envioDto)
         {
             if (id != envioDto.IdEnvio)
             {
@@ -72,7 +72,7 @@ namespace GestionLogisticaBackend.Controllers
         // POST: api/Envios
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EnvioDto>> PostEnvio(CreateEnvioDto envioDto)
+        public async Task<ActionResult<EnvioDto>> PostEnvio(EnvioDto envioDto)
         {
             if (envioDto == null)
             {

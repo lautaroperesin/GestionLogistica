@@ -50,7 +50,7 @@ namespace GestionLogisticaBackend.Extensions
         /// <summary>
         /// Mapea un DTO a una entidad.
         /// </summary>
-        public static Envio ToEntity(this CreateEnvioDto dto)
+        public static Envio ToEntity(this EnvioDto dto)
         {
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto));
@@ -64,13 +64,13 @@ namespace GestionLogisticaBackend.Extensions
                 VolumenM3 = dto.VolumenM3,
                 Descripcion = dto.Descripcion,
                 CostoTotal = dto.CostoTotal,
-                IdOrigen = dto.IdOrigen,
-                IdDestino = dto.IdDestino,
+                IdOrigen = dto.Origen.IdUbicacion,
+                IdDestino = dto.Destino.IdUbicacion,
                 Estado = EstadoEnvioEnum.Pendiente,
-                IdVehiculo = dto.IdVehiculo,
-                IdConductor = dto.IdConductor,
-                IdCliente = dto.IdCliente,
-                IdTipoCarga = dto.IdTipoCarga
+                IdVehiculo = dto.Vehiculo.IdVehiculo,
+                IdConductor = dto.Conductor.IdConductor,
+                IdCliente = dto.Cliente.IdCliente,
+                IdTipoCarga = dto.TipoCarga.IdTipoCarga
             };
         }
 
@@ -78,7 +78,7 @@ namespace GestionLogisticaBackend.Extensions
         /// Actualiza una entidad existente con los datos del DTO.
         /// Útil para PUT o PATCH.
         /// </summary>
-        public static void UpdateFromDto(this Envio envio, UpdateEnvioDto dto)
+        public static void UpdateFromDto(this Envio envio, EnvioDto dto)
         {
             if (envio == null || dto == null) return;
 
@@ -89,12 +89,12 @@ namespace GestionLogisticaBackend.Extensions
             envio.CostoTotal = dto.CostoTotal;
             envio.NumeroSeguimiento = dto.NumeroSeguimiento;
 
-            envio.IdOrigen = dto.IdOrigen;
-            envio.IdDestino = dto.IdDestino;
-            envio.IdVehiculo = dto.IdVehiculo;
-            envio.IdConductor = dto.IdConductor;
-            envio.IdCliente = dto.IdCliente;
-            envio.IdTipoCarga = dto.IdTipoCarga;
+            envio.IdOrigen = dto.Origen.IdUbicacion;
+            envio.IdDestino = dto.Destino.IdUbicacion;
+            envio.IdVehiculo = dto.Vehiculo.IdVehiculo;
+            envio.IdConductor = dto.Conductor.IdConductor;
+            envio.IdCliente = dto.Cliente.IdCliente;
+            envio.IdTipoCarga = dto.TipoCarga.IdTipoCarga;
         }
     }
 }

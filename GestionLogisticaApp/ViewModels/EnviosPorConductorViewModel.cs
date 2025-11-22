@@ -75,10 +75,10 @@ namespace GestionLogisticaApp.ViewModels
                 IsBusy = true;
                 Conductores.Clear();
 
-                var list = await _conductorService.GetAllConductoresAsync(pageNumber: 1, pageSize: 1000);
-                if (list != null)
+                var result = await _conductorService.GetConductoresAsync(new GestionLogisticaBackend.DTOs.Pagination.PaginationParams { PageNumber = 1, PageSize = 1000 });
+                if (result != null && result.Items != null)
                 {
-                    foreach (var c in list)
+                    foreach (var c in result.Items)
                         Conductores.Add(c);
                 }
             }

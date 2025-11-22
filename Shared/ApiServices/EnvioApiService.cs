@@ -67,7 +67,7 @@ namespace Shared.ApiServices
             return JsonSerializer.Deserialize<EnvioDto>(content, _options);
         }
 
-        public async Task<EnvioDto> CreateEnvioAsync(CreateEnvioDto envioDto)
+        public async Task<EnvioDto> CreateEnvioAsync(EnvioDto envioDto)
         {
             SetAuthorizationHeader();
             var response = await _httpClient.PostAsJsonAsync(_endpoint, envioDto);
@@ -79,7 +79,7 @@ namespace Shared.ApiServices
             return JsonSerializer.Deserialize<EnvioDto>(content, _options)!;
         }
 
-        public async Task<EnvioDto?> UpdateEnvioAsync(int id, UpdateEnvioDto envioDto)
+        public async Task<EnvioDto?> UpdateEnvioAsync(int id, EnvioDto envioDto)
         {
             SetAuthorizationHeader();
             var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{id}", envioDto);

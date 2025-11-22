@@ -1,0 +1,355 @@
+﻿@page "/admin/envios/crear"
+@page "/admin/envios/editar/{EnvioId:int}"
+@inject NavigationManager NavigationManager
+@inject IEnvioService EnvioService
+@inject IClienteService ClienteService
+@inject IVehiculoService VehiculoService
+@inject IConductorService ConductorService
+@inject IGenericApiService<TipoCargaDto> TipoCargaService
+@inject IUbicacionService UbicacionService
+@rendermode InteractiveServer
+
+@using GestionLogisticaBackend.DTOs.Cliente
+@using GestionLogisticaBackend.DTOs.Vehiculo
+@using GestionLogisticaBackend.DTOs.Conductor
+@using GestionLogisticaBackend.DTOs.Envio
+@using GestionLogisticaBackend.DTOs.Ubicacion
+@using GestionLogisticaBackend.Enums
+@using Service.Interfaces
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>@(EnvioId == 0 ? "Crear Nuevo Envio" : "Editar Envio")</h2>
+            <hr />
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @ErrorMessage
+                    <button type="button" class="btn-close" @onclick="() => ErrorMessage = string.Empty"></button>
+                </div>
+            }
+
+            @if (IsLoading)
+            {
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <EditForm Model="@Envio" OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="alert alert-warning" />
+
+                    <!-- Sección: Información Básica -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Información Básica</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Número de Seguimiento -->
+                            <div class="mb-3">
+                                <label for="numeroSeguimiento" class="form-label">Número de Seguimiento</label>
+                                <InputText id="numeroSeguimiento" class="form-control" @bind-Value="Envio.NumeroSeguimiento" readonly="@(EnvioId > 0)" placeholder="Número de seguimiento" />
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <InputTextArea id="descripcion" class="form-control" @bind-Value="Envio.Descripcion" rows="3" placeholder="Descripción del envío" />
+                            </div>
+
+                            <!-- Fecha de Salida -->
+                            <div class="mb-3">
+                                <label for="fechaSalida" class="form-label">Fecha de Salida</label>
+                                <InputDate id="fechaSalida" class="form-control" @bind-Value="Envio.FechaSalida" />
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <InputSelect id="estado" class="form-control" @bind-Value="Envio.Estado">
+                                    @foreach (var estado in Enum.GetValues<EstadoEnvioEnum>())
+                                    {
+                                        <option value="@estado">@estado</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <!-- Peso Kg -->
+                            <div class="mb-3">
+                                <label for="pesoKg" class="form-label">Peso (Kg) <span class="text-danger">*</span></label>
+                                <InputNumber id="pesoKg" class="form-control" @bind-Value="Envio.PesoKg" />
+                            </div>
+
+                            <!-- Volumen M3 -->
+                            <div class="mb-3">
+                                <label for="volumenM3" class="form-label">Volumen (M³) <span class="text-danger">*</span></label>
+                                <InputNumber id="volumenM3" class="form-control" @bind-Value="Envio.VolumenM3" />
+                            </div>
+
+                            <!-- Costo Total -->
+                            <div class="mb-3">
+                                <label for="costoTotal" class="form-label">Costo Total <span class="text-danger">*</span></label>
+                                <InputNumber id="costoTotal" class="form-control" @bind-Value="Envio.CostoTotal" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Origen -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Origen</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="origen" class="form-label">Dirección de Origen <span class="text-danger">*</span></label>
+                                <InputSelect id="origen" class="form-control" @bind-Value="SelectedOrigenId">
+                                    <option value="0">Seleccionar Origen</option>
+                                    @foreach (var ubicacion in Ubicaciones.Items)
+                                    {
+                                        <option value="@ubicacion.IdUbicacion">@ubicacion.DireccionCompleta</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Destino -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Destino</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="destino" class="form-label">Dirección de Destino <span class="text-danger">*</span></label>
+                                <InputSelect id="destino" class="form-control" @bind-Value="SelectedDestinoId">
+                                    <option value="0">Seleccionar Destino</option>
+                                    @foreach (var ubicacion in Ubicaciones.Items)
+                                    {
+                                        <option value="@ubicacion.IdUbicacion">@ubicacion.DireccionCompleta</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Asignaciones -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Asignaciones</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Cliente -->
+                            <div class="mb-3">
+                                <label for="cliente" class="form-label">Cliente <span class="text-danger">*</span></label>
+                                <InputSelect id="cliente" class="form-control" @bind-Value="SelectedClienteId">
+                                    <option value="0">Seleccionar Cliente</option>
+                                    @foreach (var cliente in Clientes.Items)
+                                    {
+                                        <option value="@cliente.IdCliente">@cliente.Nombre</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <!-- Vehículo -->
+                            <div class="mb-3">
+                                <label for="vehiculo" class="form-label">Vehículo <span class="text-danger">*</span></label>
+                                <InputSelect id="vehiculo" class="form-control" @bind-Value="SelectedVehiculoId">
+                                    <option value="0">Seleccionar Vehículo</option>
+                                    @foreach (var vehiculo in Vehiculos)
+                                    {
+                                        <option value="@vehiculo.IdVehiculo">@vehiculo.Marca @vehiculo.Modelo (@vehiculo.Patente)</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <!-- Conductor -->
+                            <div class="mb-3">
+                                <label for="conductor" class="form-label">Conductor <span class="text-danger">*</span></label>
+                                <InputSelect id="conductor" class="form-control" @bind-Value="SelectedConductorId">
+                                    <option value="0">Seleccionar Conductor</option>
+                                    @foreach (var conductor in Conductores.Items)
+                                    {
+                                        <option value="@conductor.IdConductor">@conductor.Nombre (@conductor.Dni)</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <!-- Tipo de Carga -->
+                            <div class="mb-3">
+                                <label for="tipoCarga" class="form-label">Tipo de Carga <span class="text-danger">*</span></label>
+                                <InputSelect id="tipoCarga" class="form-control" @bind-Value="SelectedTipoCargaId">
+                                    <option value="0">Seleccionar Tipo de Carga</option>
+                                    @foreach (var tipoCarga in TiposCarga)
+                                    {
+                                        <option value="@tipoCarga.IdTipoCarga">@tipoCarga.Nombre</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 mb-4">
+                        <button type="submit" class="btn btn-primary" disabled="@(IsSubmitting || SelectedClienteId == 0 || SelectedVehiculoId == 0 || SelectedConductorId == 0 || SelectedTipoCargaId == 0 || SelectedOrigenId == 0 || SelectedDestinoId == 0)">
+                            @if (IsSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <p>Guardando...</p>
+                            }
+                            else
+                            {
+                                @(EnvioId == 0 ? "Crear Envio" : "Guardar Cambios")
+                            }
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="@(() => NavigationManager.NavigateTo("/admin/envios"))">
+                            Cancelar
+                        </button>
+                    </div>
+                </EditForm>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int EnvioId { get; set; } = 0;
+
+    private EnvioDto Envio = new();
+    private PagedResult<ClienteDto> Clientes = new();
+	private IEnumerable<VehiculoDto> Vehiculos = new List<VehiculoDto>();
+    private PagedResult<ConductorDto> Conductores = new();
+    private List<TipoCargaDto> TiposCarga = new();
+    private PagedResult<UbicacionDto> Ubicaciones = new();
+    private int SelectedClienteId = 0;
+    private int SelectedVehiculoId = 0;
+    private int SelectedConductorId = 0;
+    private int SelectedTipoCargaId = 0;
+    private int SelectedOrigenId = 0;
+    private int SelectedDestinoId = 0;
+    private bool IsLoading = true;
+    private bool IsSubmitting = false;
+    private string ErrorMessage = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Cargar datos de referencia de forma secuencial para mejor manejo de errores
+                Clientes = await ClienteService.GetClientesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ClienteDto>();
+                Vehiculos = await VehiculoService.GetVehiculosAsync() ?? new List<VehiculoDto>();
+                Conductores = await ConductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ConductorDto>();
+                TiposCarga = await TipoCargaService.GetAllAsync(null) ?? new List<TipoCargaDto>();
+                Ubicaciones = await UbicacionService.GetUbicacionesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<UbicacionDto>();
+
+                // Si es edición, cargar el envío existente
+                if (EnvioId > 0)
+                {
+                    Envio = await EnvioService.GetEnvioByIdAsync(EnvioId) ?? new EnvioDto();
+                    SelectedClienteId = Envio.Cliente?.IdCliente ?? 0;
+                    SelectedVehiculoId = Envio.Vehiculo?.IdVehiculo ?? 0;
+                    SelectedConductorId = Envio.Conductor?.IdConductor ?? 0;
+                    SelectedTipoCargaId = Envio.TipoCarga?.IdTipoCarga ?? 0;
+                    SelectedOrigenId = Envio.Origen?.IdUbicacion ?? 0;
+                    SelectedDestinoId = Envio.Destino?.IdUbicacion ?? 0;
+                }
+                else
+                {
+                    Envio = new EnvioDto
+                    {
+                        Origen = new UbicacionDto(),
+                        Destino = new UbicacionDto(),
+                        FechaCreacionEnvio = DateTime.Now
+                    };
+                }
+
+                IsLoading = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error al cargar los datos: {ex.Message}";
+                IsLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            // Validar selecciones
+            if (SelectedClienteId == 0)
+            {
+                ErrorMessage = "Debe seleccionar un cliente";
+                return;
+            }
+
+            if (SelectedVehiculoId == 0)
+            {
+                ErrorMessage = "Debe seleccionar un vehículo";
+                return;
+            }
+
+            if (SelectedConductorId == 0)
+            {
+                ErrorMessage = "Debe seleccionar un conductor";
+                return;
+            }
+
+            if (SelectedTipoCargaId == 0)
+            {
+                ErrorMessage = "Debe seleccionar un tipo de carga";
+                return;
+            }
+
+            if (SelectedOrigenId == 0)
+            {
+                ErrorMessage = "Debe seleccionar un origen";
+                return;
+            }
+
+            if (SelectedDestinoId == 0)
+            {
+                ErrorMessage = "Debe seleccionar un destino";
+                return;
+            }
+
+            IsSubmitting = true;
+
+            // Asignar objetos desde IDs seleccionados
+            Envio.Cliente = Clientes.Items.FirstOrDefault(c => c.IdCliente == SelectedClienteId);
+            Envio.Vehiculo = Vehiculos.FirstOrDefault(v => v.IdVehiculo == SelectedVehiculoId);
+            Envio.Conductor = Conductores.Items.FirstOrDefault(c => c.IdConductor == SelectedConductorId);
+            Envio.TipoCarga = TiposCarga.FirstOrDefault(t => t.IdTipoCarga == SelectedTipoCargaId);
+            Envio.Origen = Ubicaciones.Items.FirstOrDefault(u => u.IdUbicacion == SelectedOrigenId);
+            Envio.Destino = Ubicaciones.Items.FirstOrDefault(u => u.IdUbicacion == SelectedDestinoId);
+
+            // Guardar el envío
+            if (EnvioId == 0)
+            {
+                await EnvioService.CreateEnvioAsync(Envio);
+            }
+            else
+            {
+                await EnvioService.UpdateEnvioAsync(Envio.IdEnvio, Envio);
+            }
+
+            NavigationManager.NavigateTo("/admin/envios");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error al guardar el envío: {ex.Message}";
+            IsSubmitting = false;
+        }
+    }
+}

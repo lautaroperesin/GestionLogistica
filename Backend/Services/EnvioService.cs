@@ -60,7 +60,7 @@ namespace GestionLogisticaBackend.Implementations
             return envio.ToDto();
         }
 
-        public async Task<EnvioDto> CreateEnvioAsync(CreateEnvioDto envioDto)
+        public async Task<EnvioDto> CreateEnvioAsync(EnvioDto envioDto)
         {
             var envio = envioDto.ToEntity();
 
@@ -76,7 +76,7 @@ namespace GestionLogisticaBackend.Implementations
             return envioCreado.ToDto();
         }
 
-        public async Task<EnvioDto?> UpdateEnvioAsync(int id, UpdateEnvioDto envioDto)
+        public async Task<EnvioDto?> UpdateEnvioAsync(int id, EnvioDto envioDto)
         {
             var envio = await _context.Envios.FindAsync(id);
 

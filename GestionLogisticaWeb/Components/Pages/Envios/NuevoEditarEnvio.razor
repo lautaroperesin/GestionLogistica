@@ -1,0 +1,41 @@
+﻿﻿<!-- Modal -->
+<div class="modal fade" id="NuevoEditarEnvio" tabindex="-1" aria-labelledby="Nuevo/Editar" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo/editar Envio </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!--insertamos la label y el input text para Nombre con las etiquetas de blazor-->
+                <div class="mb-3">
+                    <label for="tituloInput" class="form-label">Envio</label>
+                    <InputText id="tituloInput" class="form-control" @bind-Value="@Entity.NumeroSeguimiento" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="@(() => HandleGuardar(Entity))">Guardar los cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EnvioDto? Entity { get; set; }
+
+    [Parameter]
+    public EventCallback<EnvioDto> OnGuardar { get; set; }
+
+    private async Task HandleGuardar(EnvioDto entity)
+    {
+        if (OnGuardar.HasDelegate)
+        {
+            await OnGuardar.InvokeAsync(entity);
+        }
+    }
+
+}
