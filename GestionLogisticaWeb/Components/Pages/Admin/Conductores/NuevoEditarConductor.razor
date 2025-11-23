@@ -1,0 +1,156 @@
+@page "/admin/conductores/crear"
+@page "/admin/conductores/editar/{IdConductor:int}"
+@using GestionLogisticaBackend.DTOs.Conductor
+@inject IConductorService _conductorService
+@inject NavigationManager _navigationManager
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">@(IdConductor == 0 ? "Crear Conductor" : "Editar Conductor")</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando...</span>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@conductor" OnValidSubmit="@Guardar">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="dni" class="form-label">DNI</label>
+                <InputText id="dni" class="form-control" @bind-Value="conductor.Dni" />
+                <ValidationMessage For="@(() => conductor.Dni)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <InputText id="nombre" class="form-control" @bind-Value="conductor.Nombre" />
+                <ValidationMessage For="@(() => conductor.Nombre)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="conductor.Email" />
+                <ValidationMessage For="@(() => conductor.Email)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <InputText id="telefono" class="form-control" @bind-Value="conductor.Telefono" />
+                <ValidationMessage For="@(() => conductor.Telefono)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="claseLicencia" class="form-label">Clase de Licencia</label>
+                <InputText id="claseLicencia" class="form-control" @bind-Value="conductor.ClaseLicencia" />
+                <ValidationMessage For="@(() => conductor.ClaseLicencia)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="vencimientoLicencia" class="form-label">Vencimiento de Licencia</label>
+                <InputDate id="vencimientoLicencia" class="form-control" @bind-Value="conductor.VencimientoLicencia" />
+                <ValidationMessage For="@(() => conductor.VencimientoLicencia)" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">Guardar</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int IdConductor { get; set; }
+
+    private ConductorDto conductor = new ConductorDto();
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IdConductor > 0)
+        {
+            try
+            {
+                var result = await _conductorService.GetConductorByIdAsync(IdConductor);
+                if (result != null)
+                {
+                    conductor = result;
+                }
+                else
+                {
+                    await _sweetAlert.FireAsync("Error", "Conductor no encontrado.", SweetAlertIcon.Error);
+                    _navigationManager.NavigateTo("/admin/conductores");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Error al cargar el conductor.", SweetAlertIcon.Error);
+                _navigationManager.NavigateTo("/admin/conductores");
+                return;
+            }
+        }
+        isLoading = false;
+    }
+
+    private async Task Guardar()
+    {
+        isSaving = true;
+        try
+        {
+            if (IdConductor == 0)
+            {
+                // Crear
+                var createDto = new CreateConductorDto
+                {
+                    Dni = conductor.Dni,
+                    Nombre = conductor.Nombre,
+                    Email = conductor.Email,
+                    Telefono = conductor.Telefono,
+                    ClaseLicencia = conductor.ClaseLicencia,
+                    VencimientoLicencia = conductor.VencimientoLicencia
+                };
+                await _conductorService.CreateConductorAsync(createDto);
+                await _sweetAlert.FireAsync("Creado", "El conductor ha sido creado exitosamente.", SweetAlertIcon.Success);
+            }
+            else
+            {
+                // Actualizar
+                var updateDto = new UpdateConductorDto
+                {
+                    IdConductor = conductor.IdConductor,
+                    Dni = conductor.Dni,
+                    Nombre = conductor.Nombre,
+                    Email = conductor.Email,
+                    Telefono = conductor.Telefono,
+                    ClaseLicencia = conductor.ClaseLicencia,
+                    VencimientoLicencia = conductor.VencimientoLicencia
+                };
+                await _conductorService.UpdateConductorAsync(updateDto);
+                await _sweetAlert.FireAsync("Actualizado", "El conductor ha sido actualizado exitosamente.", SweetAlertIcon.Success);
+            }
+            _navigationManager.NavigateTo("/admin/conductores");
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Hubo un error al guardar el conductor.", SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/admin/conductores");
+    }
+}

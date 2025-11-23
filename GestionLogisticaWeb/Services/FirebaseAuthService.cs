@@ -39,7 +39,7 @@ namespace Web.Services
             if (loginResponse.UserUid != null)
             {
                 await SetUserToken();
-                OnChangeLogin?.Invoke();
+                //OnChangeLogin?.Invoke();
             }
             return loginResponse;
         }

@@ -8,6 +8,7 @@ using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Pagination;
 using Service.Services;
 using GestionLogisticaBackend.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace Shared.ApiServices
 {
@@ -17,19 +18,26 @@ namespace Shared.ApiServices
         {
         }
 
-        public Task<ConductorDto> CreateConductorAsync(CreateConductorDto conductorDto)
+        public async Task<ConductorDto> CreateConductorAsync(CreateConductorDto conductorDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PostAsJsonAsync(_endpoint, conductorDto);
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al crear conductor: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<ConductorDto>(content, _options)!;
         }
 
-        public Task<bool> DeleteConductorAsync(int id)
+        public async Task<bool> DeleteConductorAsync(int id)
         {
-            throw new NotImplementedException();
+            return await DeleteAsync(id);
         }
 
-        public Task<ConductorDto?> GetConductorByIdAsync(int id)
+        public async Task<ConductorDto?> GetConductorByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await GetByIdAsync(id);
         }
 
         public async Task<PagedResult<ConductorDto>> GetConductoresAsync(PaginationParams pagParams)
@@ -44,21 +52,32 @@ namespace Shared.ApiServices
             }
 
             // Deserializar la respuesta
-            var pagedResult = JsonSerializer.Deserialize<PagedResult<ConductorDto>>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var pagedResult = JsonSerializer.Deserialize<PagedResult<ConductorDto>>(content, _options);
             return pagedResult ?? new PagedResult<ConductorDto>();
         }
 
-        public Task<IEnumerable<ConductorDto>> GetConductoresConLicenciaVencidaAsync()
+        public async Task<IEnumerable<ConductorDto>> GetConductoresConLicenciaVencidaAsync()
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"{_endpoint}/licencias-vencidas");
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al obtener conductores con licencia vencida: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<List<ConductorDto>>(content, _options) ?? new List<ConductorDto>();
         }
 
-        public Task<bool> UpdateConductorAsync(UpdateConductorDto conductorDto)
+        public async Task<bool> UpdateConductorAsync(UpdateConductorDto conductorDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{conductorDto.IdConductor}", conductorDto);
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar conductor: {response.StatusCode} - {content}");
+            }
+            return response.IsSuccessStatusCode;
         }
     }
 }

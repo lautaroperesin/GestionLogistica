@@ -1,0 +1,170 @@
+@page "/admin/vehiculos/crear"
+@page "/admin/vehiculos/editar/{IdVehiculo:int}"
+@using GestionLogisticaBackend.DTOs.Vehiculo
+@using GestionLogisticaBackend.Enums
+@inject IVehiculoService _vehiculoService
+@inject NavigationManager _navigationManager
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">@(IdVehiculo == 0 ? "Crear Vehículo" : "Editar Vehículo")</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando...</span>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@vehiculo" OnValidSubmit="@Guardar">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="patente" class="form-label">Patente</label>
+                <InputText id="patente" class="form-control" @bind-Value="vehiculo.Patente" />
+                <ValidationMessage For="@(() => vehiculo.Patente)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <InputText id="marca" class="form-control" @bind-Value="vehiculo.Marca" />
+                <ValidationMessage For="@(() => vehiculo.Marca)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="modelo" class="form-label">Modelo</label>
+                <InputText id="modelo" class="form-control" @bind-Value="vehiculo.Modelo" />
+                <ValidationMessage For="@(() => vehiculo.Modelo)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="capacidadCarga" class="form-label">Capacidad de Carga (Kg)</label>
+                <InputNumber id="capacidadCarga" class="form-control" @bind-Value="vehiculo.CapacidadCarga" />
+                <ValidationMessage For="@(() => vehiculo.CapacidadCarga)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="estado" class="form-label">Estado</label>
+                <InputSelect id="estado" class="form-control" @bind-Value="vehiculo.Estado">
+                    @foreach (var estado in Enum.GetValues<EstadoVehiculoEnum>())
+                    {
+                        <option value="@estado">@estado</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => vehiculo.Estado)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="ultimaInspeccion" class="form-label">Última Inspección</label>
+                <InputDate id="ultimaInspeccion" class="form-control" @bind-Value="vehiculo.UltimaInspeccion" />
+                <ValidationMessage For="@(() => vehiculo.UltimaInspeccion)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="rtoVencimiento" class="form-label">Vencimiento RTO</label>
+                <InputDate id="rtoVencimiento" class="form-control" @bind-Value="vehiculo.RtoVencimiento" />
+                <ValidationMessage For="@(() => vehiculo.RtoVencimiento)" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">Guardar</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int IdVehiculo { get; set; }
+
+    private VehiculoDto vehiculo = new VehiculoDto();
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IdVehiculo > 0)
+        {
+            try
+            {
+                var result = await _vehiculoService.GetVehiculoByIdAsync(IdVehiculo);
+                if (result != null)
+                {
+                    vehiculo = result;
+                }
+                else
+                {
+                    await _sweetAlert.FireAsync("Error", "Vehículo no encontrado.", SweetAlertIcon.Error);
+                    _navigationManager.NavigateTo("/admin/vehiculos");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Error al cargar el vehículo.", SweetAlertIcon.Error);
+                _navigationManager.NavigateTo("/admin/vehiculos");
+                return;
+            }
+        }
+        isLoading = false;
+    }
+
+    private async Task Guardar()
+    {
+        isSaving = true;
+        try
+        {
+            if (IdVehiculo == 0)
+            {
+                // Crear
+                var createDto = new CreateVehiculoDto
+                {
+                    Marca = vehiculo.Marca,
+                    Modelo = vehiculo.Modelo,
+                    Patente = vehiculo.Patente,
+                    CapacidadCarga = vehiculo.CapacidadCarga,
+                    Estado = vehiculo.Estado,
+                    UltimaInspeccion = vehiculo.UltimaInspeccion,
+                    RtoVencimiento = vehiculo.RtoVencimiento
+                };
+                await _vehiculoService.CreateVehiculoAsync(createDto);
+                await _sweetAlert.FireAsync("Creado", "El vehículo ha sido creado exitosamente.", SweetAlertIcon.Success);
+            }
+            else
+            {
+                // Actualizar
+                var updateDto = new UpdateVehiculoDto
+                {
+                    IdVehiculo = vehiculo.IdVehiculo,
+                    Marca = vehiculo.Marca,
+                    Modelo = vehiculo.Modelo,
+                    Patente = vehiculo.Patente,
+                    CapacidadCarga = vehiculo.CapacidadCarga,
+                    Estado = vehiculo.Estado,
+                    UltimaInspeccion = vehiculo.UltimaInspeccion,
+                    RtoVencimiento = vehiculo.RtoVencimiento
+                };
+                await _vehiculoService.UpdateVehiculoAsync(updateDto);
+                await _sweetAlert.FireAsync("Actualizado", "El vehículo ha sido actualizado exitosamente.", SweetAlertIcon.Success);
+            }
+            _navigationManager.NavigateTo("/admin/vehiculos");
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Hubo un error al guardar el vehículo.", SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/admin/vehiculos");
+    }
+}

@@ -1,0 +1,132 @@
+@page "/admin/clientes/crear"
+@page "/admin/clientes/editar/{IdCliente:int}"
+@using GestionLogisticaBackend.DTOs.Cliente
+@inject IClienteService _clienteService
+@inject NavigationManager _navigationManager
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">@(IdCliente == 0 ? "Crear Cliente" : "Editar Cliente")</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando...</span>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@cliente" OnValidSubmit="@Guardar">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <InputText id="nombre" class="form-control" @bind-Value="cliente.Nombre" />
+                <ValidationMessage For="@(() => cliente.Nombre)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="cliente.Email" />
+                <ValidationMessage For="@(() => cliente.Email)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <InputText id="telefono" class="form-control" @bind-Value="cliente.Telefono" />
+                <ValidationMessage For="@(() => cliente.Telefono)" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">Guardar</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int IdCliente { get; set; }
+
+    private ClienteDto cliente = new ClienteDto();
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IdCliente > 0)
+        {
+            try
+            {
+                var result = await _clienteService.GetClienteByIdAsync(IdCliente);
+                if (result != null)
+                {
+                    cliente = result;
+                }
+                else
+                {
+                    await _sweetAlert.FireAsync("Error", "Cliente no encontrado.", SweetAlertIcon.Error);
+                    _navigationManager.NavigateTo("/admin/clientes");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Error al cargar el cliente.", SweetAlertIcon.Error);
+                _navigationManager.NavigateTo("/admin/clientes");
+                return;
+            }
+        }
+        isLoading = false;
+    }
+
+    private async Task Guardar()
+    {
+        isSaving = true;
+        try
+        {
+            if (IdCliente == 0)
+            {
+                // Crear
+                var createDto = new CreateClienteDto
+                {
+                    Nombre = cliente.Nombre,
+                    Email = cliente.Email,
+                    Telefono = cliente.Telefono
+                };
+                await _clienteService.CreateClienteAsync(createDto);
+                await _sweetAlert.FireAsync("Creado", "El cliente ha sido creado exitosamente.", SweetAlertIcon.Success);
+            }
+            else
+            {
+                // Actualizar
+                var updateDto = new UpdateClienteDto
+                {
+                    IdCliente = cliente.IdCliente,
+                    Nombre = cliente.Nombre,
+                    Email = cliente.Email,
+                    Telefono = cliente.Telefono
+                };
+                await _clienteService.UpdateClienteAsync(updateDto);
+                await _sweetAlert.FireAsync("Actualizado", "El cliente ha sido actualizado exitosamente.", SweetAlertIcon.Success);
+            }
+            _navigationManager.NavigateTo("/admin/clientes");
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Hubo un error al guardar el cliente.", SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/admin/clientes");
+    }
+}

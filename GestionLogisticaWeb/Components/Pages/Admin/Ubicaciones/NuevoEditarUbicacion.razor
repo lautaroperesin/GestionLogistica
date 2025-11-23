@@ -1,0 +1,236 @@
+@page "/admin/ubicaciones/crear"
+@page "/admin/ubicaciones/editar/{IdUbicacion:int}"
+@using GestionLogisticaBackend.DTOs.Ubicacion
+@inject IUbicacionService _ubicacionService
+@inject NavigationManager _navigationManager
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">@(IdUbicacion == 0 ? "Crear Ubicación" : "Editar Ubicación")</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando...</span>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@ubicacion" OnValidSubmit="@Guardar">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            @if (IdUbicacion == 0)
+            {
+                <div class="mb-3">
+                    <label for="pais" class="form-label">País</label>
+                    <InputSelect id="pais" class="form-control" @bind-Value="selectedPaisId" @bind-Value:after="OnPaisChanged">
+                        <option value="">Seleccione un país</option>
+                        @foreach (var pais in paises)
+                        {
+                            <option value="@pais.IdPais">@pais.Nombre</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label for="provincia" class="form-label">Provincia</label>
+                    <InputSelect id="provincia" class="form-control" @bind-Value="selectedProvinciaId" @bind-Value:after="OnProvinciaChanged">
+                        <option value="">Seleccione una provincia</option>
+                        @foreach (var provincia in provincias)
+                        {
+                            <option value="@provincia.IdProvincia">@provincia.Nombre</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Localidad</label>
+                    <InputSelect id="localidad" class="form-control" @bind-Value="selectedLocalidadId">
+                        <option value="">Seleccione una localidad</option>
+                        @foreach (var localidad in localidades)
+                        {
+                            <option value="@localidad.IdLocalidad">@localidad.Nombre</option>
+                        }
+                    </InputSelect>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <InputText id="direccion" class="form-control" @bind-Value="ubicacion.Direccion" />
+                <ValidationMessage For="@(() => ubicacion.Direccion)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <InputText id="descripcion" class="form-control" @bind-Value="ubicacion.Descripcion" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">Guardar</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int IdUbicacion { get; set; }
+
+    private UbicacionDto ubicacion = new UbicacionDto();
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    // For create
+    private List<PaisDto> paises = new();
+    private List<ProvinciaDto> provincias = new();
+    private List<LocalidadDto> localidades = new();
+    private int? selectedPaisId;
+    private int? selectedProvinciaId;
+    private int? selectedLocalidadId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                if (IdUbicacion == 0)
+                {
+                    // Load paises for create
+                    paises = (await _ubicacionService.GetPaisesAsync());
+                }
+                else
+                {
+                    // Load ubicacion for edit
+                    var result = await _ubicacionService.GetUbicacionByIdAsync(IdUbicacion);
+                    if (result != null)
+                    {
+                        ubicacion = result;
+                    }
+                    else
+                    {
+                        await _sweetAlert.FireAsync("Error", "Ubicación no encontrada.", SweetAlertIcon.Error);
+                        _navigationManager.NavigateTo("/admin/ubicaciones");
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Error al cargar los datos.", SweetAlertIcon.Error);
+                _navigationManager.NavigateTo("/admin/ubicaciones");
+                return;
+            }
+            finally
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void OnPaisChanged()
+    {
+        selectedProvinciaId = null;
+        selectedLocalidadId = null;
+        provincias = new();
+        localidades = new();
+        if (selectedPaisId.HasValue)
+        {
+            _ = LoadProvinciasAsync();
+        }
+        StateHasChanged();
+    }
+
+    private async Task LoadProvinciasAsync()
+    {
+        try
+        {
+            provincias = (await _ubicacionService.GetProvinciasByPaisAsync(selectedPaisId.Value)).ToList();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Error al cargar provincias.", SweetAlertIcon.Error);
+        }
+    }
+
+    private void OnProvinciaChanged()
+    {
+        selectedLocalidadId = null;
+        localidades = new();
+        if (selectedProvinciaId.HasValue)
+        {
+            _ = LoadLocalidadesAsync();
+        }
+        StateHasChanged();
+    }
+
+    private async Task LoadLocalidadesAsync()
+    {
+        try
+        {
+            localidades = (await _ubicacionService.GetLocalidadesByProvinciaAsync(selectedProvinciaId.Value)).ToList();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Error al cargar localidades.", SweetAlertIcon.Error);
+        }
+    }
+
+    private async Task Guardar()
+    {
+        isSaving = true;
+        try
+        {
+            if (IdUbicacion == 0)
+            {
+                // Crear
+                if (!selectedLocalidadId.HasValue)
+                {
+                    await _sweetAlert.FireAsync("Error", "Debe seleccionar una localidad.", SweetAlertIcon.Error);
+                    return;
+                }
+                var createDto = new CreateUbicacionDto
+                {
+                    Direccion = ubicacion.Direccion,
+                    Descripcion = ubicacion.Descripcion,
+                    IdLocalidad = selectedLocalidadId.Value
+                };
+                await _ubicacionService.CreateUbicacionAsync(createDto);
+                await _sweetAlert.FireAsync("Creada", "La ubicación ha sido creada exitosamente.", SweetAlertIcon.Success);
+            }
+            else
+            {
+                // Actualizar
+                var updateDto = new UpdateUbicacionDto
+                {
+                    IdUbicacion = ubicacion.IdUbicacion,
+                    Direccion = ubicacion.Direccion,
+                    Descripcion = ubicacion.Descripcion
+                };
+                await _ubicacionService.UpdateUbicacionAsync(updateDto);
+                await _sweetAlert.FireAsync("Actualizada", "La ubicación ha sido actualizada exitosamente.", SweetAlertIcon.Success);
+            }
+            _navigationManager.NavigateTo("/admin/ubicaciones");
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Hubo un error al guardar la ubicación.", SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/admin/ubicaciones");
+    }
+}

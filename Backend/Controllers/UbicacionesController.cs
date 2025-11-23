@@ -91,7 +91,7 @@ namespace LogisticaBackend.Controllers
         }
 
         [HttpGet("paises")]
-        public async Task<ActionResult<IEnumerable<PaisDto>>> GetPaises()
+        public async Task<ActionResult<List<PaisDto>>> GetPaises()
         {
             var paises = await _ubicacionService.GetPaisesAsync();
             return Ok(paises);

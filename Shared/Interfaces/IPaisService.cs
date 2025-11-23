@@ -4,6 +4,6 @@ namespace GestionLogisticaBackend.Services.Interfaces
 {
     public interface IPaisService
     {
-        Task<IEnumerable<PaisDto>> GetPaisesAsync();
+        Task<List<PaisDto>> GetPaisesAsync();
     }
 }

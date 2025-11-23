@@ -108,7 +108,7 @@ namespace GestionLogisticaBackend.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<PaisDto>> GetPaisesAsync()
+        public async Task<List<PaisDto>> GetPaisesAsync()
         {
             return await _context.Paises
                 .Select(p => new PaisDto

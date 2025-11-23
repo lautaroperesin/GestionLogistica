@@ -8,10 +8,11 @@ using GestionLogisticaBackend.DTOs.Ubicacion;
 using GestionLogisticaBackend.DTOs.Pagination;
 using Service.Services;
 using GestionLogisticaBackend.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace Shared.ApiServices
 {
-    public class UbicacionApiService : GenericApiService<UbicacionDto>, IUbicacionService
+    public class UbicacionApiService : GenericApiService<UbicacionDto>, IUbicacionService, IPaisService, IProvinciaService, ILocalidadService
     {
         public UbicacionApiService(HttpClient? httpClient = null) : base(httpClient)
         {
@@ -25,7 +26,7 @@ namespace Shared.ApiServices
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Error al obtener conductores: {response.StatusCode} - {content}");
+                throw new Exception($"Error al obtener ubicaciones: {response.StatusCode} - {content}");
             }
 
             // Deserializar la respuesta en PagedResult<UbicacionDto>
@@ -33,49 +34,85 @@ namespace Shared.ApiServices
             return pagedResult!;
         }
 
-        public Task<UbicacionDto> CreateUbicacionAsync(CreateUbicacionDto clienteDto)
+        public async Task<UbicacionDto> CreateUbicacionAsync(CreateUbicacionDto clienteDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PostAsJsonAsync(_endpoint, clienteDto);
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al crear ubicación: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<UbicacionDto>(content, _options)!;
         }
 
-        public Task<bool> DeleteUbicacionAsync(int id)
+        public async Task<bool> DeleteUbicacionAsync(int id)
         {
-            throw new NotImplementedException();
+            return await DeleteAsync(id);
         }
 
-        public Task<UbicacionDto?> GetUbicacionByIdAsync(int id)
+        public async Task<UbicacionDto?> GetUbicacionByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await GetByIdAsync(id);
         }
 
-        public Task<IEnumerable<UbicacionDto>> GetUbicacionsEliminadosAsync()
+        public async Task<IEnumerable<UbicacionDto>> GetUbicacionsEliminadosAsync()
         {
-            throw new NotImplementedException();
+            var result = await GetAllDeletedsAsync();
+            return result ?? new List<UbicacionDto>();
         }
 
-        public Task<bool> RestoreUbicacionAsync(int id)
+        public async Task<bool> RestoreUbicacionAsync(int id)
         {
-            throw new NotImplementedException();
+            return await RestoreAsync(id);
         }
 
-        public Task<bool> UpdateUbicacionAsync(UpdateUbicacionDto clienteDto)
+        public async Task<bool> UpdateUbicacionAsync(UpdateUbicacionDto clienteDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{clienteDto.IdUbicacion}", clienteDto);
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar ubicación: {response.StatusCode} - {content}");
+            }
+            return response.IsSuccessStatusCode;
         }
 
-        public Task<IEnumerable<LocalidadDto>> GetLocalidadesByProvinciaAsync(int provinciaId)
+        public async Task<IEnumerable<LocalidadDto>> GetLocalidadesByProvinciaAsync(int provinciaId)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"{_endpoint}/provincias/{provinciaId}/localidades");
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al obtener localidades: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<List<LocalidadDto>>(content, _options) ?? new List<LocalidadDto>();
         }
 
-        public Task<IEnumerable<ProvinciaDto>> GetProvinciasByPaisAsync(int paisId)
+        public async Task<IEnumerable<ProvinciaDto>> GetProvinciasByPaisAsync(int paisId)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"{_endpoint}/paises/{paisId}/provincias");
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al obtener provincias: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<List<ProvinciaDto>>(content, _options) ?? new List<ProvinciaDto>();
         }
 
-        public Task<IEnumerable<PaisDto>> GetPaisesAsync()
+        public async Task<List<PaisDto>> GetPaisesAsync()
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"{_endpoint}/paises");
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al obtener paises: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<List<PaisDto>>(content, _options) ?? new List<PaisDto>();
         }
     }
 }

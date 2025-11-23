@@ -1,0 +1,166 @@
+﻿@page "/admin/clientes"
+@using GestionLogisticaBackend.DTOs.Cliente
+@using GestionLogisticaBackend.DTOs.Pagination
+@inject NavigationManager _navigationManager
+@inject IClienteService _clienteService
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">Gestión de Clientes</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando clientes...</span>
+        </div>
+    }
+    else
+    {
+        <NavLink class="btn btn-primary" href="admin/clientes/crear">Nuevo cliente</NavLink>
+
+        @if (clientes != null && clientes.TotalItems > 0)
+        {
+            <!-- Tabla de clientes -->
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cliente in clientes.Items)
+                    {
+                        <tr>
+                            <td>@cliente.IdCliente</td>
+                            <td>@cliente.Nombre</td>
+                            <td>@cliente.Email</td>
+                            <td>@cliente.Telefono</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(cliente)">Modificar</button>
+                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(cliente)">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <nav aria-label="Paginación de clientes">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(clientes.PageNumber <= 1 ? "disabled" : "")">
+                        <a class="page-link" @onclick="() => CambiarPagina(clientes.PageNumber - 1)">Anterior</a>
+                    </li>
+                    @for (int i = Math.Max(1, clientes.PageNumber - 2); i <= Math.Min(clientes.TotalPages, clientes.PageNumber + 2); i++)
+                    {
+                        <li class="page-item @(i == clientes.PageNumber ? "active" : "")">
+                            <a class="page-link" @onclick="() => CambiarPagina(i)">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(clientes.PageNumber >= clientes.TotalPages ? "disabled" : "")">
+                        <a class="page-link" @onclick="() => CambiarPagina(clientes.PageNumber + 1)">Siguiente</a>
+                    </li>
+                </ul>
+                <p class="text-center mt-2">Página @clientes.PageNumber de @clientes.TotalPages (@clientes.TotalItems elementos)</p>
+            </nav>
+        }
+        else
+        {
+            <div class="alert alert-info mt-4" role="alert">
+                No hay clientes registrados.
+            </div>
+        }
+    }
+</div>
+
+@code {
+    PagedResult<ClienteDto>? clientes = new PagedResult<ClienteDto>();
+    PaginationParams paginationParams = new PaginationParams
+    {
+        PageNumber = 1,
+        PageSize = 10
+    };
+
+    bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                clientes = await _clienteService.GetClientesAsync(paginationParams);
+            }
+            catch (Exception ex)
+            {
+                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+            }
+            finally
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CambiarPagina(int nuevaPagina)
+    {
+        if (nuevaPagina < 1 || nuevaPagina > (clientes?.TotalPages ?? 1)) return;
+
+        isLoading = true;
+        paginationParams.PageNumber = nuevaPagina;
+        try
+        {
+            clientes = await _clienteService.GetClientesAsync(paginationParams);
+        }
+        catch (Exception ex)
+        {
+            // Manejar errores
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Modificar(ClienteDto cliente)
+    {
+        _navigationManager.NavigateTo($"admin/clientes/editar/{cliente.IdCliente}");
+    }
+
+    private async Task Eliminar(ClienteDto cliente)
+    {
+        SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Eliminando cliente",
+            Text = $"¿Está seguro que desea borrar el cliente {cliente.Nombre}?",
+            Icon = SweetAlertIcon.Warning,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Sí, quiero borrarlo!",
+            CancelButtonText = "No, espera"
+        });
+        if (respuesta.IsConfirmed)
+        {
+            try
+            {
+                isLoading = true;
+                await _clienteService.DeleteClienteAsync(cliente.IdCliente);
+                clientes = await _clienteService.GetClientesAsync(paginationParams);
+                await _sweetAlert.FireAsync("Eliminado", "El cliente ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Hubo un error al eliminar el cliente.", SweetAlertIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
+}

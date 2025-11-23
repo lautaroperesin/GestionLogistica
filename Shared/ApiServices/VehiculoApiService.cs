@@ -8,6 +8,7 @@ using GestionLogisticaBackend.DTOs.Vehiculo;
 using GestionLogisticaBackend.DTOs.Pagination;
 using Service.Services;
 using GestionLogisticaBackend.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace Shared.ApiServices
 {
@@ -24,7 +25,7 @@ namespace Shared.ApiServices
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Error al obtener conductores: {response.StatusCode} - {content}");
+                throw new Exception($"Error al obtener vehículos: {response.StatusCode} - {content}");
             }
 
             var vehiculos = JsonSerializer.Deserialize<IEnumerable<VehiculoDto>>(content, new JsonSerializerOptions
@@ -35,19 +36,40 @@ namespace Shared.ApiServices
             return vehiculos ?? new List<VehiculoDto>();
         }
 
-        public Task<VehiculoDto> CreateVehiculoAsync(CreateVehiculoDto clienteDto)
+        public async Task<VehiculoDto> CreateVehiculoAsync(CreateVehiculoDto vehiculoDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PostAsJsonAsync(_endpoint, vehiculoDto);
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al crear vehículo: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<VehiculoDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
-        public Task<bool> DeleteVehiculoAsync(int id)
+        public async Task<bool> DeleteVehiculoAsync(int id)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.DeleteAsync($"{_endpoint}/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al eliminar vehículo: {response.StatusCode} - {content}");
+            }
+            return true;
         }
 
-        public Task<VehiculoDto?> GetVehiculoByIdAsync(int id)
+        public async Task<VehiculoDto?> GetVehiculoByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"{_endpoint}/{id}");
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al obtener vehículo: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<VehiculoDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public Task<IEnumerable<VehiculoDto>> GetVehiculosEliminadosAsync()
@@ -60,9 +82,16 @@ namespace Shared.ApiServices
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateVehiculoAsync(UpdateVehiculoDto clienteDto)
+        public async Task<bool> UpdateVehiculoAsync(UpdateVehiculoDto vehiculoDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{vehiculoDto.IdVehiculo}", vehiculoDto);
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar vehículo: {response.StatusCode} - {content}");
+            }
+            return true;
         }
     }
 }

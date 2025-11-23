@@ -8,6 +8,7 @@ using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Pagination;
 using Service.Services;
 using GestionLogisticaBackend.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace Shared.ApiServices
 {
@@ -25,7 +26,7 @@ namespace Shared.ApiServices
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Error al obtener conductores: {response.StatusCode} - {content}");
+                throw new Exception($"Error al obtener clientes: {response.StatusCode} - {content}");
             }
 
             // Deserializar la respuesta en PagedResult<ClienteDto>
@@ -33,34 +34,49 @@ namespace Shared.ApiServices
             return pagedResult!;
         }
 
-        public Task<ClienteDto> CreateClienteAsync(CreateClienteDto clienteDto)
+        public async Task<ClienteDto?> GetClienteByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await GetByIdAsync(id);
         }
 
-        public Task<bool> DeleteClienteAsync(int id)
+        public async Task<ClienteDto> CreateClienteAsync(CreateClienteDto clienteDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PostAsJsonAsync(_endpoint, clienteDto);
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error al crear cliente: {response.StatusCode} - {content}");
+            }
+            return JsonSerializer.Deserialize<ClienteDto>(content, _options)!;
         }
 
-        public Task<ClienteDto?> GetClienteByIdAsync(int id)
+        public async Task<bool> UpdateClienteAsync(UpdateClienteDto clienteDto)
         {
-            throw new NotImplementedException();
+            SetAuthorizationHeader();
+            var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{clienteDto.IdCliente}", clienteDto);
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar cliente: {response.StatusCode} - {content}");
+            }
+            return response.IsSuccessStatusCode;
         }
 
-        public Task<IEnumerable<ClienteDto>> GetClientesEliminadosAsync()
+        public async Task<bool> DeleteClienteAsync(int id)
         {
-            throw new NotImplementedException();
+            return await DeleteAsync(id);
         }
 
-        public Task<bool> RestoreClienteAsync(int id)
+        public async Task<bool> RestoreClienteAsync(int id)
         {
-            throw new NotImplementedException();
+            return await RestoreAsync(id);
         }
 
-        public Task<bool> UpdateClienteAsync(UpdateClienteDto clienteDto)
+        public async Task<IEnumerable<ClienteDto>> GetClientesEliminadosAsync()
         {
-            throw new NotImplementedException();
+            var result = await GetAllDeletedsAsync();
+            return result ?? new List<ClienteDto>();
         }
     }
 }

@@ -1,0 +1,325 @@
+﻿@page "/admin/envios"
+@using GestionLogisticaBackend.DTOs.Cliente
+@using GestionLogisticaBackend.DTOs.Conductor
+@using GestionLogisticaBackend.DTOs.Vehiculo
+@using GestionLogisticaBackend.DTOs.Envio
+@using GestionLogisticaBackend.DTOs.Filters
+@using GestionLogisticaBackend.DTOs.Pagination
+@using GestionLogisticaBackend.Enums
+@inject NavigationManager _navigationManager
+@inject IEnvioService _envioService
+@inject SweetAlertService _sweetAlert
+@inject IClienteService _clienteService
+@inject IVehiculoService _vehiculoService
+@inject IConductorService _conductorService
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">Gestión de Envios</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando envios...</span>
+        </div>
+    }
+    else
+    {
+        <NavLink class="btn btn-primary" href="admin/envios/crear">Nuevo envio</NavLink>
+
+        <!-- Filtros -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Filtros</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="numeroSeguimiento" class="form-label">Número de Seguimiento</label>
+                        <InputText id="numeroSeguimiento" class="form-control" @bind-Value="envioFilter.NumeroSeguimiento" placeholder="Buscar por número" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="cliente" class="form-label">Cliente</label>
+                        <InputSelect id="cliente" class="form-control" @bind-Value="envioFilter.IdCliente">
+                            <option value="">Todos los clientes</option>
+                            @foreach (var cliente in clientes)
+                            {
+                                <option value="@cliente.IdCliente">@cliente.Nombre</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="conductor" class="form-label">Conductor</label>
+                        <InputSelect id="conductor" class="form-control" @bind-Value="envioFilter.IdConductor">
+                            <option value="">Todos los conductores</option>
+                            @foreach (var conductor in conductores)
+                            {
+                                <option value="@conductor.IdConductor">@conductor.Nombre</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="vehiculo" class="form-label">Vehículo</label>
+                        <InputSelect id="vehiculo" class="form-control" @bind-Value="envioFilter.IdVehiculo">
+                            <option value="">Todos los vehículos</option>
+                            @foreach (var vehiculo in vehiculos)
+                            {
+                                <option value="@vehiculo.IdVehiculo">@vehiculo.Marca @vehiculo.Modelo (@vehiculo.Patente)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <InputSelect id="estado" class="form-control" @bind-Value="envioFilter.EstadoEnvio">
+                            <option value="">Todos los estados</option>
+                            @foreach (var estado in Enum.GetValues<EstadoEnvioEnum>())
+                            {
+                                <option value="@estado">@estado</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaDesde" class="form-label">Fecha Salida Desde</label>
+                        <InputDate id="fechaDesde" class="form-control" @bind-Value="envioFilter.FechaSalidaDesde" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaHasta" class="form-label">Fecha Salida Hasta</label>
+                        <InputDate id="fechaHasta" class="form-control" @bind-Value="envioFilter.FechaSalidaHasta" />
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-secondary" @onclick="AplicarFiltros">Aplicar Filtros</button>
+                    <button class="btn btn-outline-secondary" @onclick="LimpiarFiltros">Limpiar Filtros</button>
+                </div>
+            </div>
+        </div>
+
+        @if (envios != null && envios.TotalItems > 0)
+        {
+            // Tabla de envios
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Número de Seguimiento</th>
+                        <th>Fecha de Salida</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var envio in envios.Items)
+                    {
+                        <tr>
+                            <td>@envio.NumeroSeguimiento</td>
+                            <td>@envio.FechaSalida?.ToString("dd/MM/yyyy")</td>
+                            <td>@envio.Origen.DireccionCompleta</td>
+                            <td>@envio.Destino.DireccionCompleta</td>
+                            <td>@envio.Estado</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(envio)">Modificar</button>
+                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(envio)">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <nav aria-label="Paginación de envíos">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(envios.PageNumber <= 1 ? "disabled" : "")">
+                        <a class="page-link" @onclick="() => CambiarPagina(envios.PageNumber - 1)">Anterior</a>
+                    </li>
+                    @for (int i = Math.Max(1, envios.PageNumber - 2); i <= Math.Min(envios.TotalPages, envios.PageNumber + 2); i++)
+                    {
+                        <li class="page-item @(i == envios.PageNumber ? "active" : "")">
+                            <a class="page-link" @onclick="() => CambiarPagina(i)">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(envios.PageNumber >= envios.TotalPages ? "disabled" : "")">
+                        <a class="page-link" @onclick="() => CambiarPagina(envios.PageNumber + 1)">Siguiente</a>
+                    </li>
+                </ul>
+                <p class="text-center mt-2">Página @envios.PageNumber de @envios.TotalPages (@envios.TotalItems elementos)</p>
+            </nav>
+        }
+        else
+        {
+            <div class="alert alert-info mt-4" role="alert">
+                No hay envios registrados.
+            </div>
+        }
+    }
+</div>
+
+@code {
+    PagedResult<EnvioDto>? envios = new PagedResult<EnvioDto>();
+    EnvioDto envioCurrent = new EnvioDto();
+    EnvioFilterDto envioFilter = new EnvioFilterDto
+    {
+        PageNumber = 1,
+        PageSize = 10
+    };
+
+    // Listas para filtros
+    List<ClienteDto> clientes = new();
+    List<VehiculoDto> vehiculos = new();
+    List<ConductorDto> conductores = new();
+
+    bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Cargar listas para filtros
+                var clientesTask = _clienteService.GetClientesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
+                var conductoresTask = _conductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
+                var vehiculosTask = _vehiculoService.GetVehiculosAsync();
+
+                await Task.WhenAll(clientesTask, conductoresTask, vehiculosTask);
+
+                clientes = (await clientesTask)?.Items.ToList() ?? new List<ClienteDto>();
+                conductores = (await conductoresTask)?.Items.ToList() ?? new List<ConductorDto>();
+                vehiculos = (await vehiculosTask)?.ToList() ?? new List<VehiculoDto>();
+
+                // Cargar envíos
+                envios = await _envioService.GetEnviosAsync(envioFilter);
+            }
+            catch (Exception ex)
+            {
+                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+            }
+            finally
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AplicarFiltros()
+    {
+        isLoading = true;
+        envioFilter.PageNumber = 1; // Reset to first page
+        try
+        {
+            envios = await _envioService.GetEnviosAsync(envioFilter);
+        }
+        catch (Exception ex)
+        {
+            // Manejar errores
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LimpiarFiltros()
+    {
+        envioFilter = new EnvioFilterDto
+        {
+            PageNumber = 1,
+            PageSize = 10
+        };
+        await AplicarFiltros();
+    }
+
+    private async Task CambiarPagina(int nuevaPagina)
+    {
+        if (nuevaPagina < 1 || nuevaPagina > (envios?.TotalPages ?? 1)) return;
+
+        isLoading = true;
+        envioFilter.PageNumber = nuevaPagina;
+        try
+        {
+            envios = await _envioService.GetEnviosAsync(envioFilter);
+        }
+        catch (Exception ex)
+        {
+            // Manejar errores
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Modificar(EnvioDto entity)
+    {
+        _navigationManager.NavigateTo($"admin/envios/editar/{entity.IdEnvio}");
+    }
+
+    private void Nuevo()
+    {
+        envioCurrent = new();
+    }
+
+    private async Task Eliminar(EnvioDto entity)
+    {
+        SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Eliminando envio",
+            Text = $"¿Está seguro que desea borrar el envio {entity.NumeroSeguimiento}",
+            Icon = SweetAlertIcon.Warning,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Si, quiero borrarlo!",
+            CancelButtonText = "No, espera"
+        });
+        if (respuesta.IsConfirmed)
+        {
+            try
+            {
+                isLoading = true;
+                await _envioService.DeleteEnvioAsync(entity.IdEnvio);
+                envios = await _envioService.GetEnviosAsync(envioFilter);
+                await _sweetAlert.FireAsync("Eliminado", "El envio ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Hubo un error al eliminar el envio.", SweetAlertIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    // private async Task Guardar(EnvioDto envioToSave)
+    // {
+    //     try
+    //     {
+    //         isLoading = true;
+    //         if (envioToSave.IdEnvio == 0)
+    //         {
+    //             // Nuevo autor
+    //             await _envioService.CreateEnvioAsync(envioToSave);
+    //             await _sweetAlert.FireAsync("Creado", "El envio ha sido creado exitosamente.", SweetAlertIcon.Success);
+    //         }
+    //         else
+    //         {
+    //             // Actualizar autor existente
+    //             await _envioService.UpdateEnvioAsync(envioToSave.IdEnvio, envioToSave);
+    //             await _sweetAlert.FireAsync("Actualizado", "El envio ha sido actualizado exitosamente.", SweetAlertIcon.Success);
+    //         }
+    //         envios = await _envioService.GetEnviosAsync(envioFilter);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         await _sweetAlert.FireAsync("Error", "Hubo un error al guardar el envio.", SweetAlertIcon.Error);
+    //     }
+    //     finally
+    //     {
+    //         isLoading = false;
+    //         StateHasChanged();
+    //     }
+    // }
+}

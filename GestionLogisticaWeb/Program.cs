@@ -21,6 +21,9 @@ builder.Services.AddScoped<IClienteService, ClienteApiService>();
 builder.Services.AddScoped<IVehiculoService, VehiculoApiService>();
 builder.Services.AddScoped<IConductorService, ConductorApiService>();
 builder.Services.AddScoped<IUbicacionService, UbicacionApiService>();
+builder.Services.AddScoped<IPaisService, UbicacionApiService>();
+builder.Services.AddScoped<IProvinciaService, UbicacionApiService>();
+builder.Services.AddScoped<ILocalidadService, UbicacionApiService>();
 
 builder.Services.AddSweetAlert2();
 builder.Services.AddMemoryCache();
