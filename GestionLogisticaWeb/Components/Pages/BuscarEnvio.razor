@@ -1,79 +1,101 @@
-﻿@page "/buscar-envio"
+﻿@page "/"
 @inject NavigationManager Navigation
 @inject IEnvioService _envioService
 @rendermode InteractiveServer
 
-<div class="container mt-5">
-    <h1 class="mb-4">Buscar Envío</h1>
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <input type="text" class="form-control" @bind="NumeroSeguimiento" placeholder="Ingrese el número de seguimiento" />
-        </div>
-        <div class="col-md-4">
-            <button class="btn btn-primary w-100" @onclick="Buscar" disabled="@(string.IsNullOrWhiteSpace(NumeroSeguimiento) || IsLoading)">
-                @if (IsLoading)
-                {
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    @("Buscando...")
-                }
-                else
-                {
-                    @("Buscar")
-                }
-            </button>
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Consulta tu Envío</h1>
+                <p class="lead">Ingresa el número de seguimiento para obtener información actualizada sobre tu paquete.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-center mb-4">Buscar Envío</h5>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-lg" @bind="NumeroSeguimiento" placeholder="Número de seguimiento" />
+                            <button class="btn btn-success btn-lg" @onclick="Buscar" disabled="@(string.IsNullOrWhiteSpace(NumeroSeguimiento) || IsLoading)">
+                                @if (IsLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="ms-2">Buscando...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-search"></i>
+                                    <span class="ms-2">Buscar</span>
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    @if (IsLoading)
-    {
+</div>
+
+@if (IsLoading)
+{
+    <div class="container mt-5">
         <div class="d-flex justify-content-center">
-            <div class="spinner-border text-primary" role="status">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
                 <span class="visually-hidden">Cargando...</span>
             </div>
         </div>
-    }
-    else if (Envio != null)
-    {
-        if (Envio.Items.Any())
+    </div>
+}
+else if (Envio != null)
+{
+    <div class="container mt-5">
+        @if (Envio.Items.Any())
         {
-            <div class="card">
-                <div class="card-header">
-                    <h5>Resultado de la Búsqueda</h5>
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-check-circle-fill"></i> Resultado de la Búsqueda</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Número Seguimiento</th>
-                                <th>Estado</th>
-                                <th>Origen</th>
-                                <th>Destino</th>
-                                <th>Cliente</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var envio in Envio.Items)
-                            {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
                                 <tr>
-                                    <td>@envio.NumeroSeguimiento</td>
-                                    <td>@envio.Estado</td>
-                                    <td>@envio.Origen?.DireccionCompleta</td>
-                                    <td>@envio.Destino?.DireccionCompleta</td>
-                                    <td>@envio.Cliente?.Nombre</td>
+                                    <th><i class="bi bi-hash"></i> Número Seguimiento</th>
+                                    <th><i class="bi bi-info-circle"></i> Estado</th>
+                                    <th><i class="bi bi-geo-alt"></i> Origen</th>
+                                    <th><i class="bi bi-geo-alt-fill"></i> Destino</th>
+                                    <th><i class="bi bi-person"></i> Cliente</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var envio in Envio.Items)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@envio.NumeroSeguimiento</td>
+                                        <td>
+                                            <span class="badge bg-@(GetEstadoBadgeClass(envio.Estado))">@envio.Estado</span>
+                                        </td>
+                                        <td>@envio.Origen?.DireccionCompleta</td>
+                                        <td>@envio.Destino?.DireccionCompleta</td>
+                                        <td>@envio.Cliente?.Nombre</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         }
         else
         {
-            <div class="alert alert-warning" role="alert">
-                No se encontró ningún envío con el número de seguimiento proporcionado.
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>No encontrado:</strong> No se encontró ningún envío con el número de seguimiento proporcionado.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
-    }
-</div>
+    </div>
+}
 
 @code {
     private PagedResult<EnvioDto>? Envio { get; set; }
@@ -91,5 +113,18 @@
 
         IsLoading = false;
         StateHasChanged();
+    }
+
+    private string GetEstadoBadgeClass(EstadoEnvioEnum estado)
+    {
+        return estado switch
+        {
+            EstadoEnvioEnum.Pendiente => "secondary",
+            EstadoEnvioEnum.EnTransito => "primary",
+            EstadoEnvioEnum.Entregado => "success",
+            EstadoEnvioEnum.Demorado => "warning",
+            EstadoEnvioEnum.Cancelado => "danger",
+            _ => "light"
+        };
     }
 }
