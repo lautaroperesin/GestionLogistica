@@ -22,6 +22,10 @@ namespace Shared.ApiServices
         {
             SetAuthorizationHeader();
             var url = $"{_endpoint}?PageNumber={pagParams.PageNumber}&PageSize={pagParams.PageSize}";
+            if (!string.IsNullOrEmpty(pagParams.SearchTerm))
+            {
+                url += $"&searchTerm={Uri.EscapeDataString(pagParams.SearchTerm)}";
+            }
             var response = await _httpClient.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)

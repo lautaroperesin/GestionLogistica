@@ -28,8 +28,9 @@ namespace LogisticaBackend.Controllers
 
         // GET: api/Conductores
         [HttpGet]
-        public async Task<ActionResult<PagedResult<ConductorDto>>> GetConductores([FromQuery] PaginationParams pagParams)
+        public async Task<ActionResult<PagedResult<ConductorDto>>> GetConductores([FromQuery] PaginationParams pagParams, [FromQuery] string? searchTerm = null)
         {
+            pagParams.SearchTerm = searchTerm;
             var conductores = await _conductorService.GetConductoresAsync(pagParams);
 
             return Ok(conductores);

@@ -19,6 +19,11 @@
     {
         <NavLink class="btn btn-primary" href="admin/conductores/crear">Nuevo conductor</NavLink>
 
+        <div class="d-flex mb-3">
+            <input type="text" class="form-control me-2" placeholder="Buscar por nombre" @bind="searchTerm" />
+            <button class="btn btn-secondary" @onclick="Buscar">Buscar</button>
+        </div>
+
         @if (conductores != null && conductores.TotalItems > 0)
         {
             <!-- Tabla de conductores -->
@@ -92,24 +97,30 @@
     };
 
     bool isLoading = true;
+    string searchTerm = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                conductores = await _conductorService.GetConductoresAsync(paginationParams);
-            }
-            catch (Exception ex)
-            {
-                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
-            }
-            finally
-            {
-                isLoading = false;
-                StateHasChanged();
-            }
+            await LoadConductores();
+        }
+    }
+
+    private async Task LoadConductores()
+    {
+        try
+        {
+            conductores = await _conductorService.GetConductoresAsync(paginationParams);
+        }
+        catch (Exception ex)
+        {
+            // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -119,19 +130,7 @@
 
         isLoading = true;
         paginationParams.PageNumber = nuevaPagina;
-        try
-        {
-            conductores = await _conductorService.GetConductoresAsync(paginationParams);
-        }
-        catch (Exception ex)
-        {
-            // Manejar errores
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
+        await LoadConductores();
     }
 
     private void Modificar(ConductorDto conductor)
@@ -156,7 +155,7 @@
             {
                 isLoading = true;
                 await _conductorService.DeleteConductorAsync(conductor.IdConductor);
-                conductores = await _conductorService.GetConductoresAsync(paginationParams);
+                await LoadConductores();
                 await _sweetAlert.FireAsync("Eliminado", "El conductor ha sido eliminado exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)
@@ -168,5 +167,13 @@
                 isLoading = false;
             }
         }
+    }
+
+    private async Task Buscar()
+    {
+        paginationParams.PageNumber = 1;
+        paginationParams.SearchTerm = searchTerm;
+        isLoading = true;
+        await LoadConductores();
     }
 }

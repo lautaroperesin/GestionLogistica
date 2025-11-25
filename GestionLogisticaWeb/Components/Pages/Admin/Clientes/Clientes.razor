@@ -19,6 +19,11 @@
     {
         <NavLink class="btn btn-primary" href="admin/clientes/crear">Nuevo cliente</NavLink>
 
+        <div class="d-flex m-3">
+            <input type="text" class="form-control me-2" placeholder="Buscar por nombre" @bind="searchTerm" />
+            <button class="btn btn-secondary" @onclick="Buscar">Buscar</button>
+        </div>
+
         @if (clientes != null && clientes.TotalItems > 0)
         {
             <!-- Tabla de clientes -->
@@ -86,24 +91,30 @@
     };
 
     bool isLoading = true;
+    string searchTerm = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                clientes = await _clienteService.GetClientesAsync(paginationParams);
-            }
-            catch (Exception ex)
-            {
-                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
-            }
-            finally
-            {
-                isLoading = false;
-                StateHasChanged();
-            }
+            await LoadClientes();
+        }
+    }
+
+    private async Task LoadClientes()
+    {
+        try
+        {
+            clientes = await _clienteService.GetClientesAsync(paginationParams);
+        }
+        catch (Exception ex)
+        {
+            // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -113,19 +124,15 @@
 
         isLoading = true;
         paginationParams.PageNumber = nuevaPagina;
-        try
-        {
-            clientes = await _clienteService.GetClientesAsync(paginationParams);
-        }
-        catch (Exception ex)
-        {
-            // Manejar errores
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
+        await LoadClientes();
+    }
+
+    private async Task Buscar()
+    {
+        paginationParams.PageNumber = 1;
+        paginationParams.SearchTerm = searchTerm;
+        isLoading = true;
+        await LoadClientes();
     }
 
     private void Modificar(ClienteDto cliente)
@@ -150,7 +157,7 @@
             {
                 isLoading = true;
                 await _clienteService.DeleteClienteAsync(cliente.IdCliente);
-                clientes = await _clienteService.GetClientesAsync(paginationParams);
+                await LoadClientes();
                 await _sweetAlert.FireAsync("Eliminado", "El cliente ha sido eliminado exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)

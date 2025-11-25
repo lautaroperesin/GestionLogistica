@@ -15,7 +15,7 @@
             <!-- Header con logo y título -->
             <Frame BackgroundColor="#2196F3" CornerRadius="15" Padding="20" HasShadow="True">
                 <StackLayout Orientation="Vertical" HorizontalOptions="Center">
-                    <Label Text="📚" FontSize="60" HorizontalOptions="Center" TextColor="White"/>
+                    <Label Text="🛻" FontSize="60" HorizontalOptions="Center" TextColor="White"/>
                     <Label Text="{Binding BienvenidaMessage}" FontSize="16" TextColor="White" HorizontalOptions="Center"/>
                     <Label Text="{Binding TituloApp}" FontSize="28" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <Label Text="{Binding Descripcion}" FontSize="14" TextColor="White" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>

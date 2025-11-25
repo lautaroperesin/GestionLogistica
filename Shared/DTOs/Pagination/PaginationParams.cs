@@ -12,5 +12,7 @@
             get => _pageSize;
             set => _pageSize = (value <= 0) ? 10 : (value > MaxPageSize ? MaxPageSize : value);
         }
+
+        public string? SearchTerm { get; set; }
     }
 }

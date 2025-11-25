@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,7 +68,7 @@ namespace GestionLogisticaApp.ViewModels
                     {
                         Nombre = Nombre,
                         Email = Mail,
-                        Password = Password,
+                        Password = GetHashSha256(Password),
                         Rol = TipoRolEnum.Conductor
                     };
                     await _usuarioService.AddAsync(newUser);
@@ -89,6 +90,21 @@ namespace GestionLogisticaApp.ViewModels
         private async Task OnVolver()
         {
             await Shell.Current.GoToAsync("//LoginPage");
+        }
+
+        public string GetHashSha256(string textoAEncriptar)
+        {
+            // Create a SHA256   
+            using SHA256 sha256Hash = SHA256.Create();
+            // ComputeHash - returns byte array  
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(textoAEncriptar));
+            // Convert byte array to a string   
+            StringBuilder hashObtenido = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                hashObtenido.Append(bytes[i].ToString("x2"));
+            }
+            return hashObtenido.ToString();
         }
     }
 }

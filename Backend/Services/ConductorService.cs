@@ -21,7 +21,14 @@ namespace GestionLogisticaBackend.Services
 
         public async Task<PagedResult<ConductorDto>> GetConductoresAsync(PaginationParams pagParams)
         {
-            var query = _context.Conductores.OrderBy(c => c.Nombre);
+            var query = _context.Conductores.AsQueryable();
+
+            if (!string.IsNullOrEmpty(pagParams.SearchTerm))
+            {
+                query = query.Where(c => c.Nombre.Contains(pagParams.SearchTerm));
+            }
+
+            query = query.OrderBy(c => c.Nombre);
 
             var totalItems = await query.CountAsync();
 
