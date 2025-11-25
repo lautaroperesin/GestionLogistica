@@ -55,14 +55,6 @@ namespace GestionLogisticaApp.ViewModels
         {
             AccesosRapidos.Add(new AccesoRapidoItem
             {
-                Titulo = "Buscar Envios",
-                Descripcion = "Encuentra envios por número de seguimiento",
-                Ruta = "//EnviosPage",
-                Color = "#2196F3"
-            });
-
-            AccesosRapidos.Add(new AccesoRapidoItem
-            {
                 Titulo = "Mis Envios",
                 Descripcion = "Ver envios asignados a un conductor",
                 Ruta = "//EnviosPorConductorPage",

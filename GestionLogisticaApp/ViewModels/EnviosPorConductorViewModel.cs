@@ -12,6 +12,7 @@ using Service.Services;
 using Microsoft.Maui.Controls;
 using System.Collections.Generic;
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace GestionLogisticaApp.ViewModels
 {
@@ -47,7 +48,7 @@ namespace GestionLogisticaApp.ViewModels
         public IRelayCommand LoadConductoresCommand { get; }
         public IRelayCommand ConductorSelectedCommand { get; }
         public IRelayCommand<EnvioDto> ViewDetalleCommand { get; }
-        public IRelayCommand TestCommand { get; }
+        public IRelayCommand GoBackCommand { get; }
 
         public EnviosPorConductorViewModel()
         {
@@ -58,7 +59,8 @@ namespace GestionLogisticaApp.ViewModels
             LoadConductoresCommand = new RelayCommand(async () => await LoadConductoresAsync());
             ConductorSelectedCommand = new RelayCommand(async () => await LoadEnviosForSelectedConductorAsync());
             ViewDetalleCommand = new RelayCommand<EnvioDto>(ViewDetalle);
-            TestCommand = new RelayCommand(() => Debug.Print("Test command executed"));
+            GoBackCommand = new RelayCommand(async () => await Shell.Current.GoToAsync(".."));
+            WeakReferenceMessenger.Default.Register<EnvioUpdatedMessage>(this, async (r, m) => await LoadEnviosForSelectedConductorAsync());
             InitializeAsync();
         }
 

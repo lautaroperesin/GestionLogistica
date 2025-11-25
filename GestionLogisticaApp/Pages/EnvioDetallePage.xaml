@@ -13,7 +13,9 @@
                     <Label Text="{Binding Envio.NumeroSeguimiento}" FontSize="14" TextColor="#495057" />
 
                     <Label Text="Estado" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
-                    <Label Text="{Binding Envio.Estado}" FontSize="14" TextColor="#495057" />
+                    <Picker ItemsSource="{Binding EstadosPosibles}" SelectedItem="{Binding SelectedEstado}" FontSize="14" TextColor="#495057" />
+                    <Button Text="Actualizar Estado" Command="{Binding UpdateEstadoCommand}" BackgroundColor="#007BFF" TextColor="White" />
+                    <Label Text="{Binding Message}" TextColor="Green" FontSize="14" />
 
                     <Label Text="Fecha de Creación" FontAttributes="Bold" FontSize="16" TextColor="#007BFF" />
                     <Label Text="{Binding Envio.FechaCreacionEnvio, StringFormat='{0:dd/MM/yyyy}'}" FontSize="14" TextColor="#495057" />

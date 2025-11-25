@@ -7,6 +7,10 @@
              Title="Envios por Conductor"
              BackgroundColor="White">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="←" Command="{Binding GoBackCommand}" />
+    </ContentPage.ToolbarItems>
+
     <ContentPage.BindingContext>
         <vm:EnviosPorConductorViewModel />
     </ContentPage.BindingContext>

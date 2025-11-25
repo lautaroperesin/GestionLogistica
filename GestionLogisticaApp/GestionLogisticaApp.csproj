@@ -76,9 +76,6 @@
 	  <Compile Update="Pages\EnviosPorConductorPage.xaml.cs">
 	    <DependentUpon>EnviosPorConductorPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\EnviosPage.xaml.cs">
-	    <DependentUpon>EnviosPage.xaml</DependentUpon>
-	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -92,9 +89,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\MainPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\EnviosPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\RecuperarPasswordPage.xaml">

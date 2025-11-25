@@ -74,8 +74,7 @@ namespace Shared.ApiServices
                 else
                 {
                     //si no es exitoso, devuelvo el mensaje de error
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    return errorContent;
+                    return null;
                 }
             }
             catch (Exception ex)
