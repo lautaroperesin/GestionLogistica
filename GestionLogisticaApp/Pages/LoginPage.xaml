@@ -1,24 +1,182 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:GestionLogisticaApp.ViewModels"
              x:Class="GestionLogisticaApp.LoginPage"
-             Title="Login">
+             Title="Login"
+             BackgroundColor="Transparent">
     <ContentPage.BindingContext>
         <viewModels:LoginViewModel />
     </ContentPage.BindingContext>
-    <StackLayout Padding="30">
-        <Label Text="Iniciar sesion" FontSize="24" HorizontalOptions="Center"/>
-        <Entry Placeholder="Usuario" Text="{Binding Username}"/>
-        <Entry Placeholder="Contrasena" IsPassword="True" Text="{Binding Password}"/>
-        <Button Text="Ingresar" Command="{Binding LoginCommand}"/>
+    
+    <Grid>
+        <!-- Fondo con gradiente -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#667eea" Offset="0.0" />
+                    <GradientStop Color="#764ba2" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-        <!--Ingreso el texto enlace "Olvide mi contrasena"-->
-        <Label Text="Olvide mi contrasena" TextColor="Blue" FontSize="Body" HorizontalOptions="Center">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
-            </Label.GestureRecognizers>
-        </Label>
-        <Button Text="Crear cuenta" Command="{Binding RegisterCommand}" HorizontalOptions="Center"/>
-        <ActivityIndicator IsRunning="{Binding IsBusy}"/>
-    </StackLayout>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="0" VerticalOptions="Center">
+                
+                <!-- Logo o Icono de la App -->
+                <Frame CornerRadius="60" 
+                       WidthRequest="120" 
+                       HeightRequest="120" 
+                       Padding="0" 
+                       HasShadow="True"
+                       BackgroundColor="White"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,30">
+                    <Label Text="GL" 
+                           FontSize="48"
+                           FontAttributes="Bold"
+                           TextColor="#667eea"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"/>
+                </Frame>
+
+                <!-- Tarjeta Principal -->
+                <Frame Padding="30" 
+                       CornerRadius="20" 
+                       BackgroundColor="White" 
+                       HasShadow="True"
+                       Margin="10,0">
+                    
+                    <VerticalStackLayout Spacing="20">
+                        
+                        <!-- Titulo -->
+                        <Label Text="¡Bienvenido!" 
+                               FontSize="32" 
+                               FontAttributes="Bold"
+                               TextColor="#333333"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,10"/>
+                        
+                        <Label Text="Inicia sesión en tu cuenta" 
+                               FontSize="16" 
+                               TextColor="#666666"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,20"/>
+
+                        <!-- Campo de Usuario -->
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               BorderColor="#E0E0E0"
+                               HasShadow="False"
+                               BackgroundColor="#F5F5F5">
+                            <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                                <Label Text="&#x1F464;" 
+                                       FontSize="20" 
+                                       VerticalOptions="Center"
+                                       Margin="0,0,10,0"/>
+                                <Entry Grid.Column="1"
+                                       Placeholder="Usuario" 
+                                       Text="{Binding Username}"
+                                       BackgroundColor="Transparent"
+                                       TextColor="#333333"
+                                       PlaceholderColor="#999999"/>
+                            </Grid>
+                        </Frame>
+
+                        <!-- Campo de Contraseña -->
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               BorderColor="#E0E0E0"
+                               HasShadow="False"
+                               BackgroundColor="#F5F5F5">
+                            <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                                <Label Text="&#x1F512;" 
+                                       FontSize="20" 
+                                       VerticalOptions="Center"
+                                       Margin="0,0,10,0"/>
+                                <Entry Grid.Column="1"
+                                       Placeholder="Contraseña" 
+                                       IsPassword="True" 
+                                       Text="{Binding Password}"
+                                       BackgroundColor="Transparent"
+                                       TextColor="#333333"
+                                       PlaceholderColor="#999999"/>
+                            </Grid>
+                        </Frame>
+
+                        <!-- Boton de Ingresar -->
+                        <Button Text="INGRESAR" 
+                                Command="{Binding LoginCommand}"
+                                BackgroundColor="#667eea"
+                                TextColor="White"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="50"
+                                Margin="0,10,0,0">
+                            <Button.Shadow>
+                                <Shadow Brush="#667eea" 
+                                        Offset="0,4" 
+                                        Radius="8" 
+                                        Opacity="0.3"/>
+                            </Button.Shadow>
+                        </Button>
+
+                        <!-- Olvide mi contraseña -->
+                        <Label Text="¿Olvidaste tu contraseña?" 
+                               TextColor="#667eea" 
+                               FontSize="14" 
+                               HorizontalOptions="Center"
+                               Margin="0,10,0,0">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+
+                        <!-- Divisor -->
+                        <Grid ColumnDefinitions="*,Auto,*" 
+                              Margin="0,10,0,10"
+                              ColumnSpacing="10">
+                            <BoxView Color="#E0E0E0" 
+                                     HeightRequest="1" 
+                                     VerticalOptions="Center"/>
+                            <Label Grid.Column="1" 
+                                   Text="o" 
+                                   TextColor="#999999" 
+                                   FontSize="14"
+                                   VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" 
+                                     Color="#E0E0E0" 
+                                     HeightRequest="1" 
+                                     VerticalOptions="Center"/>
+                        </Grid>
+
+                        <!-- Boton de Crear cuenta -->
+                        <Button Text="CREAR CUENTA" 
+                                Command="{Binding RegisterCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="#667eea"
+                                BorderColor="#667eea"
+                                BorderWidth="2"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="50"/>
+
+                        <!-- Indicador de actividad -->
+                        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                         Color="#667eea"
+                                         Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Espacio inferior -->
+                <Label Text="Gestión Logística © 2025" 
+                       FontSize="12" 
+                       TextColor="White" 
+                       Opacity="0.8"
+                       HorizontalOptions="Center"
+                       Margin="0,30,0,20"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

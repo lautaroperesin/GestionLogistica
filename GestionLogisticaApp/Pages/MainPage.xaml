@@ -3,62 +3,183 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:GestionLogisticaApp.ViewModels"
              x:Class="GestionLogisticaApp.MainPage"
-             Title="Inicio">
+             Title="Inicio"
+             BackgroundColor="#F8F9FA">
 
     <ContentPage.BindingContext>
         <viewModels:MainPageViewModel />
     </ContentPage.BindingContext>
 
-    <ScrollView>
-        <StackLayout Padding="20" Spacing="25">
-            
-            <!-- Header con logo y título -->
-            <Frame BackgroundColor="#2196F3" CornerRadius="15" Padding="20" HasShadow="True">
-                <StackLayout Orientation="Vertical" HorizontalOptions="Center">
-                    <Label Text="🛻" FontSize="60" HorizontalOptions="Center" TextColor="White"/>
-                    <Label Text="{Binding BienvenidaMessage}" FontSize="16" TextColor="White" HorizontalOptions="Center"/>
-                    <Label Text="{Binding TituloApp}" FontSize="28" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <Label Text="{Binding Descripcion}" FontSize="14" TextColor="White" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-                </StackLayout>
-            </Frame>
+    <Grid>
+        <!-- Fondo decorativo superior -->
+        <BoxView HeightRequest="250" VerticalOptions="Start">
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#667eea" Offset="0.0" />
+                    <GradientStop Color="#764ba2" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-            <!-- Fecha actual -->
-            <Frame BackgroundColor="#F5F5F5" CornerRadius="10" Padding="15">
-                <Label Text="{Binding FechaFormateada}" FontSize="16" TextColor="#333" HorizontalOptions="Center" FontAttributes="Italic"/>
-            </Frame>
-
-            <!-- Título de accesos rápidos -->
-            <Label Text="Accesos Rápidos" FontSize="20" FontAttributes="Bold" TextColor="#333" HorizontalOptions="Center"/>
-
-            <!-- Lista de accesos rápidos -->
-            <CollectionView ItemsSource="{Binding AccesosRapidos}" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame BackgroundColor="{Binding Color}" CornerRadius="10" Margin="0,5" HasShadow="True">
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}, Path=NavegaCommand}" 
-                                                      CommandParameter="{Binding Ruta}"/>
-                            </Frame.GestureRecognizers>
-                            <StackLayout Orientation="Horizontal" Padding="10">
-                                <StackLayout VerticalOptions="Center" HorizontalOptions="FillAndExpand">
-                                    <Label Text="{Binding Titulo}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
-                                    <Label Text="{Binding Descripcion}" FontSize="14" TextColor="White" Opacity="0.8"/>
-                                </StackLayout>
-                                <Label Text="▶" FontSize="20" TextColor="White" VerticalOptions="Center"/>
-                            </StackLayout>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="20">
+                
+                <!-- Header con logo y titulo -->
+                <Frame Padding="25" 
+                       CornerRadius="20" 
+                       BackgroundColor="White" 
+                       HasShadow="True"
+                       Margin="0,10,0,0">
+                    <Frame.Shadow>
+                        <Shadow Brush="Black" Offset="0,4" Radius="15" Opacity="0.1"/>
+                    </Frame.Shadow>
+                    
+                    <VerticalStackLayout Spacing="15">
+                        <!-- Icono de camion -->
+                        <Frame CornerRadius="40" 
+                               WidthRequest="80" 
+                               HeightRequest="80" 
+                               Padding="0" 
+                               HasShadow="False"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,10">
+                            <Frame.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#667eea" Offset="0.0" />
+                                    <GradientStop Color="#764ba2" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Frame.Background>
+                            <Label Text="&#x1F69A;" 
+                                   FontSize="40" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
                         </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                        
+                        <Label Text="{Binding BienvenidaMessage}" 
+                               FontSize="18" 
+                               TextColor="#667eea" 
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold"/>
+                        
+                        <Label Text="{Binding TituloApp}" 
+                               FontSize="24" 
+                               FontAttributes="Bold" 
+                               TextColor="#333333" 
+                               HorizontalOptions="Center"/>
+                        
+                        <Label Text="{Binding Descripcion}" 
+                               FontSize="14" 
+                               TextColor="#666666" 
+                               HorizontalOptions="Center" 
+                               HorizontalTextAlignment="Center"
+                               Opacity="0.9"/>
+                        
+                        <!-- Fecha actual -->
+                        <Frame Padding="12,8" 
+                               CornerRadius="8" 
+                               BackgroundColor="#F8F9FA" 
+                               HasShadow="False"
+                               HorizontalOptions="Center"
+                               Margin="10,5,10,0">
+                            <Label Text="{Binding FechaFormateada}" 
+                                   FontSize="13" 
+                                   TextColor="#666666" 
+                                   HorizontalOptions="Center" 
+                                   FontAttributes="Italic"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
 
-            <!-- Footer informativo -->
-            <StackLayout Orientation="Vertical" Spacing="10" Margin="0,20,0,0">
-                <BoxView Color="#E0E0E0" HeightRequest="1"/>
-                <Label Text="ISP N°20" FontSize="14" TextColor="#666" HorizontalOptions="Center"/>
-                <Label Text="Sistema de Gestión Logistica" FontSize="12" TextColor="#999" HorizontalOptions="Center"/>
-            </StackLayout>
+                <!-- Titulo de accesos rapidos -->
+                <Label Text="Accesos Rápidos" 
+                       FontSize="22" 
+                       FontAttributes="Bold" 
+                       TextColor="#333333" 
+                       Margin="5,10,0,5"/>
 
-        </StackLayout>
-    </ScrollView>
+                <!-- Lista de accesos rapidos -->
+                <CollectionView ItemsSource="{Binding AccesosRapidos}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="0" 
+                                   CornerRadius="15" 
+                                   Margin="0,0,0,15" 
+                                   HasShadow="True"
+                                   BackgroundColor="White">
+                                <Frame.Shadow>
+                                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.08"/>
+                                </Frame.Shadow>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}, Path=NavegaCommand}" 
+                                                          CommandParameter="{Binding Ruta}"/>
+                                </Frame.GestureRecognizers>
+                                
+                                <Grid ColumnDefinitions="8,*,Auto" Padding="0">
+                                    <!-- Barra lateral de color -->
+                                    <BoxView Grid.Column="0" 
+                                             BackgroundColor="{Binding Color}"
+                                             WidthRequest="8">
+                                        <BoxView.Clip>
+                                            <RoundRectangleGeometry Rect="0,0,8,100" CornerRadius="15,0,0,15"/>
+                                        </BoxView.Clip>
+                                    </BoxView>
+                                    
+                                    <!-- Contenido -->
+                                    <VerticalStackLayout Grid.Column="1" 
+                                                        Padding="20,15" 
+                                                        Spacing="5"
+                                                        VerticalOptions="Center">
+                                        <Label Text="{Binding Titulo}" 
+                                               FontSize="18" 
+                                               FontAttributes="Bold" 
+                                               TextColor="#333333"/>
+                                        <Label Text="{Binding Descripcion}" 
+                                               FontSize="14" 
+                                               TextColor="#666666"/>
+                                    </VerticalStackLayout>
+                                    
+                                    <!-- Icono flecha -->
+                                    <Frame Grid.Column="2" 
+                                           CornerRadius="20" 
+                                           WidthRequest="40" 
+                                           HeightRequest="40" 
+                                           Padding="0" 
+                                           HasShadow="False"
+                                           BackgroundColor="{Binding Color}"
+                                           VerticalOptions="Center"
+                                           Margin="0,0,15,0">
+                                        <Label Text="&#x276F;" 
+                                               FontSize="18" 
+                                               TextColor="White" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center"
+                                               FontAttributes="Bold"/>
+                                    </Frame>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Footer informativo -->
+                <VerticalStackLayout Spacing="12" Margin="0,20,0,30">
+                    <BoxView Color="#E0E0E0" 
+                             HeightRequest="1" 
+                             Opacity="0.5"
+                             Margin="20,0"/>
+                    <Label Text="ISP N°20" 
+                           FontSize="15" 
+                           FontAttributes="Bold"
+                           TextColor="#667eea" 
+                           HorizontalOptions="Center"/>
+                    <Label Text="Sistema de Gestión Logística" 
+                           FontSize="13" 
+                           TextColor="#999999" 
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 
 </ContentPage>

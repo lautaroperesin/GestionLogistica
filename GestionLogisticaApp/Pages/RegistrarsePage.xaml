@@ -3,67 +3,217 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:GestionLogisticaApp.ViewModels"
              x:Class="GestionLogisticaApp.Pages.RegistrarsePage"
-             Title="Crear Cuenta">
+             Title="Crear Cuenta"
+             BackgroundColor="Transparent">
     <ContentPage.BindingContext>
         <viewmodels:RegistrarseViewModel />
     </ContentPage.BindingContext>
-    <ScrollView>
-        <VerticalStackLayout Margin="20">
-            <Label 
-             FontSize="Title"
-             Text="Crear una nueva cuenta"
-             VerticalOptions="Center" 
-             HorizontalOptions="Center" />
-            <!-- Botón volver -->
-            <Button Text="←"
-                    Command="{Binding VolverCommand}"
-                    BackgroundColor="Transparent"
-                    TextColor="White"
-                    FontSize="24"
-                    HorizontalOptions="Start"
-                    WidthRequest="50"
-                    HeightRequest="50"
-                    Margin="0,0,0,20"/>
-            <Grid RowDefinitions="2*,2*,2*,2*,*,*" ColumnDefinitions="*,*">
-                <Label Grid.Row="0" Grid.Column="0" 
-                    HorizontalTextAlignment="End"
-                    VerticalTextAlignment="Center"
-                    Margin="5,10">Apellido y Nombre:</Label>
-                <Entry Grid.Row="0" Grid.Column="1" 
-                    Text="{Binding Nombre}"
-                    Margin="10,20,10,20"></Entry>
-                <Label Grid.Row="1" Grid.Column="0" 
-                    HorizontalTextAlignment="End"
-                    VerticalTextAlignment="Center"
-                    Margin="10,20">Email:</Label>
-                <Entry Grid.Row="1" Grid.Column="1" 
-                    Text="{Binding Mail}"
-                    Margin="10,20,10,20"></Entry>
+    
+    <Grid>
+        <!-- Fondo con gradiente -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#667eea" Offset="0.0" />
+                    <GradientStop Color="#764ba2" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-                <Label Grid.Row="2" Grid.Column="0" 
-                    HorizontalTextAlignment="End"
-                    VerticalTextAlignment="Center"
-                    Margin="10,20">Contraseña:</Label>
-                <Entry Grid.Row="2" Grid.Column="1" 
-                    Text="{Binding Password}"
-                    Margin="10,20,100,20" IsPassword="True"></Entry>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="0" VerticalOptions="Center">
+                
+                <!-- Boton volver -->
+                <Button Text="&#x2190;"
+                        Command="{Binding VolverCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="White"
+                        FontSize="28"
+                        HorizontalOptions="Start"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        Margin="0,0,0,10"/>
+                
+                <!-- Logo o Icono -->
+                <Frame CornerRadius="50" 
+                       WidthRequest="100" 
+                       HeightRequest="100" 
+                       Padding="0" 
+                       HasShadow="True"
+                       BackgroundColor="White"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,20">
+                    <Label Text="&#x1F464;" 
+                           FontSize="50" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"/>
+                </Frame>
 
-                <Label Grid.Row="3" Grid.Column="0" 
-                    HorizontalTextAlignment="End"
-                    VerticalTextAlignment="Center"
-                    Margin="10,20">Verificar Contraseña:</Label>
-                <Entry Grid.Row="3" Grid.Column="1" 
-                    Text="{Binding VerifyPassword}"
-                    Margin="10,20,100,20" IsPassword="True"></Entry>
+                <!-- Tarjeta Principal -->
+                <Frame Padding="30" 
+                       CornerRadius="20" 
+                       BackgroundColor="White" 
+                       HasShadow="True"
+                       Margin="10,0">
+                    
+                    <VerticalStackLayout Spacing="25">
+                        
+                        <!-- Titulo -->
+                        <Label Text="Crear Cuenta" 
+                               FontSize="28" 
+                               FontAttributes="Bold"
+                               TextColor="#333333"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,5"/>
+                        
+                        <Label Text="Completa tus datos para registrarte" 
+                               FontSize="14" 
+                               TextColor="#666666"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,15"/>
 
-                <Button Text="Registrarse"
-                     Command="{Binding RegistrarseCommand}"
-                     Grid.Row="4" Grid.Column="0"
-                     Grid.ColumnSpan="2"
-                     Margin="100,10"
-                     ></Button>
-                <ActivityIndicator IsRunning="{Binding IsBusy}" Grid.Row="5" Grid.ColumnSpan="2"/>
-            </Grid>
-        </VerticalStackLayout>
-    </ScrollView>
+                        <!-- Campo de Nombre -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Apellido y Nombre" 
+                                   FontSize="14" 
+                                   TextColor="#666666"
+                                   FontAttributes="Bold"/>
+                            <Frame Padding="0" 
+                                   CornerRadius="10" 
+                                   BorderColor="#E0E0E0"
+                                   HasShadow="False"
+                                   BackgroundColor="#F5F5F5">
+                                <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                                    <Label Text="&#x1F464;" 
+                                           FontSize="18" 
+                                           VerticalOptions="Center"
+                                           Margin="0,0,10,0"/>
+                                    <Entry Grid.Column="1"
+                                           Placeholder="Juan Pérez" 
+                                           Text="{Binding Nombre}"
+                                           BackgroundColor="Transparent"
+                                           TextColor="#333333"
+                                           PlaceholderColor="#999999"/>
+                                </Grid>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Campo de Email -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Correo Electrónico" 
+                                   FontSize="14" 
+                                   TextColor="#666666"
+                                   FontAttributes="Bold"/>
+                            <Frame Padding="0" 
+                                   CornerRadius="10" 
+                                   BorderColor="#E0E0E0"
+                                   HasShadow="False"
+                                   BackgroundColor="#F5F5F5">
+                                <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                                    <Label Text="&#x2709;" 
+                                           FontSize="18" 
+                                           VerticalOptions="Center"
+                                           Margin="0,0,10,0"/>
+                                    <Entry Grid.Column="1"
+                                           Placeholder="correo@ejemplo.com" 
+                                           Text="{Binding Mail}"
+                                           Keyboard="Email"
+                                           BackgroundColor="Transparent"
+                                           TextColor="#333333"
+                                           PlaceholderColor="#999999"/>
+                                </Grid>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Campo de Contraseña -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Contraseña" 
+                                   FontSize="14" 
+                                   TextColor="#666666"
+                                   FontAttributes="Bold"/>
+                            <Frame Padding="0" 
+                                   CornerRadius="10" 
+                                   BorderColor="#E0E0E0"
+                                   HasShadow="False"
+                                   BackgroundColor="#F5F5F5">
+                                <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                                    <Label Text="&#x1F512;" 
+                                           FontSize="18" 
+                                           VerticalOptions="Center"
+                                           Margin="0,0,10,0"/>
+                                    <Entry Grid.Column="1"
+                                           Placeholder="Mínimo 6 caracteres" 
+                                           IsPassword="True" 
+                                           Text="{Binding Password}"
+                                           BackgroundColor="Transparent"
+                                           TextColor="#333333"
+                                           PlaceholderColor="#999999"/>
+                                </Grid>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Campo de Verificar Contraseña -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Confirmar Contraseña" 
+                                   FontSize="14" 
+                                   TextColor="#666666"
+                                   FontAttributes="Bold"/>
+                            <Frame Padding="0" 
+                                   CornerRadius="10" 
+                                   BorderColor="#E0E0E0"
+                                   HasShadow="False"
+                                   BackgroundColor="#F5F5F5">
+                                <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                                    <Label Text="&#x1F512;" 
+                                           FontSize="18" 
+                                           VerticalOptions="Center"
+                                           Margin="0,0,10,0"/>
+                                    <Entry Grid.Column="1"
+                                           Placeholder="Repite tu contraseña" 
+                                           IsPassword="True" 
+                                           Text="{Binding VerifyPassword}"
+                                           BackgroundColor="Transparent"
+                                           TextColor="#333333"
+                                           PlaceholderColor="#999999"/>
+                                </Grid>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Boton de Registrarse -->
+                        <Button Text="REGISTRARSE" 
+                                Command="{Binding RegistrarseCommand}"
+                                BackgroundColor="#667eea"
+                                TextColor="White"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="50"
+                                Margin="0,10,0,0">
+                            <Button.Shadow>
+                                <Shadow Brush="#667eea" 
+                                        Offset="0,4" 
+                                        Radius="8" 
+                                        Opacity="0.3"/>
+                            </Button.Shadow>
+                        </Button>
+
+                        <!-- Indicador de actividad -->
+                        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                         Color="#667eea"
+                                         HeightRequest="40"
+                                         Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Espacio inferior -->
+                <Label Text="Al registrarte aceptas nuestros términos y condiciones" 
+                       FontSize="11" 
+                       TextColor="White" 
+                       Opacity="0.8"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       Margin="20,30,20,20"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>
