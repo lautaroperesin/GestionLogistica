@@ -63,4 +63,23 @@ jobs:
           slot-name: 'Production'
           package: .
 
-          
+
+      - name: Set environment variable in Azure App Service
+        uses: Azure/appservice-settings@v1
+        with:
+          app-name: 'gestionlogisticabackend'
+          slot-name: 'Production'
+          app-settings-json: |
+            [
+              {
+                "name": "GOOGLE_CREDENTIALS",
+                "value": "${{ secrets.GOOGLE_CREDENTIALS }}",
+                "slotSetting": false
+              },
+              {
+                "name": "ConnectionStrings__mysqlRemoto",
+                "value": "${{ secrets.MYSQL_REMOTO_CONNECTION_STRING }}",
+                "slotSetting": false
+              }
+            ]
+
