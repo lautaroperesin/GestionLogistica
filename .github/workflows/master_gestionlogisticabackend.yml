@@ -80,6 +80,17 @@ jobs:
                 "name": "ConnectionStrings__mysqlRemoto",
                 "value": "${{ secrets.MYSQL_REMOTO_CONNECTION_STRING }}",
                 "slotSetting": false
+              },
+               {
+                "name": "ApiKeyFirebase",
+                "value": "${{ secrets.APIKEYFIREBASE }}",
+                "slotSetting": false
+              },
+               {
+                "name": "AuthDomainFirebase",
+                "value": "${{ secrets.AUTHDOMAINFIREBASE }}",
+                "slotSetting": false
               }
             ]
+
 
