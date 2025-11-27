@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json.Serialization;
 using Backend.Class;
 using FirebaseAdmin;
@@ -17,6 +17,11 @@ using Shared.Interfaces;
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar logging mejorado
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 var firebaseJson = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS");
 
@@ -54,14 +59,13 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddScoped<DashboardService>();
 
+// Configurar correctamente para que funcione tanto en Development como en Production
+var connectionString = builder.Configuration.GetConnectionString("mysqlRemoto");
 
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-                  .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                  .AddEnvironmentVariables()
-                  .Build();
-
-var connectionString = configuration.GetConnectionString("mysqlRemoto");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("La cadena de conexión 'mysqlRemoto' no está configurada.");
+}
 
 builder.Services.AddDbContext<LogisticaContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
@@ -130,15 +134,36 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Endpoint p�blico de salud para verificar que la API funciona
+// Endpoint público de salud para verificar que la API funciona
 app.MapGet("/", () => Results.Ok(new 
 { 
     status = "OK", 
-    message = "Gesti�n Log�stica Backend API est� funcionando correctamente",
+    message = "Gestión Logística Backend API está funcionando correctamente",
     version = "1.0",
     environment = app.Environment.EnvironmentName,
     swagger = "/swagger",
     timestamp = DateTime.UtcNow
 })).AllowAnonymous();
+
+// Endpoint de diagnóstico (solo mostrar info sensible en Development)
+app.MapGet("/health", (IConfiguration config, IWebHostEnvironment env) =>
+{
+    var hasConnectionString = !string.IsNullOrEmpty(config.GetConnectionString("mysqlRemoto"));
+    var hasFirebaseConfig = !string.IsNullOrEmpty(config["ApiKeyFirebase"]);
+    var hasGoogleCredentials = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS"));
+    
+    return Results.Ok(new
+    {
+        status = "Healthy",
+        environment = env.EnvironmentName,
+        checks = new
+        {
+            connectionString = hasConnectionString ? "Configurado" : "No configurado",
+            firebaseConfig = hasFirebaseConfig ? "Configurado" : "No configurado",
+            googleCredentials = hasGoogleCredentials ? "Configurado" : "No configurado"
+        },
+        timestamp = DateTime.UtcNow
+    });
+}).AllowAnonymous();
 
 app.Run();
