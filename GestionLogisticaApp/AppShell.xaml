@@ -16,7 +16,7 @@
     <Shell.FlyoutHeader>
         <Grid BackgroundColor="#2196F3" HeightRequest="120">
             <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                <Label Text="📚" FontSize="40" HorizontalOptions="Center" TextColor="White"/>
+                <Label Text="🛻" FontSize="40" HorizontalOptions="Center" TextColor="White"/>
                 <Label Text="Gestion Logística" FontSize="18" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
             </StackLayout>
         </Grid>
@@ -38,7 +38,7 @@
             Route="MainPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Mis Envios" Icon="book.png" IsVisible="{Binding MenuVisible}">
+    <FlyoutItem Title="📦 Mis Envios" Icon="book.png" IsVisible="{Binding MenuVisible}">
         <ShellContent
             Title="Envios por Conductor"
             ContentTemplate="{DataTemplate local:EnviosPorConductorPage}"

@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="urlApi" xml:space="preserve">
+    <value>https://gestionlogisticabackend.azurewebsites.net</value>
+  </data>
+  <data name="urlApi2" xml:space="preserve">
     <value>https://localhost:7000/api/</value>
   </data>
 </root>

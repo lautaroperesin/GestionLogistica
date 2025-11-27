@@ -61,7 +61,7 @@ var configuration = new ConfigurationBuilder()
                   .AddEnvironmentVariables()
                   .Build();
 
-var connectionString = configuration.GetConnectionString("DefaultConnection");
+var connectionString = configuration.GetConnectionString("mysqlRemoto");
 
 builder.Services.AddDbContext<LogisticaContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
@@ -109,7 +109,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         builder => builder
-            .WithOrigins("https://gestionlogistica.azurewebsites.net", "https://localhost:8000")
+            .WithOrigins("https://gestionlogisticabackend.azurewebsites.net", "https://localhost:8000")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
