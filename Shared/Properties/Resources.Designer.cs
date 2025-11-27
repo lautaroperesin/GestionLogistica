@@ -61,7 +61,7 @@ namespace Shared.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a https://gestionlogisticabackend.azurewebsites.net.
+        ///   Busca una cadena traducida similar a https://gestionlogisticabackend.azurewebsites.net/api/.
         /// </summary>
         public static string urlApi {
             get {

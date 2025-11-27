@@ -117,11 +117,9 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Habilitar Swagger en todos los entornos para facilitar pruebas en Azure
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowSpecificOrigins");
 
@@ -131,5 +129,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Endpoint público de salud para verificar que la API funciona
+app.MapGet("/", () => Results.Ok(new 
+{ 
+    status = "OK", 
+    message = "Gestión Logística Backend API está funcionando correctamente",
+    version = "1.0",
+    environment = app.Environment.EnvironmentName,
+    swagger = "/swagger",
+    timestamp = DateTime.UtcNow
+})).AllowAnonymous();
 
 app.Run();
