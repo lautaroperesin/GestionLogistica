@@ -88,6 +88,7 @@ namespace GestionLogisticaBackend.Extensions
             envio.Descripcion = dto.Descripcion;
             envio.CostoTotal = dto.CostoTotal;
             envio.NumeroSeguimiento = dto.NumeroSeguimiento;
+            envio.Estado = dto.Estado;
 
             envio.IdOrigen = dto.Origen.IdUbicacion;
             envio.IdDestino = dto.Destino.IdUbicacion;
