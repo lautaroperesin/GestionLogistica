@@ -6,81 +6,241 @@
 @inject SweetAlertService _sweetAlert
 @rendermode InteractiveServer
 
-<h1 class="text-center my-4">Gestión de Clientes</h1>
-<div class="container py-4">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-people-fill text-primary me-2"></i>
+                Gestión de Clientes
+            </h1>
+            <p class="text-muted mb-0">Administra la información de todos tus clientes</p>
+        </div>
+        <NavLink class="btn btn-primary btn-lg shadow-sm" href="admin/clientes/crear">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Cliente
+        </NavLink>
+    </div>
+
     @if (isLoading)
     {
-        <div class="d-flex align-items-center justify-content-center my-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <span class="ms-2 text-primary">Cargando clientes...</span>
+        <div class="d-flex align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted">Cargando clientes...</p>
+            </div>
         </div>
     }
     else
     {
-        <NavLink class="btn btn-primary" href="admin/clientes/crear">Nuevo cliente</NavLink>
-
-        <div class="d-flex m-3">
-            <input type="text" class="form-control me-2" placeholder="Buscar por nombre" @bind="searchTerm" />
-            <button class="btn btn-secondary" @onclick="Buscar">Buscar</button>
+        <!-- Búsqueda -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-10">
+                        <label for="searchTerm" class="form-label fw-semibold">
+                            <i class="bi bi-search text-muted me-1"></i>Buscar Cliente
+                        </label>
+                        <input id="searchTerm" type="text" class="form-control form-control-lg" placeholder="Buscar por nombre..." @bind="searchTerm" @onkeyup="HandleKeyUp" />
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100 btn-lg" @onclick="Buscar">
+                            <i class="bi bi-search me-2"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         @if (clientes != null && clientes.TotalItems > 0)
         {
-            <!-- Tabla de clientes -->
-            <table class="table table-striped mt-4">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var cliente in clientes.Items)
-                    {
-                        <tr>
-                            <td>@cliente.IdCliente</td>
-                            <td>@cliente.Nombre</td>
-                            <td>@cliente.Email</td>
-                            <td>@cliente.Telefono</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(cliente)">Modificar</button>
-                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(cliente)">Eliminar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <!-- Estadísticas -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Clientes</h6>
+                                    <h3 class="mb-0 fw-bold">@clientes.TotalItems</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm bg-success bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-check2-circle text-success" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">En esta Página</h6>
+                                    <h3 class="mb-0 fw-bold">@clientes.Items.Count()</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Paginación -->
-            <nav aria-label="Paginación de clientes">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item @(clientes.PageNumber <= 1 ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(clientes.PageNumber - 1)">Anterior</a>
-                    </li>
-                    @for (int i = Math.Max(1, clientes.PageNumber - 2); i <= Math.Min(clientes.TotalPages, clientes.PageNumber + 2); i++)
-                    {
-                        <li class="page-item @(i == clientes.PageNumber ? "active" : "")">
-                            <a class="page-link" @onclick="() => CambiarPagina(i)">@i</a>
-                        </li>
-                    }
-                    <li class="page-item @(clientes.PageNumber >= clientes.TotalPages ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(clientes.PageNumber + 1)">Siguiente</a>
-                    </li>
-                </ul>
-                <p class="text-center mt-2">Página @clientes.PageNumber de @clientes.TotalPages (@clientes.TotalItems elementos)</p>
-            </nav>
+            <!-- Tabla de clientes -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-list-ul text-primary me-2"></i>
+                            Lista de Clientes
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">@clientes.TotalItems registros</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold">
+                                        <i class="bi bi-hash me-1"></i>ID
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-person me-1"></i>Nombre
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-envelope me-1"></i>Email
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-telephone me-1"></i>Teléfono
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cliente in clientes.Items)
+                                {
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-light text-dark">@cliente.IdCliente</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle me-2">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <span class="fw-semibold">@cliente.Nombre</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <i class="bi bi-envelope-fill text-muted me-2"></i>
+                                            <span class="text-muted">@cliente.Email</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <i class="bi bi-telephone-fill text-muted me-2"></i>
+                                            <span class="text-muted">@(cliente.Telefono ?? "N/A")</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => Modificar(cliente)" title="Editar">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(cliente)" title="Eliminar">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav aria-label="Paginación de clientes">
+                        <ul class="pagination justify-content-center mb-2">
+                            <li class="page-item @(clientes.PageNumber <= 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(clientes.PageNumber - 1)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = Math.Max(1, clientes.PageNumber - 2); i <= Math.Min(clientes.TotalPages, clientes.PageNumber + 2); i++)
+                            {
+                                var pageNum = i;
+                                <li class="page-item @(i == clientes.PageNumber ? "active" : "")">
+                                    <a class="page-link" @onclick="() => CambiarPagina(pageNum)">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(clientes.PageNumber >= clientes.TotalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(clientes.PageNumber + 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="text-center text-muted mb-0 small">
+                            Mostrando página <strong>@clientes.PageNumber</strong> de <strong>@clientes.TotalPages</strong> 
+                            (<strong>@clientes.TotalItems</strong> clientes en total)
+                        </p>
+                    </nav>
+                </div>
+            </div>
         }
         else
         {
-            <div class="alert alert-info mt-4" role="alert">
-                No hay clientes registrados.
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-person-x" style="font-size: 4rem; color: #dee2e6;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No se encontraron clientes</h5>
+                    <p class="text-muted mb-4">No hay clientes registrados o no coinciden con tu búsqueda.</p>
+                    <NavLink class="btn btn-primary" href="admin/clientes/crear">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Primer Cliente
+                    </NavLink>
+                </div>
             </div>
         }
     }
 </div>
+
+<style>
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        font-size: 1.2rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.375rem 0.75rem;
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .page-link {
+        cursor: pointer;
+    }
+</style>
 
 @code {
     PagedResult<ClienteDto>? clientes = new PagedResult<ClienteDto>();
@@ -109,7 +269,7 @@
         }
         catch (Exception ex)
         {
-            // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+            await _sweetAlert.FireAsync("Error", "Hubo un error al cargar los clientes.", SweetAlertIcon.Error);
         }
         finally
         {
@@ -135,6 +295,14 @@
         await LoadClientes();
     }
 
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Buscar();
+        }
+    }
+
     private void Modificar(ClienteDto cliente)
     {
         _navigationManager.NavigateTo($"admin/clientes/editar/{cliente.IdCliente}");
@@ -144,13 +312,16 @@
     {
         SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Eliminando cliente",
-            Text = $"¿Está seguro que desea borrar el cliente {cliente.Nombre}?",
+            Title = "¿Eliminar cliente?",
+            Text = $"¿Está seguro que desea eliminar al cliente {cliente.Nombre}? Esta acción no se puede deshacer.",
             Icon = SweetAlertIcon.Warning,
             ShowCancelButton = true,
-            ConfirmButtonText = "Sí, quiero borrarlo!",
-            CancelButtonText = "No, espera"
+            ConfirmButtonText = "Sí, eliminar",
+            CancelButtonText = "Cancelar",
+            ConfirmButtonColor = "#dc3545",
+            CancelButtonColor = "#6c757d"
         });
+        
         if (respuesta.IsConfirmed)
         {
             try
@@ -158,7 +329,7 @@
                 isLoading = true;
                 await _clienteService.DeleteClienteAsync(cliente.IdCliente);
                 await LoadClientes();
-                await _sweetAlert.FireAsync("Eliminado", "El cliente ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+                await _sweetAlert.FireAsync("¡Eliminado!", "El cliente ha sido eliminado exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)
             {

@@ -10,7 +10,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Web</a>
+        <a class="navbar-brand" href="">📦 Gestión Logística</a>
     </div>
 </div>
 
@@ -22,7 +22,7 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> Inicio
+                    <i class="bi bi-house-door-fill nav-icon" aria-hidden="true"></i> Inicio
                 </NavLink>
             </div>
         }
@@ -30,106 +30,108 @@
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/envios">
-                    <span class="bi bi-truck" aria-hidden="true"></span> Envíos
+                    <i class="bi bi-box-seam-fill nav-icon" aria-hidden="true"></i> Envíos
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/clientes">
-                    <span class="bi bi-people-fill" aria-hidden="true"></span> Clientes
+                    <i class="bi bi-people-fill nav-icon" aria-hidden="true"></i> Clientes
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/conductores">
-                    <span class="bi bi-truck-front" aria-hidden="true"></span> Conductores
+                    <i class="bi bi-person-badge-fill nav-icon" aria-hidden="true"></i> Conductores
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/ubicaciones">
-                    <span class="bi bi-geo-alt" aria-hidden="true"></span> Ubicaciones
+                    <i class="bi bi-geo-alt-fill nav-icon" aria-hidden="true"></i> Ubicaciones
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/admin/vehiculos">
-                    <span class="bi bi-car-front" aria-hidden="true"></span> Vehículos
+                    <i class="bi bi-truck-front-fill nav-icon" aria-hidden="true"></i> Vehículos
 				</NavLink>
 			</div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/admin/tiposcarga">
+                    <i class="bi bi-boxes nav-icon" aria-hidden="true"></i> Tipos de Carga
+                </NavLink>
+            </div>
         }
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="login">
-                <span class="bi @loginIcon" aria-hidden="true"></span> @textBtnLogin
+                <i class="bi @loginIcon nav-icon" aria-hidden="true"></i> @textBtnLogin
             </NavLink>
         </div>
     </nav>
 </div>
 
-    @code {
-        FirebaseUser? _userLogued;
-        bool _isLogued = false;
-        UsuarioDto? _usuarioLogueado;
-        private string textBtnLogin => _isLogued ? "Cerrar sesión" : "Iniciar sesión";
-        private string loginIcon => _isLogued ? "bi-box-arrow-right" : "bi-box-arrow-in-right";
+@code {
+    FirebaseUser? _userLogued;
+    bool _isLogued = false;
+    UsuarioDto? _usuarioLogueado;
+    private string textBtnLogin => _isLogued ? "Cerrar sesión" : "Iniciar sesión";
+    private string loginIcon => _isLogued ? "bi-box-arrow-right" : "bi-box-arrow-in-right";
 
-        protected async override Task OnAfterRenderAsync(bool firstRender)
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            if (firstRender)
-            {
-                //_firebaseAuthService.OnChangeLogin += async () => await InvokeAsync(LoginChangedAsync);
-                _firebaseAuthService.OnChangeLogin += LoginChanged;
-                if (await _firebaseAuthService.IsUserAuthenticated())
-                {
-                    _userLogued = _firebaseAuthService.CurrentUser;
-                    _isLogued = true;
-                    if (_usuarioLogueado == null) await CargarUsuarioAsync();
-                }
-                else
-                {
-                    _isLogued = false;
-                    _userLogued = null;
-                    _navigationManager.NavigateTo("/login");
-
-                }
-            }
-        }
-
-        private async Task CargarUsuarioAsync()
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(_userLogued?.Email))
-                {
-                    _usuarioLogueado = await _usuarioService.GetUserByEmailAsync(_userLogued.Email);
-                    Console.WriteLine($"Usuario cargado: {_usuarioLogueado?.Email}, TipoRol: {_usuarioLogueado?.TipoRol}");
-                    if (_usuarioLogueado != null)
-                    {
-                        _cacheMemory.Set("usuarioLogueado", _usuarioLogueado);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex);
-            }
-        }
-
-        private async void LoginChanged()
-        {
-            if (_firebaseAuthService.CurrentUser != null)
+            _firebaseAuthService.OnChangeLogin += LoginChanged;
+            if (await _firebaseAuthService.IsUserAuthenticated())
             {
                 _userLogued = _firebaseAuthService.CurrentUser;
                 _isLogued = true;
                 if (_usuarioLogueado == null) await CargarUsuarioAsync();
-
             }
             else
             {
                 _isLogued = false;
                 _userLogued = null;
-                _navigationManager.NavigateTo("/login");
             }
             StateHasChanged();
         }
     }
+
+    private async Task CargarUsuarioAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(_userLogued?.Email))
+            {
+                _usuarioLogueado = await _usuarioService.GetUserByEmailAsync(_userLogued.Email);
+                Console.WriteLine($"Usuario cargado: {_usuarioLogueado?.Email}, TipoRol: {_usuarioLogueado?.TipoRol}");
+                if (_usuarioLogueado != null)
+                {
+                    _cacheMemory.Set("usuarioLogueado", _usuarioLogueado);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+        }
+    }
+
+    private async void LoginChanged()
+    {
+        if (_firebaseAuthService.CurrentUser != null)
+        {
+            _userLogued = _firebaseAuthService.CurrentUser;
+            _isLogued = true;
+            if (_usuarioLogueado == null) await CargarUsuarioAsync();
+        }
+        else
+        {
+            _isLogued = false;
+            _userLogued = null;
+        }
+        StateHasChanged();
+    }
+}

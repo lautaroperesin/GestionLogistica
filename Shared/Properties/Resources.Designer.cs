@@ -61,7 +61,7 @@ namespace Shared.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a https://gestionlogisticabackend.azurewebsites.net/api/.
+        ///   Busca una cadena traducida similar a https://localhost:7000/api/.
         /// </summary>
         public static string urlApi {
             get {
@@ -70,11 +70,11 @@ namespace Shared.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a https://localhost:7000/api/.
+        ///   Busca una cadena traducida similar a https://gestionlogisticabackend.azurewebsites.net/api/.
         /// </summary>
-        public static string urlApi2 {
+        public static string urlApi3 {
             get {
-                return ResourceManager.GetString("urlApi2", resourceCulture);
+                return ResourceManager.GetString("urlApi3", resourceCulture);
             }
         }
     }

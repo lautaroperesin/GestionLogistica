@@ -5,63 +5,251 @@
 @inject SweetAlertService _sweetAlert
 @rendermode InteractiveServer
 
-<h1 class="text-center my-4">Gestión de Vehículos</h1>
-<div class="container py-4">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-truck-front-fill text-primary me-2"></i>
+                Gestión de Vehículos
+            </h1>
+            <p class="text-muted mb-0">Administra toda la flota de vehículos</p>
+        </div>
+        <NavLink class="btn btn-primary btn-lg shadow-sm" href="admin/vehiculos/crear">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo
+        </NavLink>
+    </div>
+
     @if (isLoading)
     {
-        <div class="d-flex align-items-center justify-content-center my-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <span class="ms-2 text-primary">Cargando vehículos...</span>
+        <div class="d-flex align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted">Cargando vehículos...</p>
+            </div>
         </div>
     }
     else
     {
-        <NavLink class="btn btn-primary" href="admin/vehiculos/crear">Nuevo vehículo</NavLink>
-
         @if (vehiculos != null && vehiculos.Any())
         {
+            <!-- Estadísticas -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-truck text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Vehículos</h6>
+                                    <h3 class="mb-0 fw-bold">@vehiculos.Count()</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-success bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">RTO Vigente</h6>
+                                    <h3 class="mb-0 fw-bold">@vehiculos.Count(v => v.RtoVencimiento > DateTime.Now)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-warning bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">RTO Vencido</h6>
+                                    <h3 class="mb-0 fw-bold">@vehiculos.Count(v => v.RtoVencimiento <= DateTime.Now)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Tabla de vehículos -->
-            <table class="table table-striped mt-4">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Patente</th>
-                        <th>Marca</th>
-                        <th>Modelo</th>
-                        <th>Capacidad (Kg)</th>
-                        <th>Última Inspección</th>
-                        <th>Vencimiento RTO</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var vehiculo in vehiculos)
-                    {
-                        <tr>
-                            <td>@vehiculo.IdVehiculo</td>
-                            <td>@vehiculo.Patente</td>
-                            <td>@vehiculo.Marca</td>
-                            <td>@vehiculo.Modelo</td>
-                            <td>@vehiculo.CapacidadCarga</td>
-                            <td>@vehiculo.UltimaInspeccion.ToString("dd/MM/yyyy")</td>
-                            <td>@vehiculo.RtoVencimiento.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(vehiculo)">Modificar</button>
-                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(vehiculo)">Eliminar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-list-ul text-primary me-2"></i>
+                            Lista de Vehículos
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">@vehiculos.Count() registros</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold">
+                                        <i class="bi bi-hash me-1"></i>ID
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-credit-card-2-front me-1"></i>Patente
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-truck me-1"></i>Vehículo
+                                    </th>
+                                    <th class="py-3 fw-semibold text-center">
+                                        <i class="bi bi-box-seam me-1"></i>Capacidad
+                                    </th>
+                                    <th class="py-3 fw-semibold text-center">
+                                        <i class="bi bi-calendar-check me-1"></i>Última Inspección
+                                    </th>
+                                    <th class="py-3 fw-semibold text-center">
+                                        <i class="bi bi-shield-check me-1"></i>Venc. RTO
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var vehiculo in vehiculos)
+                                {
+                                    var rtoVencido = vehiculo.RtoVencimiento <= DateTime.Now;
+                                    var rtoProximoVencimiento = vehiculo.RtoVencimiento <= DateTime.Now.AddMonths(1);
+                                    
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-light text-dark">@vehiculo.IdVehiculo</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="plate-badge me-2">
+                                                    @vehiculo.Patente
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="vehicle-icon me-2">
+                                                    <i class="bi bi-truck-front"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-semibold">@vehiculo.Marca</div>
+                                                    <small class="text-muted">@vehiculo.Modelo</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <span class="badge bg-info text-dark px-3 py-2">
+                                                <i class="bi bi-weight me-1"></i>
+                                                @vehiculo.CapacidadCarga Kg
+                                            </span>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar3 me-1"></i>
+                                                @vehiculo.UltimaInspeccion.ToString("dd/MM/yyyy")
+                                            </small>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <span class="badge @(rtoVencido ? "bg-danger" : rtoProximoVencimiento ? "bg-warning text-dark" : "bg-success") px-3 py-2">
+                                                <i class="bi bi-shield-fill-check me-1"></i>
+                                                @vehiculo.RtoVencimiento.ToString("dd/MM/yyyy")
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => Modificar(vehiculo)" title="Editar">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(vehiculo)" title="Eliminar">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         }
         else
         {
-            <div class="alert alert-info mt-4" role="alert">
-                No hay vehículos registrados.
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-truck" style="font-size: 4rem; color: #dee2e6;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No se encontraron vehículos</h5>
+                    <p class="text-muted mb-4">No hay vehículos registrados en el sistema.</p>
+                    <NavLink class="btn btn-primary" href="admin/vehiculos/crear">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Primer Vehículo
+                    </NavLink>
+                </div>
             </div>
         }
     }
 </div>
+
+<style>
+    .vehicle-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        font-size: 1.4rem;
+    }
+
+    .plate-badge {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 2px;
+        border: 2px solid #1a252f;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-size: 0.9rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.375rem 0.75rem;
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+</style>
 
 @code {
     List<VehiculoDto> vehiculos = new();
@@ -77,7 +265,7 @@
             }
             catch (Exception ex)
             {
-                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+                await _sweetAlert.FireAsync("Error", "Hubo un error al cargar los vehículos.", SweetAlertIcon.Error);
             }
             finally
             {
@@ -96,13 +284,16 @@
     {
         SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Eliminando vehículo",
-            Text = $"¿Está seguro que desea borrar el vehículo {vehiculo.Marca} {vehiculo.Modelo} ({vehiculo.Patente})?",
+            Title = "¿Eliminar vehículo?",
+            Text = $"¿Está seguro que desea eliminar el vehículo {vehiculo.Marca} {vehiculo.Modelo} ({vehiculo.Patente})? Esta acción no se puede deshacer.",
             Icon = SweetAlertIcon.Warning,
             ShowCancelButton = true,
-            ConfirmButtonText = "Sí, quiero borrarlo!",
-            CancelButtonText = "No, espera"
+            ConfirmButtonText = "Sí, eliminar",
+            CancelButtonText = "Cancelar",
+            ConfirmButtonColor = "#dc3545",
+            CancelButtonColor = "#6c757d"
         });
+        
         if (respuesta.IsConfirmed)
         {
             try
@@ -110,7 +301,7 @@
                 isLoading = true;
                 await _vehiculoService.DeleteVehiculoAsync(vehiculo.IdVehiculo);
                 vehiculos = (await _vehiculoService.GetVehiculosAsync()).ToList();
-                await _sweetAlert.FireAsync("Eliminado", "El vehículo ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+                await _sweetAlert.FireAsync("¡Eliminado!", "El vehículo ha sido eliminado exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)
             {

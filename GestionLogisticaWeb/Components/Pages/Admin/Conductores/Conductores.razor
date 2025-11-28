@@ -6,87 +6,288 @@
 @inject SweetAlertService _sweetAlert
 @rendermode InteractiveServer
 
-<h1 class="text-center my-4">Gestión de Conductores</h1>
-<div class="container py-4">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-person-badge-fill text-primary me-2"></i>
+                Gestión de Conductores
+            </h1>
+            <p class="text-muted mb-0">Administra la información de todos tus conductores</p>
+        </div>
+        <NavLink class="btn btn-primary btn-lg shadow-sm" href="admin/conductores/crear">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Conductor
+        </NavLink>
+    </div>
+
     @if (isLoading)
     {
-        <div class="d-flex align-items-center justify-content-center my-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <span class="ms-2 text-primary">Cargando conductores...</span>
+        <div class="d-flex align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted">Cargando conductores...</p>
+            </div>
         </div>
     }
     else
     {
-        <NavLink class="btn btn-primary" href="admin/conductores/crear">Nuevo conductor</NavLink>
-
-        <div class="d-flex mb-3">
-            <input type="text" class="form-control me-2" placeholder="Buscar por nombre" @bind="searchTerm" />
-            <button class="btn btn-secondary" @onclick="Buscar">Buscar</button>
+        <!-- Búsqueda -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-10">
+                        <label for="searchTerm" class="form-label fw-semibold">
+                            <i class="bi bi-search text-muted me-1"></i>Buscar Conductor
+                        </label>
+                        <input id="searchTerm" type="text" class="form-control form-control-lg" placeholder="Buscar por nombre..." @bind="searchTerm" @onkeyup="HandleKeyUp" />
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100 btn-lg" @onclick="Buscar">
+                            <i class="bi bi-search me-2"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         @if (conductores != null && conductores.TotalItems > 0)
         {
-            <!-- Tabla de conductores -->
-            <table class="table table-striped mt-4">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>DNI</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Clase Licencia</th>
-                        <th>Vencimiento Licencia</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var conductor in conductores.Items)
-                    {
-                        <tr>
-                            <td>@conductor.IdConductor</td>
-                            <td>@conductor.Dni</td>
-                            <td>@conductor.Nombre</td>
-                            <td>@conductor.Email</td>
-                            <td>@conductor.Telefono</td>
-                            <td>@conductor.ClaseLicencia</td>
-                            <td>@conductor.VencimientoLicencia.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(conductor)">Modificar</button>
-                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(conductor)">Eliminar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <!-- Estadísticas -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-person-badge text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Conductores</h6>
+                                    <h3 class="mb-0 fw-bold">@conductores.TotalItems</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-success bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Licencias Vigentes</h6>
+                                    <h3 class="mb-0 fw-bold">@conductores.Items.Count(c => c.VencimientoLicencia > DateTime.Now)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-warning bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Licencias Vencidas</h6>
+                                    <h3 class="mb-0 fw-bold">@conductores.Items.Count(c => c.VencimientoLicencia <= DateTime.Now)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Paginación -->
-            <nav aria-label="Paginación de conductores">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item @(conductores.PageNumber <= 1 ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(conductores.PageNumber - 1)">Anterior</a>
-                    </li>
-                    @for (int i = Math.Max(1, conductores.PageNumber - 2); i <= Math.Min(conductores.TotalPages, conductores.PageNumber + 2); i++)
-                    {
-                        <li class="page-item @(i == conductores.PageNumber ? "active" : "")">
-                            <a class="page-link" @onclick="() => CambiarPagina(i)">@i</a>
-                        </li>
-                    }
-                    <li class="page-item @(conductores.PageNumber >= conductores.TotalPages ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(conductores.PageNumber + 1)">Siguiente</a>
-                    </li>
-                </ul>
-                <p class="text-center mt-2">Página @conductores.PageNumber de @conductores.TotalPages (@conductores.TotalItems elementos)</p>
-            </nav>
+            <!-- Tabla de conductores -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-list-ul text-primary me-2"></i>
+                            Lista de Conductores
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">@conductores.TotalItems registros</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold">
+                                        <i class="bi bi-hash me-1"></i>ID
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-person me-1"></i>Conductor
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-card-text me-1"></i>DNI
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-envelope me-1"></i>Email
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-telephone me-1"></i>Teléfono
+                                    </th>
+                                    <th class="py-3 fw-semibold text-center">
+                                        <i class="bi bi-credit-card me-1"></i>Licencia
+                                    </th>
+                                    <th class="py-3 fw-semibold text-center">
+                                        <i class="bi bi-calendar-event me-1"></i>Vencimiento
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var conductor in conductores.Items)
+                                {
+                                    var isVencida = conductor.VencimientoLicencia <= DateTime.Now;
+                                    var proximoVencimiento = conductor.VencimientoLicencia <= DateTime.Now.AddMonths(1);
+                                    
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-light text-dark">@conductor.IdConductor</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="driver-avatar me-2">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <span class="fw-semibold">@conductor.Nombre</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="text-muted">@conductor.Dni</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <i class="bi bi-envelope-fill text-muted me-2"></i>
+                                            <span class="text-muted small">@(conductor.Email ?? "N/A")</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <i class="bi bi-telephone-fill text-muted me-2"></i>
+                                            <span class="text-muted">@conductor.Telefono</span>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <span class="badge bg-info text-dark px-3 py-2">
+                                                <i class="bi bi-award-fill me-1"></i>
+                                                Clase @conductor.ClaseLicencia
+                                            </span>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <span class="badge @(isVencida ? "bg-danger" : proximoVencimiento ? "bg-warning text-dark" : "bg-success") px-3 py-2">
+                                                <i class="bi bi-calendar-check-fill me-1"></i>
+                                                @conductor.VencimientoLicencia.ToString("dd/MM/yyyy")
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => Modificar(conductor)" title="Editar">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(conductor)" title="Eliminar">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav aria-label="Paginación de conductores">
+                        <ul class="pagination justify-content-center mb-2">
+                            <li class="page-item @(conductores.PageNumber <= 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(conductores.PageNumber - 1)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = Math.Max(1, conductores.PageNumber - 2); i <= Math.Min(conductores.TotalPages, conductores.PageNumber + 2); i++)
+                            {
+                                var pageNum = i;
+                                <li class="page-item @(i == conductores.PageNumber ? "active" : "")">
+                                    <a class="page-link" @onclick="() => CambiarPagina(pageNum)">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(conductores.PageNumber >= conductores.TotalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(conductores.PageNumber + 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="text-center text-muted mb-0 small">
+                            Mostrando página <strong>@conductores.PageNumber</strong> de <strong>@conductores.TotalPages</strong> 
+                            (<strong>@conductores.TotalItems</strong> conductores en total)
+                        </p>
+                    </nav>
+                </div>
+            </div>
         }
         else
         {
-            <div class="alert alert-info mt-4" role="alert">
-                No hay conductores registrados.
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-person-x-fill" style="font-size: 4rem; color: #dee2e6;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No se encontraron conductores</h5>
+                    <p class="text-muted mb-4">No hay conductores registrados o no coinciden con tu búsqueda.</p>
+                    <NavLink class="btn btn-primary" href="admin/conductores/crear">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Primer Conductor
+                    </NavLink>
+                </div>
             </div>
         }
     }
 </div>
+
+<style>
+    .driver-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        font-size: 1.2rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.375rem 0.75rem;
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .page-link {
+        cursor: pointer;
+    }
+</style>
 
 @code {
     PagedResult<ConductorDto>? conductores = new PagedResult<ConductorDto>();
@@ -115,7 +316,7 @@
         }
         catch (Exception ex)
         {
-            // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+            await _sweetAlert.FireAsync("Error", "Hubo un error al cargar los conductores.", SweetAlertIcon.Error);
         }
         finally
         {
@@ -133,6 +334,22 @@
         await LoadConductores();
     }
 
+    private async Task Buscar()
+    {
+        paginationParams.PageNumber = 1;
+        paginationParams.SearchTerm = searchTerm;
+        isLoading = true;
+        await LoadConductores();
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Buscar();
+        }
+    }
+
     private void Modificar(ConductorDto conductor)
     {
         _navigationManager.NavigateTo($"admin/conductores/editar/{conductor.IdConductor}");
@@ -142,13 +359,16 @@
     {
         SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Eliminando conductor",
-            Text = $"¿Está seguro que desea borrar el conductor {conductor.Nombre}?",
+            Title = "¿Eliminar conductor?",
+            Text = $"¿Está seguro que desea eliminar al conductor {conductor.Nombre}? Esta acción no se puede deshacer.",
             Icon = SweetAlertIcon.Warning,
             ShowCancelButton = true,
-            ConfirmButtonText = "Sí, quiero borrarlo!",
-            CancelButtonText = "No, espera"
+            ConfirmButtonText = "Sí, eliminar",
+            CancelButtonText = "Cancelar",
+            ConfirmButtonColor = "#dc3545",
+            CancelButtonColor = "#6c757d"
         });
+        
         if (respuesta.IsConfirmed)
         {
             try
@@ -156,7 +376,7 @@
                 isLoading = true;
                 await _conductorService.DeleteConductorAsync(conductor.IdConductor);
                 await LoadConductores();
-                await _sweetAlert.FireAsync("Eliminado", "El conductor ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+                await _sweetAlert.FireAsync("¡Eliminado!", "El conductor ha sido eliminado exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)
             {
@@ -167,13 +387,5 @@
                 isLoading = false;
             }
         }
-    }
-
-    private async Task Buscar()
-    {
-        paginationParams.PageNumber = 1;
-        paginationParams.SearchTerm = searchTerm;
-        isLoading = true;
-        await LoadConductores();
     }
 }

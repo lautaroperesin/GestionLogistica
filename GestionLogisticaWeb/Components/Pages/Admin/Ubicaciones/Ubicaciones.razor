@@ -6,76 +6,223 @@
 @inject SweetAlertService _sweetAlert
 @rendermode InteractiveServer
 
-<h1 class="text-center my-4">Gestión de Ubicaciones</h1>
-<div class="container py-4">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                Gestión de Ubicaciones
+            </h1>
+            <p class="text-muted mb-0">Administra todas las ubicaciones del sistema</p>
+        </div>
+        <NavLink class="btn btn-primary btn-lg shadow-sm" href="admin/ubicaciones/crear">
+            <i class="bi bi-plus-circle me-2"></i>Nueva Ubicación
+        </NavLink>
+    </div>
+
     @if (isLoading)
     {
-        <div class="d-flex align-items-center justify-content-center my-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <span class="ms-2 text-primary">Cargando ubicaciones...</span>
+        <div class="d-flex align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted">Cargando ubicaciones...</p>
+            </div>
         </div>
     }
     else
     {
-        <NavLink class="btn btn-primary" href="admin/ubicaciones/crear">Nueva ubicación</NavLink>
-
         @if (ubicaciones != null && ubicaciones.TotalItems > 0)
         {
-            <!-- Tabla de ubicaciones -->
-            <table class="table table-striped mt-4">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Dirección</th>
-                        <th>Descripción</th>
-                        <th>Dirección Completa</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var ubicacion in ubicaciones.Items)
-                    {
-                        <tr>
-                            <td>@ubicacion.IdUbicacion</td>
-                            <td>@ubicacion.Direccion</td>
-                            <td>@ubicacion.Descripcion</td>
-                            <td>@ubicacion.DireccionCompleta</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(ubicacion)">Modificar</button>
-                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(ubicacion)">Eliminar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <!-- Estadísticas -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-geo-fill text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Ubicaciones</h6>
+                                    <h3 class="mb-0 fw-bold">@ubicaciones.TotalItems</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm bg-info bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-map text-info" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">En esta Página</h6>
+                                    <h3 class="mb-0 fw-bold">@ubicaciones.Items.Count()</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Paginación -->
-            <nav aria-label="Paginación de ubicaciones">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item @(ubicaciones.PageNumber <= 1 ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(ubicaciones.PageNumber - 1)">Anterior</a>
-                    </li>
-                    @for (int i = Math.Max(1, ubicaciones.PageNumber - 2); i <= Math.Min(ubicaciones.TotalPages, ubicaciones.PageNumber + 2); i++)
-                    {
-                        <li class="page-item @(i == ubicaciones.PageNumber ? "active" : "")">
-                            <a class="page-link" @onclick="() => CambiarPagina(i)">@i</a>
-                        </li>
-                    }
-                    <li class="page-item @(ubicaciones.PageNumber >= ubicaciones.TotalPages ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(ubicaciones.PageNumber + 1)">Siguiente</a>
-                    </li>
-                </ul>
-                <p class="text-center mt-2">Página @ubicaciones.PageNumber de @ubicaciones.TotalPages (@ubicaciones.TotalItems elementos)</p>
-            </nav>
+            <!-- Tabla de ubicaciones -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-list-ul text-primary me-2"></i>
+                            Lista de Ubicaciones
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">@ubicaciones.TotalItems registros</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold">
+                                        <i class="bi bi-hash me-1"></i>ID
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-signpost me-1"></i>Dirección
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-info-circle me-1"></i>Descripción
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-map me-1"></i>Dirección Completa
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ubicacion in ubicaciones.Items)
+                                {
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-light text-dark">@ubicacion.IdUbicacion</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="location-icon me-2">
+                                                    <i class="bi bi-geo-alt-fill"></i>
+                                                </div>
+                                                <span class="fw-semibold">@ubicacion.Direccion</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="text-muted">@(ubicacion.Descripcion ?? "Sin descripción")</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-pin-map-fill text-danger me-2 mt-1"></i>
+                                                <span class="text-muted small">@ubicacion.DireccionCompleta</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => Modificar(ubicacion)" title="Editar">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(ubicacion)" title="Eliminar">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav aria-label="Paginación de ubicaciones">
+                        <ul class="pagination justify-content-center mb-2">
+                            <li class="page-item @(ubicaciones.PageNumber <= 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(ubicaciones.PageNumber - 1)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = Math.Max(1, ubicaciones.PageNumber - 2); i <= Math.Min(ubicaciones.TotalPages, ubicaciones.PageNumber + 2); i++)
+                            {
+                                var pageNum = i;
+                                <li class="page-item @(i == ubicaciones.PageNumber ? "active" : "")">
+                                    <a class="page-link" @onclick="() => CambiarPagina(pageNum)">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(ubicaciones.PageNumber >= ubicaciones.TotalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(ubicaciones.PageNumber + 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="text-center text-muted mb-0 small">
+                            Mostrando página <strong>@ubicaciones.PageNumber</strong> de <strong>@ubicaciones.TotalPages</strong> 
+                            (<strong>@ubicaciones.TotalItems</strong> ubicaciones en total)
+                        </p>
+                    </nav>
+                </div>
+            </div>
         }
         else
         {
-            <div class="alert alert-info mt-4" role="alert">
-                No hay ubicaciones registradas.
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-pin-map" style="font-size: 4rem; color: #dee2e6;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No se encontraron ubicaciones</h5>
+                    <p class="text-muted mb-4">No hay ubicaciones registradas en el sistema.</p>
+                    <NavLink class="btn btn-primary" href="admin/ubicaciones/crear">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Primera Ubicación
+                    </NavLink>
+                </div>
             </div>
         }
     }
 </div>
+
+<style>
+    .location-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #dc3545;
+        font-size: 1.2rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.375rem 0.75rem;
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .page-link {
+        cursor: pointer;
+    }
+</style>
 
 @code {
     PagedResult<UbicacionDto>? ubicaciones = new PagedResult<UbicacionDto>();
@@ -97,7 +244,7 @@
             }
             catch (Exception ex)
             {
-                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+                await _sweetAlert.FireAsync("Error", "Hubo un error al cargar las ubicaciones.", SweetAlertIcon.Error);
             }
             finally
             {
@@ -119,7 +266,7 @@
         }
         catch (Exception ex)
         {
-            // Manejar errores
+            await _sweetAlert.FireAsync("Error", "Hubo un error al cambiar de página.", SweetAlertIcon.Error);
         }
         finally
         {
@@ -137,13 +284,16 @@
     {
         SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Eliminando ubicación",
-            Text = $"¿Está seguro que desea borrar la ubicación {ubicacion.Direccion}?",
+            Title = "¿Eliminar ubicación?",
+            Text = $"¿Está seguro que desea eliminar la ubicación {ubicacion.Direccion}? Esta acción no se puede deshacer.",
             Icon = SweetAlertIcon.Warning,
             ShowCancelButton = true,
-            ConfirmButtonText = "Sí, quiero borrarla!",
-            CancelButtonText = "No, espera"
+            ConfirmButtonText = "Sí, eliminar",
+            CancelButtonText = "Cancelar",
+            ConfirmButtonColor = "#dc3545",
+            CancelButtonColor = "#6c757d"
         });
+        
         if (respuesta.IsConfirmed)
         {
             try
@@ -151,7 +301,7 @@
                 isLoading = true;
                 await _ubicacionService.DeleteUbicacionAsync(ubicacion.IdUbicacion);
                 ubicaciones = await _ubicacionService.GetUbicacionesAsync(paginationParams);
-                await _sweetAlert.FireAsync("Eliminada", "La ubicación ha sido eliminada exitosamente.", SweetAlertIcon.Success);
+                await _sweetAlert.FireAsync("¡Eliminada!", "La ubicación ha sido eliminada exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)
             {

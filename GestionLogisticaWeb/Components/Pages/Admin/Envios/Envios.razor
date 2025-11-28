@@ -14,33 +14,55 @@
 @inject IConductorService _conductorService
 @rendermode InteractiveServer
 
-<h1 class="text-center my-4">Gestión de Envios</h1>
-<div class="container py-4">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-box-seam-fill text-primary me-2"></i>
+                Gestión de Envíos
+            </h1>
+            <p class="text-muted mb-0">Administra y monitorea todos los envíos del sistema</p>
+        </div>
+        <NavLink class="btn btn-primary btn-lg shadow-sm" href="admin/envios/crear">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Envío
+        </NavLink>
+    </div>
+
     @if (isLoading)
     {
-        <div class="d-flex align-items-center justify-content-center my-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <span class="ms-2 text-primary">Cargando envios...</span>
+        <div class="d-flex align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted">Cargando envíos...</p>
+            </div>
         </div>
     }
     else
     {
-        <NavLink class="btn btn-primary" href="admin/envios/crear">Nuevo envio</NavLink>
-
         <!-- Filtros -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5>Filtros</h5>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-funnel-fill text-primary me-2"></i>
+                    <h5 class="mb-0 fw-semibold">Filtros de Búsqueda</h5>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label for="numeroSeguimiento" class="form-label">Número de Seguimiento</label>
-                        <InputText id="numeroSeguimiento" class="form-control" @bind-Value="envioFilter.NumeroSeguimiento" placeholder="Buscar por número" />
+                        <label for="numeroSeguimiento" class="form-label fw-semibold">
+                            <i class="bi bi-hash text-muted me-1"></i>Número de Seguimiento
+                        </label>
+                        <InputText id="numeroSeguimiento" class="form-control" @bind-Value="envioFilter.NumeroSeguimiento" placeholder="Ej: ENV-2024-001" />
                     </div>
                     <div class="col-md-3">
-                        <label for="cliente" class="form-label">Cliente</label>
-                        <InputSelect id="cliente" class="form-control" @bind-Value="envioFilter.IdCliente">
+                        <label for="cliente" class="form-label fw-semibold">
+                            <i class="bi bi-person-fill text-muted me-1"></i>Cliente
+                        </label>
+                        <InputSelect id="cliente" class="form-select" @bind-Value="envioFilter.IdCliente">
                             <option value="">Todos los clientes</option>
                             @foreach (var cliente in clientes)
                             {
@@ -49,8 +71,10 @@
                         </InputSelect>
                     </div>
                     <div class="col-md-3">
-                        <label for="conductor" class="form-label">Conductor</label>
-                        <InputSelect id="conductor" class="form-control" @bind-Value="envioFilter.IdConductor">
+                        <label for="conductor" class="form-label fw-semibold">
+                            <i class="bi bi-person-badge-fill text-muted me-1"></i>Conductor
+                        </label>
+                        <InputSelect id="conductor" class="form-select" @bind-Value="envioFilter.IdConductor">
                             <option value="">Todos los conductores</option>
                             @foreach (var conductor in conductores)
                             {
@@ -59,8 +83,10 @@
                         </InputSelect>
                     </div>
                     <div class="col-md-3">
-                        <label for="vehiculo" class="form-label">Vehículo</label>
-                        <InputSelect id="vehiculo" class="form-control" @bind-Value="envioFilter.IdVehiculo">
+                        <label for="vehiculo" class="form-label fw-semibold">
+                            <i class="bi bi-truck-front-fill text-muted me-1"></i>Vehículo
+                        </label>
+                        <InputSelect id="vehiculo" class="form-select" @bind-Value="envioFilter.IdVehiculo">
                             <option value="">Todos los vehículos</option>
                             @foreach (var vehiculo in vehiculos)
                             {
@@ -69,8 +95,10 @@
                         </InputSelect>
                     </div>
                     <div class="col-md-3">
-                        <label for="estado" class="form-label">Estado</label>
-                        <InputSelect id="estado" class="form-control" @bind-Value="envioFilter.EstadoEnvio">
+                        <label for="estado" class="form-label fw-semibold">
+                            <i class="bi bi-flag-fill text-muted me-1"></i>Estado
+                        </label>
+                        <InputSelect id="estado" class="form-select" @bind-Value="envioFilter.EstadoEnvio">
                             <option value="">Todos los estados</option>
                             @foreach (var estado in Enum.GetValues<EstadoEnvioEnum>())
                             {
@@ -79,80 +107,534 @@
                         </InputSelect>
                     </div>
                     <div class="col-md-3">
-                        <label for="fechaDesde" class="form-label">Fecha Salida Desde</label>
+                        <label for="fechaDesde" class="form-label fw-semibold">
+                            <i class="bi bi-calendar-event text-muted me-1"></i>Fecha Desde
+                        </label>
                         <InputDate id="fechaDesde" class="form-control" @bind-Value="envioFilter.FechaSalidaDesde" />
                     </div>
                     <div class="col-md-3">
-                        <label for="fechaHasta" class="form-label">Fecha Salida Hasta</label>
+                        <label for="fechaHasta" class="form-label fw-semibold">
+                            <i class="bi bi-calendar-check text-muted me-1"></i>Fecha Hasta
+                        </label>
                         <InputDate id="fechaHasta" class="form-control" @bind-Value="envioFilter.FechaSalidaHasta" />
                     </div>
                 </div>
-                <div class="d-flex gap-2 mt-3">
-                    <button class="btn btn-secondary" @onclick="AplicarFiltros">Aplicar Filtros</button>
-                    <button class="btn btn-outline-secondary" @onclick="LimpiarFiltros">Limpiar Filtros</button>
+                <div class="d-flex gap-2 mt-4">
+                    <button class="btn btn-primary px-4" @onclick="AplicarFiltros">
+                        <i class="bi bi-search me-2"></i>Aplicar Filtros
+                    </button>
+                    <button class="btn btn-outline-secondary px-4" @onclick="LimpiarFiltros">
+                        <i class="bi bi-x-circle me-2"></i>Limpiar
+                    </button>
                 </div>
             </div>
         </div>
 
+        <!-- Estadísticas rápidas -->
         @if (envios != null && envios.TotalItems > 0)
         {
-            // Tabla de envios
-            <table class="table table-striped mt-4">
-                <thead>
-                    <tr>
-                        <th>Número de Seguimiento</th>
-                        <th>Fecha de Salida</th>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var envio in envios.Items)
-                    {
-                        <tr>
-                            <td>@envio.NumeroSeguimiento</td>
-                            <td>@envio.FechaSalida?.ToString("dd/MM/yyyy")</td>
-                            <td>@envio.Origen.DireccionCompleta</td>
-                            <td>@envio.Destino.DireccionCompleta</td>
-                            <td>@envio.Estado</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(envio)">Modificar</button>
-                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(envio)">Eliminar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-box2-fill text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Envíos</h6>
+                                    <h3 class="mb-0 fw-bold">@envios.TotalItems</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm bg-warning bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-hourglass-split text-warning" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">En Tránsito</h6>
+                                    <h3 class="mb-0 fw-bold">@envios.Items.Count(e => e.Estado == EstadoEnvioEnum.EnTransito)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm bg-success bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Entregados</h6>
+                                    <h3 class="mb-0 fw-bold">@envios.Items.Count(e => e.Estado == EstadoEnvioEnum.Entregado)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm bg-danger bg-opacity-10">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Demorados</h6>
+                                    <h3 class="mb-0 fw-bold">@envios.Items.Count(e => e.Estado == EstadoEnvioEnum.Demorado)</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Paginación -->
-            <nav aria-label="Paginación de envíos">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item @(envios.PageNumber <= 1 ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(envios.PageNumber - 1)">Anterior</a>
-                    </li>
-                    @for (int i = Math.Max(1, envios.PageNumber - 2); i <= Math.Min(envios.TotalPages, envios.PageNumber + 2); i++)
-                    {
-                        <li class="page-item @(i == envios.PageNumber ? "active" : "")">
-                            <a class="page-link" @onclick="() => CambiarPagina(i)">@i</a>
-                        </li>
-                    }
-                    <li class="page-item @(envios.PageNumber >= envios.TotalPages ? "disabled" : "")">
-                        <a class="page-link" @onclick="() => CambiarPagina(envios.PageNumber + 1)">Siguiente</a>
-                    </li>
-                </ul>
-                <p class="text-center mt-2">Página @envios.PageNumber de @envios.TotalPages (@envios.TotalItems elementos)</p>
-            </nav>
+            <!-- Tabla de envíos -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-list-ul text-primary me-2"></i>
+                            Lista de Envíos
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">@envios.TotalItems registros</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold">
+                                        <i class="bi bi-hash me-1"></i>N° Seguimiento
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-calendar3 me-1"></i>Fecha Salida
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-geo-alt me-1"></i>Ruta
+                                    </th>
+                                    <th class="py-3 fw-semibold">
+                                        <i class="bi bi-person me-1"></i>Cliente
+                                    </th>
+                                    <th class="py-3 fw-semibold text-center">
+                                        <i class="bi bi-flag me-1"></i>Estado
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var envio in envios.Items)
+                                {
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="icon-box me-2">
+                                                    <i class="bi bi-box-seam text-primary"></i>
+                                                </div>
+                                                <span class="fw-semibold text-primary">@envio.NumeroSeguimiento</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <i class="bi bi-calendar-event text-muted me-1"></i>
+                                            <span class="text-muted">@envio.FechaSalida?.ToString("dd/MM/yyyy")</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex flex-column">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-geo-alt-fill text-success me-1"></i>
+                                                    @(envio.Origen?.DireccionCompleta?.Length > 30 ? envio.Origen.DireccionCompleta.Substring(0, 30) + "..." : envio.Origen?.DireccionCompleta)
+                                                </small>
+                                                <small class="text-muted mt-1">
+                                                    <i class="bi bi-geo-fill text-danger me-1"></i>
+                                                    @(envio.Destino?.DireccionCompleta?.Length > 30 ? envio.Destino.DireccionCompleta.Substring(0, 30) + "..." : envio.Destino?.DireccionCompleta)
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-person-circle text-muted me-2"></i>
+                                                <span>@envio.Cliente?.Nombre</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 text-center">
+                                            <span class="badge rounded-pill @GetEstadoBadgeClass(envio.Estado) px-3 py-2">
+                                                <i class="@GetEstadoIcon(envio.Estado) me-1"></i>
+                                                @envio.Estado
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-info" @onclick="() => VerDetalles(envio)" title="Ver Detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => Modificar(envio)" title="Editar">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(envio)" title="Eliminar">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav aria-label="Paginación de envíos">
+                        <ul class="pagination justify-content-center mb-2">
+                            <li class="page-item @(envios.PageNumber <= 1 ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(envios.PageNumber - 1)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = Math.Max(1, envios.PageNumber - 2); i <= Math.Min(envios.TotalPages, envios.PageNumber + 2); i++)
+                            {
+                                var pageNum = i;
+                                <li class="page-item @(i == envios.PageNumber ? "active" : "")">
+                                    <a class="page-link" @onclick="() => CambiarPagina(pageNum)">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(envios.PageNumber >= envios.TotalPages ? "disabled" : "")">
+                                <a class="page-link" @onclick="() => CambiarPagina(envios.PageNumber + 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="text-center text-muted mb-0 small">
+                            Mostrando página <strong>@envios.PageNumber</strong> de <strong>@envios.TotalPages</strong> 
+                            (<strong>@envios.TotalItems</strong> envíos en total)
+                        </p>
+                    </nav>
+                </div>
+            </div>
         }
         else
         {
-            <div class="alert alert-info mt-4" role="alert">
-                No hay envios registrados.
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-inbox" style="font-size: 4rem; color: #dee2e6;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No se encontraron envíos</h5>
+                    <p class="text-muted mb-4">No hay envíos registrados con los filtros aplicados.</p>
+                    <NavLink class="btn btn-primary" href="admin/envios/crear">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Primer Envío
+                    </NavLink>
+                </div>
             </div>
         }
     }
 </div>
+
+<!-- Modal de Detalles -->
+@if (showModal && envioSeleccionado != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-seam-fill me-2"></i>
+                        Detalles del Envío
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Información General -->
+                    <div class="card mb-3 border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary fw-bold mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Información General
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Número de Seguimiento</label>
+                                    <p class="fw-bold mb-0">@envioSeleccionado.NumeroSeguimiento</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Estado</label>
+                                    <p class="mb-0">
+                                        <span class="badge @GetEstadoBadgeClass(envioSeleccionado.Estado) px-3 py-2">
+                                            <i class="@GetEstadoIcon(envioSeleccionado.Estado) me-1"></i>
+                                            @envioSeleccionado.Estado
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Fecha de Creación</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-calendar-plus me-2 text-info"></i>
+                                        @envioSeleccionado.FechaCreacionEnvio.ToString("dd/MM/yyyy")
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Fecha de Salida</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                                        @(envioSeleccionado.FechaSalida?.ToString("dd/MM/yyyy") ?? "No definida")
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="text-muted small">Peso</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-box-fill me-2 text-warning"></i>
+                                        <strong>@envioSeleccionado.PesoKg kg</strong>
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="text-muted small">Volumen</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-box me-2 text-info"></i>
+                                        <strong>@envioSeleccionado.VolumenM3 m³</strong>
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="text-muted small">Costo Total</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-cash-coin me-2 text-success"></i>
+                                        <strong>$@envioSeleccionado.CostoTotal.ToString("N2")</strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="card mb-3 border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary fw-bold mb-3">
+                                <i class="bi bi-person-fill me-2"></i>Cliente
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Nombre</label>
+                                    <p class="fw-bold mb-0">@envioSeleccionado.Cliente?.Nombre</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Email</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        @(envioSeleccionado.Cliente?.Email ?? "No disponible")
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Teléfono</label>
+                                    <p class="mb-0">
+                                        <i class="bi bi-telephone me-2"></i>
+                                        @(envioSeleccionado.Cliente?.Telefono ?? "No disponible")
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ubicaciones -->
+                    <div class="card mb-3 border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary fw-bold mb-3">
+                                <i class="bi bi-geo-alt-fill me-2"></i>Ruta del Envío
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="alert alert-success mb-0" role="alert">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-geo-alt-fill fs-4 me-3"></i>
+                                            <div>
+                                                <label class="text-muted small mb-1">Origen</label>
+                                                <p class="fw-bold mb-1">@envioSeleccionado.Origen?.Direccion</p>
+                                                <p class="small mb-0 text-muted">@envioSeleccionado.Origen?.DireccionCompleta</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="text-center">
+                                        <i class="bi bi-arrow-down-circle-fill text-primary" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="alert alert-danger mb-0" role="alert">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-geo-fill fs-4 me-3"></i>
+                                            <div>
+                                                <label class="text-muted small mb-1">Destino</label>
+                                                <p class="fw-bold mb-1">@envioSeleccionado.Destino?.Direccion</p>
+                                                <p class="small mb-0 text-muted">@envioSeleccionado.Destino?.DireccionCompleta</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conductor y Vehículo -->
+                    @if (envioSeleccionado.Conductor != null || envioSeleccionado.Vehiculo != null)
+                    {
+                        <div class="card mb-3 border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary fw-bold mb-3">
+                                    <i class="bi bi-truck-front me-2"></i>Transporte
+                                </h6>
+                                <div class="row g-3">
+                                    @if (envioSeleccionado.Conductor != null)
+                                    {
+                                        <div class="col-md-6">
+                                            <label class="text-muted small">Conductor</label>
+                                            <p class="fw-bold mb-1">
+                                                <i class="bi bi-person-badge me-2"></i>
+                                                @envioSeleccionado.Conductor.Nombre
+                                            </p>
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-telephone me-1"></i>
+                                                @envioSeleccionado.Conductor.Telefono
+                                            </small>
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-credit-card me-1"></i>
+                                                DNI: @envioSeleccionado.Conductor.Dni
+                                            </small>
+                                        </div>
+                                    }
+                                    @if (envioSeleccionado.Vehiculo != null)
+                                    {
+                                        <div class="col-md-6">
+                                            <label class="text-muted small">Vehículo</label>
+                                            <p class="fw-bold mb-1">
+                                                <i class="bi bi-truck me-2"></i>
+                                                @envioSeleccionado.Vehiculo.Marca @envioSeleccionado.Vehiculo.Modelo
+                                            </p>
+                                            <small class="text-muted d-block">
+                                                Patente: <strong>@envioSeleccionado.Vehiculo.Patente</strong>
+                                            </small>
+                                            <small class="text-muted d-block">
+                                                Capacidad: <strong>@envioSeleccionado.Vehiculo.CapacidadCarga kg</strong>
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Tipo de Carga -->
+                    @if (envioSeleccionado.TipoCarga != null)
+                    {
+                        <div class="card mb-3 border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary fw-bold mb-3">
+                                    <i class="bi bi-boxes me-2"></i>Tipo de Carga
+                                </h6>
+                                <div class="d-flex align-items-center">
+                                    <div class="cargo-type-icon me-3">
+                                        <i class="bi bi-box-seam-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold mb-0">@envioSeleccionado.TipoCarga.Nombre</p>
+                                        <small class="text-muted">Categoría de mercancía</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Descripción -->
+                    @if (!string.IsNullOrWhiteSpace(envioSeleccionado.Descripcion))
+                    {
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary fw-bold mb-3">
+                                    <i class="bi bi-chat-left-text me-2"></i>Descripción
+                                </h6>
+                                <p class="mb-0">@envioSeleccionado.Descripcion</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarModal">
+                        <i class="bi bi-x-circle me-2"></i>Cerrar
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="() => Modificar(envioSeleccionado)">
+                        <i class="bi bi-pencil-square me-2"></i>Editar Envío
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .icon-box {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 6px;
+    }
+
+    .icon-box i {
+        font-size: 1.1rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.375rem 0.75rem;
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .page-link {
+        cursor: pointer;
+    }
+
+    .modal.show {
+        display: block;
+    }
+
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .cargo-type-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(96, 165, 250, 0.2) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        font-size: 1.5rem;
+    }
+</style>
 
 @code {
     PagedResult<EnvioDto>? envios = new PagedResult<EnvioDto>();
@@ -163,12 +645,13 @@
         PageSize = 10
     };
 
-    // Listas para filtros
     List<ClienteDto> clientes = new();
     List<VehiculoDto> vehiculos = new();
     List<ConductorDto> conductores = new();
 
     bool isLoading = true;
+    bool showModal = false;
+    EnvioDto? envioSeleccionado = null;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -176,7 +659,6 @@
         {
             try
             {
-                // Cargar listas para filtros
                 var clientesTask = _clienteService.GetClientesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
                 var conductoresTask = _conductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
                 var vehiculosTask = _vehiculoService.GetVehiculosAsync();
@@ -187,12 +669,11 @@
                 conductores = (await conductoresTask)?.Items.ToList() ?? new List<ConductorDto>();
                 vehiculos = (await vehiculosTask)?.ToList() ?? new List<VehiculoDto>();
 
-                // Cargar envíos
                 envios = await _envioService.GetEnviosAsync(envioFilter);
             }
             catch (Exception ex)
             {
-                // Manejar errores aquí (por ejemplo, mostrar un mensaje al usuario)
+                await _sweetAlert.FireAsync("Error", "Hubo un error al cargar los datos.", SweetAlertIcon.Error);
             }
             finally
             {
@@ -205,14 +686,14 @@
     private async Task AplicarFiltros()
     {
         isLoading = true;
-        envioFilter.PageNumber = 1; // Reset to first page
+        envioFilter.PageNumber = 1;
         try
         {
             envios = await _envioService.GetEnviosAsync(envioFilter);
         }
         catch (Exception ex)
         {
-            // Manejar errores
+            await _sweetAlert.FireAsync("Error", "Hubo un error al aplicar los filtros.", SweetAlertIcon.Error);
         }
         finally
         {
@@ -243,7 +724,7 @@
         }
         catch (Exception ex)
         {
-            // Manejar errores
+            await _sweetAlert.FireAsync("Error", "Hubo un error al cambiar de página.", SweetAlertIcon.Error);
         }
         finally
         {
@@ -252,27 +733,39 @@
         }
     }
 
+    private void VerDetalles(EnvioDto envio)
+    {
+        envioSeleccionado = envio;
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private void CerrarModal()
+    {
+        showModal = false;
+        envioSeleccionado = null;
+        StateHasChanged();
+    }
+
     private void Modificar(EnvioDto entity)
     {
         _navigationManager.NavigateTo($"admin/envios/editar/{entity.IdEnvio}");
-    }
-
-    private void Nuevo()
-    {
-        envioCurrent = new();
     }
 
     private async Task Eliminar(EnvioDto entity)
     {
         SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Eliminando envio",
-            Text = $"¿Está seguro que desea borrar el envio {entity.NumeroSeguimiento}",
+            Title = "¿Eliminar envío?",
+            Text = $"¿Está seguro que desea eliminar el envío {entity.NumeroSeguimiento}? Esta acción no se puede deshacer.",
             Icon = SweetAlertIcon.Warning,
             ShowCancelButton = true,
-            ConfirmButtonText = "Si, quiero borrarlo!",
-            CancelButtonText = "No, espera"
+            ConfirmButtonText = "Sí, eliminar",
+            CancelButtonText = "Cancelar",
+            ConfirmButtonColor = "#dc3545",
+            CancelButtonColor = "#6c757d"
         });
+        
         if (respuesta.IsConfirmed)
         {
             try
@@ -280,46 +773,43 @@
                 isLoading = true;
                 await _envioService.DeleteEnvioAsync(entity.IdEnvio);
                 envios = await _envioService.GetEnviosAsync(envioFilter);
-                await _sweetAlert.FireAsync("Eliminado", "El envio ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+                await _sweetAlert.FireAsync("¡Eliminado!", "El envío ha sido eliminado exitosamente.", SweetAlertIcon.Success);
             }
             catch (Exception ex)
             {
-                await _sweetAlert.FireAsync("Error", "Hubo un error al eliminar el envio.", SweetAlertIcon.Error);
+                await _sweetAlert.FireAsync("Error", "Hubo un error al eliminar el envío.", SweetAlertIcon.Error);
             }
             finally
             {
                 isLoading = false;
+                StateHasChanged();
             }
         }
     }
 
-    // private async Task Guardar(EnvioDto envioToSave)
-    // {
-    //     try
-    //     {
-    //         isLoading = true;
-    //         if (envioToSave.IdEnvio == 0)
-    //         {
-    //             // Nuevo autor
-    //             await _envioService.CreateEnvioAsync(envioToSave);
-    //             await _sweetAlert.FireAsync("Creado", "El envio ha sido creado exitosamente.", SweetAlertIcon.Success);
-    //         }
-    //         else
-    //         {
-    //             // Actualizar autor existente
-    //             await _envioService.UpdateEnvioAsync(envioToSave.IdEnvio, envioToSave);
-    //             await _sweetAlert.FireAsync("Actualizado", "El envio ha sido actualizado exitosamente.", SweetAlertIcon.Success);
-    //         }
-    //         envios = await _envioService.GetEnviosAsync(envioFilter);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         await _sweetAlert.FireAsync("Error", "Hubo un error al guardar el envio.", SweetAlertIcon.Error);
-    //     }
-    //     finally
-    //     {
-    //         isLoading = false;
-    //         StateHasChanged();
-    //     }
-    // }
+    private string GetEstadoBadgeClass(EstadoEnvioEnum estado)
+    {
+        return estado switch
+        {
+            EstadoEnvioEnum.Pendiente => "bg-secondary",
+            EstadoEnvioEnum.EnTransito => "bg-primary",
+            EstadoEnvioEnum.Entregado => "bg-success",
+            EstadoEnvioEnum.Demorado => "bg-warning text-dark",
+            EstadoEnvioEnum.Cancelado => "bg-danger",
+            _ => "bg-light text-dark"
+        };
+    }
+
+    private string GetEstadoIcon(EstadoEnvioEnum estado)
+    {
+        return estado switch
+        {
+            EstadoEnvioEnum.Pendiente => "bi bi-clock-history",
+            EstadoEnvioEnum.EnTransito => "bi bi-truck",
+            EstadoEnvioEnum.Entregado => "bi bi-check-circle-fill",
+            EstadoEnvioEnum.Demorado => "bi bi-exclamation-triangle-fill",
+            EstadoEnvioEnum.Cancelado => "bi bi-x-circle-fill",
+            _ => "bi bi-question-circle"
+        };
+    }
 }

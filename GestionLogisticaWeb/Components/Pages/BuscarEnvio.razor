@@ -1,40 +1,96 @@
 ﻿@page "/"
+@using GestionLogisticaBackend.DTOs.Usuario
+@using Microsoft.Extensions.Caching.Memory
+@using Service.Enums
+@using Shared.DTOs.Usuario
 @inject NavigationManager Navigation
 @inject IEnvioService _envioService
+@inject FirebaseAuthService _firebaseAuthService
+@inject IUsuarioService _usuarioService
+@inject IMemoryCache _cacheMemory
 @rendermode InteractiveServer
 
-<div class="hero-section bg-primary text-white py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold">Consulta tu Envío</h1>
-                <p class="lead">Ingresa el número de seguimiento para obtener información actualizada sobre tu paquete.</p>
-            </div>
-            <div class="col-lg-6">
-                <div class="card shadow-lg border-0">
-                    <div class="card-body p-4">
-                        <h5 class="card-title text-center mb-4">Buscar Envío</h5>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control form-control-lg" @bind="NumeroSeguimiento" placeholder="Número de seguimiento" />
-                            <button class="btn btn-success btn-lg" @onclick="Buscar" disabled="@(string.IsNullOrWhiteSpace(NumeroSeguimiento) || IsLoading)">
-                                @if (IsLoading)
-                                {
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span class="ms-2">Buscando...</span>
-                                }
-                                else
-                                {
-                                    <i class="bi bi-search"></i>
-                                    <span class="ms-2">Buscar</span>
-                                }
-                            </button>
+@if (!_isLogued)
+{
+    <!-- Pantalla de Bienvenida para usuarios no autenticados -->
+    <div class="welcome-container">
+        <div class="hero-gradient">
+            <div class="container py-5">
+                <div class="row align-items-center min-vh-100">
+                    <div class="col-lg-6 text-white">
+                        <div class="welcome-content">
+                            <h1 class="display-3 fw-bold mb-4 animate-fade-in">
+                                📦 Gestión Logística
+                            </h1>
+                            <div class="features-list animate-fade-in-delay-2">
+                                <div class="feature-item mb-3">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    <span>Seguimiento en tiempo real de tus envios</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card shadow-2xl border-0 animate-scale-in">
+                            <div class="card-body p-5">
+                                <div class="text-center mb-4">
+                                    <div class="login-icon mb-3">
+                                        <i class="bi bi-box-seam-fill text-primary" style="font-size: 4rem;"></i>
+                                    </div>
+                                    <h2 class="h3 fw-bold mb-2">¡Bienvenido!</h2>
+                                </div>
+                                
+                                <div class="d-grid gap-3">
+                                    <a href="/login" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                        Iniciar Sesión
+                                    </a>
+                                </div>
+                           
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
+
+@if (_isLogued)
+{
+    <div class="hero-section bg-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold">Consulta tu Envío</h1>
+                    <p class="lead">Ingresa el número de seguimiento para obtener información actualizada sobre tu paquete.</p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-4">
+                            <h5 class="card-title text-center mb-4">Buscar Envío</h5>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control form-control-lg" @bind="NumeroSeguimiento" placeholder="Número de seguimiento" />
+                                <button class="btn btn-success btn-lg" @onclick="Buscar" disabled="@(string.IsNullOrWhiteSpace(NumeroSeguimiento) || IsLoading)">
+                                    @if (IsLoading)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="ms-2">Buscando...</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-search"></i>
+                                        <span class="ms-2">Buscar</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @if (IsLoading)
 {
@@ -97,10 +153,198 @@ else if (Envio != null)
     </div>
 }
 
+<style>
+    .welcome-container {
+        min-height: 100vh;
+    }
+
+    .hero-gradient {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .shadow-2xl {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .feature-item {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .feature-item i {
+        font-size: 1.5rem;
+    }
+
+    .divider {
+        position: relative;
+        text-align: center;
+        margin: 1.5rem 0;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #dee2e6;
+    }
+
+    .divider-text {
+        background: white;
+        padding: 0 1rem;
+        position: relative;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .features-section {
+        border-top: 1px solid #e5e7eb;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .animate-fade-in-delay-1 {
+        animation: fadeIn 0.6s ease-out 0.2s;
+        animation-fill-mode: backwards;
+    }
+
+    .animate-fade-in-delay-2 {
+        animation: fadeIn 0.6s ease-out 0.4s;
+        animation-fill-mode: backwards;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.6s ease-out 0.3s;
+        animation-fill-mode: backwards;
+    }
+
+    .login-icon {
+        display: inline-block;
+        padding: 1rem;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+        border-radius: 50%;
+    }
+</style>
+
 @code {
     private PagedResult<EnvioDto>? Envio { get; set; }
     private string NumeroSeguimiento { get; set; } = "";
     private bool IsLoading { get; set; } = false;
+    private FirebaseUser? _userLogued;
+    private bool _isLogued = false;
+    private UsuarioDto? _usuarioLogueado;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _firebaseAuthService.OnChangeLogin += LoginChanged;
+            if (await _firebaseAuthService.IsUserAuthenticated())
+            {
+                _userLogued = _firebaseAuthService.CurrentUser;
+                _isLogued = true;
+                if (_usuarioLogueado == null) await CargarUsuarioAsync();
+            }
+            else
+            {
+                _isLogued = false;
+                _userLogued = null;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task CargarUsuarioAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(_userLogued?.Email))
+            {
+                _usuarioLogueado = await _usuarioService.GetUserByEmailAsync(_userLogued.Email);
+                if (_usuarioLogueado != null)
+                {
+                    _cacheMemory.Set("usuarioLogueado", _usuarioLogueado);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+        }
+    }
+
+    private async void LoginChanged()
+    {
+        if (_firebaseAuthService.CurrentUser != null)
+        {
+            _userLogued = _firebaseAuthService.CurrentUser;
+            _isLogued = true;
+            if (_usuarioLogueado == null) await CargarUsuarioAsync();
+        }
+        else
+        {
+            _isLogued = false;
+            _userLogued = null;
+        }
+        StateHasChanged();
+    }
 
     private async Task Buscar()
     {
@@ -126,5 +370,10 @@ else if (Envio != null)
             EstadoEnvioEnum.Cancelado => "danger",
             _ => "light"
         };
+    }
+
+    public void Dispose()
+    {
+        _firebaseAuthService.OnChangeLogin -= LoginChanged;
     }
 }
