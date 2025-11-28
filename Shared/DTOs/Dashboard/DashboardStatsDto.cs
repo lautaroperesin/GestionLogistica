@@ -10,18 +10,11 @@
         public int EnviosCancelados { get; set; } // Incluye cancelados, incidentes y demorados
         public int EnviosEsteMes { get; set; }
 
-        // Ingresos
-        public decimal IngresosEsteMes { get; set; }
-        public decimal IngresosMesAnterior { get; set; }
-        public decimal FacturacionPendiente { get; set; }
-
         // Clientes
         public int TotalClientes { get; set; }
 
         // Vehículos
         public int TotalVehiculos { get; set; }
-        public int VehiculosActivos { get; set; }
-        public int VehiculosEnMantenimiento { get; set; }
     }
 
 }

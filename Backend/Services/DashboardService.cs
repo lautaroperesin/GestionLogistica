@@ -1,6 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Dashboard;
 using GestionLogisticaBackend.DTOs.Envio;
-using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.Enums;
 using GestionLogisticaBackend.Extensions;
 using LogisticaBackend.Data;
@@ -42,33 +41,11 @@ namespace GestionLogisticaBackend.Implementations
             // cancelados/incidentes/demorados
             var cancelados = await _context.Envios.CountAsync(e => e.Estado == EstadoEnvioEnum.None || e.Estado == EstadoEnvioEnum.Demorado || e.Estado == EstadoEnvioEnum.Cancelado);
 
-            // Ingresos del mes actual (ej: facturas cobradas - movimientos realizados)
-            var ingresosMes = await _context.MovimientosCaja
-                .Where(f => f.FechaPago.Month == mesActual && f.FechaPago.Year == anioActual)
-                .SumAsync(f => (decimal?)f.Monto) ?? 0;
-
-            var ingresosMesAnterior = await _context.MovimientosCaja
-                .Where(f => f.FechaPago.Month == mesAnterior && f.FechaPago.Year == anioMesAnterior)
-                .SumAsync(f => (decimal?)f.Monto) ?? 0;
-
-            // facturacion pendiente
-            var facturacionPendiente = await _context.Facturas
-                .Where(f => f.Estado == EstadoFacturaEnum.Emitida || f.Estado == EstadoFacturaEnum.ParcialmentePagada)
-                    .Select(f => new
-                    {
-                        f.Total,
-                        MontoPagado = f.MovimientosCaja
-                        .Sum(m => (decimal?)m.Monto) ?? 0
-                    })
-                    .SumAsync(x => x.Total - x.MontoPagado);
-
             // Clientes totales
             var totalClientes = await _context.Clientes.CountAsync();
 
-            // Flota activa vs total
-            var flotaDisponible = await _context.Vehiculos.CountAsync(v => v.Estado == EstadoVehiculoEnum.Disponible);
+            // Flota total
             var flotaTotal = await _context.Vehiculos.CountAsync();
-            var flotaEnMantenimiento = await _context.Vehiculos.CountAsync(v => v.Estado == EstadoVehiculoEnum.EnMantenimiento);
 
             return new DashboardStatsDto
             {
@@ -77,13 +54,8 @@ namespace GestionLogisticaBackend.Implementations
                 EnviosPendientes = pendientes,
                 EnviosCancelados = cancelados,
                 EnviosEsteMes = totalEnviosMes,
-                IngresosEsteMes = ingresosMes,
-                IngresosMesAnterior = ingresosMesAnterior,
-                FacturacionPendiente = facturacionPendiente,
                 TotalClientes = totalClientes,
                 TotalVehiculos = flotaTotal,
-                VehiculosActivos = flotaDisponible,
-                VehiculosEnMantenimiento = flotaEnMantenimiento
             };
         }
 

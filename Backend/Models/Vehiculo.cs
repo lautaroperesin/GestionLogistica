@@ -31,10 +31,6 @@ namespace LogisticaBackend.Models
         public decimal CapacidadKg { get; set; }
 
         [Required]
-        [Column("estado_vehiculo")]
-        public EstadoVehiculoEnum Estado { get; set; } = EstadoVehiculoEnum.Disponible;
-
-        [Required]
         [Column("ultima_inspeccion")]
         public DateTime UltimaInspeccion { get; set; }
 

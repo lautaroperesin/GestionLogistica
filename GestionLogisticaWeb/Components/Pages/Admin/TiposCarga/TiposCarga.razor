@@ -1,0 +1,124 @@
+﻿@page "/admin/tiposcarga"
+@using GestionLogisticaBackend.DTOs.Envio
+@using Service.Interfaces
+@inject NavigationManager _navigationManager
+@inject IGenericApiService<TipoCargaDto> _tipoCargaService
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">Gestión de Tipos de Carga</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando tipos de carga...</span>
+        </div>
+    }
+    else
+    {
+        <NavLink class="btn btn-primary" href="admin/tiposcarga/crear">Nuevo tipo de carga</NavLink>
+
+        @if (tiposCarga != null && tiposCarga.Any())
+        {
+            <!-- Tabla de tipos de carga -->
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tipoCarga in tiposCarga)
+                    {
+                        <tr>
+                            <td>@tipoCarga.IdTipoCarga</td>
+                            <td>@tipoCarga.Nombre</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-2" @onclick="() => Modificar(tipoCarga)">Modificar</button>
+                                <button class="btn btn-sm btn-danger" @onclick="() => Eliminar(tipoCarga)">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-info mt-4" role="alert">
+                No hay tipos de carga registrados.
+            </div>
+        }
+    }
+</div>
+
+@code {
+    List<TipoCargaDto>? tiposCarga = new List<TipoCargaDto>();
+    bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadTiposCarga();
+        }
+    }
+
+    private async Task LoadTiposCarga()
+    {
+        try
+        {
+            tiposCarga = await _tipoCargaService.GetAllAsync("");
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Error al cargar los tipos de carga.", SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Modificar(TipoCargaDto tipoCarga)
+    {
+        _navigationManager.NavigateTo($"admin/tiposcarga/editar/{tipoCarga.IdTipoCarga}");
+    }
+
+    private async Task Eliminar(TipoCargaDto tipoCarga)
+    {
+        SweetAlertResult respuesta = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Eliminando tipo de carga",
+            Text = $"¿Está seguro que desea borrar el tipo de carga {tipoCarga.Nombre}?",
+            Icon = SweetAlertIcon.Warning,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Sí, quiero borrarlo!",
+            CancelButtonText = "No, espera"
+        });
+        
+        if (respuesta.IsConfirmed)
+        {
+            try
+            {
+                isLoading = true;
+                StateHasChanged();
+                await _tipoCargaService.DeleteAsync(tipoCarga.IdTipoCarga);
+                await LoadTiposCarga();
+                await _sweetAlert.FireAsync("Eliminado", "El tipo de carga ha sido eliminado exitosamente.", SweetAlertIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Hubo un error al eliminar el tipo de carga.", SweetAlertIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

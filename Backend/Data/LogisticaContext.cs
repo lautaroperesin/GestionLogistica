@@ -11,14 +11,12 @@ namespace LogisticaBackend.Data
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Conductor> Conductores { get; set; }
         public DbSet<Envio> Envios { get; set; }
-        public DbSet<Factura> Facturas { get; set; }
         public DbSet<Localidad> Localidades { get; set; }
         public DbSet<Provincia> Provincias { get; set; }
         public DbSet<Pais> Paises { get; set; }
         public DbSet<Ubicacion> Ubicaciones { get; set; }
         public DbSet<Vehiculo> Vehiculos { get; set; }
         public DbSet<TipoCarga> TiposCarga { get; set; }
-        public DbSet<MovimientoCaja> MovimientosCaja { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,21 +53,15 @@ namespace LogisticaBackend.Data
                 .HasIndex(tc => tc.Nombre)
                 .IsUnique();
 
-            modelBuilder.Entity<Factura>()
-                .HasIndex(f => f.NumeroFactura)
-                .IsUnique();
-
             // Configurar filtros globales para soft delete
             modelBuilder.Entity<Cliente>().HasQueryFilter(c => !c.Deleted);
             modelBuilder.Entity<Conductor>().HasQueryFilter(c => !c.Deleted);
             modelBuilder.Entity<Vehiculo>().HasQueryFilter(v => !v.Deleted);
             modelBuilder.Entity<Envio>().HasQueryFilter(e => !e.Deleted);
-            modelBuilder.Entity<Factura>().HasQueryFilter(f => !f.Deleted);
             modelBuilder.Entity<Pais>().HasQueryFilter(p => !p.Deleted);
             modelBuilder.Entity<Provincia>().HasQueryFilter(p => !p.Deleted);
             modelBuilder.Entity<Localidad>().HasQueryFilter(l => !l.Deleted);
             modelBuilder.Entity<Ubicacion>().HasQueryFilter(u => !u.Deleted);
-            modelBuilder.Entity<MovimientoCaja>().HasQueryFilter(m => !m.Deleted);
 
             // Configurar precisión decimal
             modelBuilder.Entity<Vehiculo>()
@@ -84,16 +76,6 @@ namespace LogisticaBackend.Data
                 .Property(e => e.CostoTotal)
                 .HasPrecision(10, 2);
 
-            // Configurar conversiones de enumeraciones
-            modelBuilder.Entity<Factura>()
-                .Property(f => f.Estado)
-                .HasConversion<int>();
-
-            modelBuilder.Entity<Vehiculo>()
-                .Property(v => v.Estado)
-                .HasConversion<int>();
-
-
             // Configurar valor por defecto en entidades con soft delete
             modelBuilder.Entity<Pais>().Property(p => p.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Provincia>().Property(p => p.Deleted).HasDefaultValue(false);
@@ -102,9 +84,7 @@ namespace LogisticaBackend.Data
             modelBuilder.Entity<Conductor>().Property(c => c.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Vehiculo>().Property(v => v.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Envio>().Property(e => e.Deleted).HasDefaultValue(false);
-            modelBuilder.Entity<Factura>().Property(f => f.Deleted).HasDefaultValue(false);
             modelBuilder.Entity<Ubicacion>().Property(u => u.Deleted).HasDefaultValue(false);
-            modelBuilder.Entity<MovimientoCaja>().Property(m => m.Deleted).HasDefaultValue(false);
         }
     }
 }

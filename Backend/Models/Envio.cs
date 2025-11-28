@@ -87,6 +87,5 @@ namespace LogisticaBackend.Models
         [ForeignKey("IdTipoCarga")]
         public virtual TipoCarga TipoCarga { get; set; } = null!;
 
-        public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
     }
 }

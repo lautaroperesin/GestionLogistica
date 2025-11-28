@@ -47,17 +47,6 @@
             </div>
 
             <div class="mb-3">
-                <label for="estado" class="form-label">Estado</label>
-                <InputSelect id="estado" class="form-control" @bind-Value="vehiculo.Estado">
-                    @foreach (var estado in Enum.GetValues<EstadoVehiculoEnum>())
-                    {
-                        <option value="@estado">@estado</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => vehiculo.Estado)" />
-            </div>
-
-            <div class="mb-3">
                 <label for="ultimaInspeccion" class="form-label">Última Inspección</label>
                 <InputDate id="ultimaInspeccion" class="form-control" @bind-Value="vehiculo.UltimaInspeccion" />
                 <ValidationMessage For="@(() => vehiculo.UltimaInspeccion)" />
@@ -127,7 +116,6 @@
                     Modelo = vehiculo.Modelo,
                     Patente = vehiculo.Patente,
                     CapacidadCarga = vehiculo.CapacidadCarga,
-                    Estado = vehiculo.Estado,
                     UltimaInspeccion = vehiculo.UltimaInspeccion,
                     RtoVencimiento = vehiculo.RtoVencimiento
                 };
@@ -144,7 +132,6 @@
                     Modelo = vehiculo.Modelo,
                     Patente = vehiculo.Patente,
                     CapacidadCarga = vehiculo.CapacidadCarga,
-                    Estado = vehiculo.Estado,
                     UltimaInspeccion = vehiculo.UltimaInspeccion,
                     RtoVencimiento = vehiculo.RtoVencimiento
                 };

@@ -1,0 +1,108 @@
+@page "/admin/tiposcarga/crear"
+@page "/admin/tiposcarga/editar/{IdTipoCarga:int}"
+@using GestionLogisticaBackend.DTOs.Envio
+@using Service.Interfaces
+@inject IGenericApiService<TipoCargaDto> _tipoCargaService
+@inject NavigationManager _navigationManager
+@inject SweetAlertService _sweetAlert
+@rendermode InteractiveServer
+
+<h1 class="text-center my-4">@(IdTipoCarga == 0 ? "Crear Tipo de Carga" : "Editar Tipo de Carga")</h1>
+<div class="container py-4">
+    @if (isLoading)
+    {
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2 text-primary">Cargando...</span>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@tipoCarga" OnValidSubmit="@Guardar">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <InputText id="nombre" class="form-control" @bind-Value="tipoCarga.Nombre" />
+                <ValidationMessage For="@(() => tipoCarga.Nombre)" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">Guardar</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int IdTipoCarga { get; set; }
+
+    private TipoCargaDto tipoCarga = new TipoCargaDto();
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IdTipoCarga > 0)
+        {
+            try
+            {
+                var result = await _tipoCargaService.GetByIdAsync(IdTipoCarga);
+                if (result != null)
+                {
+                    tipoCarga = result;
+                }
+                else
+                {
+                    await _sweetAlert.FireAsync("Error", "Tipo de carga no encontrado.", SweetAlertIcon.Error);
+                    _navigationManager.NavigateTo("/admin/tiposcarga");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _sweetAlert.FireAsync("Error", "Error al cargar el tipo de carga.", SweetAlertIcon.Error);
+                _navigationManager.NavigateTo("/admin/tiposcarga");
+                return;
+            }
+        }
+        isLoading = false;
+    }
+
+    private async Task Guardar()
+    {
+        isSaving = true;
+        try
+        {
+            if (IdTipoCarga == 0)
+            {
+                // Crear
+                await _tipoCargaService.AddAsync(tipoCarga);
+                await _sweetAlert.FireAsync("Creado", "El tipo de carga ha sido creado exitosamente.", SweetAlertIcon.Success);
+            }
+            else
+            {
+                // Actualizar
+                await _tipoCargaService.UpdateAsync(tipoCarga);
+                await _sweetAlert.FireAsync("Actualizado", "El tipo de carga ha sido actualizado exitosamente.", SweetAlertIcon.Success);
+            }
+            _navigationManager.NavigateTo("/admin/tiposcarga");
+        }
+        catch (Exception ex)
+        {
+            await _sweetAlert.FireAsync("Error", "Hubo un error al guardar el tipo de carga.", SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/admin/tiposcarga");
+    }
+}

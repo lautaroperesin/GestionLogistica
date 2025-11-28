@@ -1,6 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Dashboard;
 using GestionLogisticaBackend.DTOs.Envio;
-using GestionLogisticaBackend.DTOs.Factura;
 using GestionLogisticaBackend.Implementations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -52,8 +52,6 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IVehiculoService, VehiculoService>();
 builder.Services.AddScoped<IConductorService, ConductorService>();
 builder.Services.AddScoped<IEnvioService, EnvioService>();
-builder.Services.AddScoped<IFacturaService, FacturaService>();
-builder.Services.AddScoped<IMovimientoCajaService, MovimientoCajaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 //builder.Services.AddScoped<IAuthService, Auth>();
 builder.Services.AddScoped<IGeminiService, GeminiService>();
@@ -68,7 +66,8 @@ if (string.IsNullOrEmpty(connectionString))
 }
 
 builder.Services.AddDbContext<LogisticaContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        mySqlOptions => mySqlOptions.MigrationsHistoryTable("__efmigrationshistory"))
 );
 
 builder.Services.AddControllers()
