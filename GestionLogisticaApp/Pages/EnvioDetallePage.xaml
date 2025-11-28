@@ -347,5 +347,39 @@
 
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- Overlay de carga -->
+        <Grid IsVisible="{Binding IsBusy}"
+              BackgroundColor="#80000000"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill">
+            <Frame CornerRadius="20"
+                   BackgroundColor="White"
+                   Padding="40"
+                   WidthRequest="270"
+                   HeightRequest="270"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="20"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                     Color="#667eea"
+                                     WidthRequest="60"
+                                     HeightRequest="50"
+                                     HorizontalOptions="Center"/>
+                    <Label Text="Cargando detalles..."
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#333333"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Por favor espera"
+                           FontSize="14"
+                           TextColor="#666666"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
     </Grid>
 </ContentPage>

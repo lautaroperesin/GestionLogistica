@@ -59,7 +59,7 @@ namespace GestionLogisticaApp.ViewModels
             LoadConductoresCommand = new RelayCommand(async () => await LoadConductoresAsync());
             ConductorSelectedCommand = new RelayCommand(async () => await LoadEnviosForSelectedConductorAsync());
             ViewDetalleCommand = new RelayCommand<EnvioDto>(ViewDetalle);
-            GoBackCommand = new RelayCommand(async () => await Shell.Current.GoToAsync(".."));
+            GoBackCommand = new RelayCommand(GoBack);
             WeakReferenceMessenger.Default.Register<EnvioUpdatedMessage>(this, async (r, m) => await LoadEnviosForSelectedConductorAsync());
             InitializeAsync();
         }
@@ -161,6 +161,11 @@ namespace GestionLogisticaApp.ViewModels
         private async void ViewDetalle(EnvioDto envio)
         {
             await Shell.Current.GoToAsync($"EnvioDetallePage?envioId={envio.IdEnvio}");
+        }
+
+        private async void GoBack()
+        {
+            await Shell.Current.GoToAsync("///MainPage");
         }
     }
 }

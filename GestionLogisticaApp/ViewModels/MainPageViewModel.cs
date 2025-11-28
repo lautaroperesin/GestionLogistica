@@ -55,9 +55,17 @@ namespace GestionLogisticaApp.ViewModels
         {
             AccesosRapidos.Add(new AccesoRapidoItem
             {
+                Titulo = "Crear Envío",
+                Descripcion = "Registrar un nuevo envío",
+                Ruta = "CrearEnvioPage",
+                Color = "#667eea"
+            });
+            
+            AccesosRapidos.Add(new AccesoRapidoItem
+            {
                 Titulo = "Mis Envios",
                 Descripcion = "Ver envios asignados a un conductor",
-                Ruta = "//EnviosPorConductorPage",
+                Ruta = "///EnviosPorConductorPage",
                 Color = "#FF9800"
             });
         }

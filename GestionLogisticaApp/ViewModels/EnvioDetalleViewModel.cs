@@ -21,6 +21,9 @@ namespace GestionLogisticaApp.ViewModels
         [ObservableProperty]
         private string message = "";
 
+        [ObservableProperty]
+        private bool isBusy;
+
         public List<EstadoEnvioEnum> EstadosPosibles { get; } = Enum.GetValues(typeof(EstadoEnvioEnum)).Cast<EstadoEnvioEnum>().ToList();
 
         public IAsyncRelayCommand UpdateEstadoCommand { get; }
@@ -34,8 +37,11 @@ namespace GestionLogisticaApp.ViewModels
 
         private async void LoadEnvioAsync(int id)
         {
+            if (IsBusy) return;
+            
             try
             {
+                IsBusy = true;
                 var envio = await _envioService.GetEnvioByIdAsync(id);
                 if (envio != null)
                 {
@@ -48,12 +54,19 @@ namespace GestionLogisticaApp.ViewModels
                 // handle error
                 Debug.WriteLine(ex.Message);
             }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task UpdateEstadoAsync()
         {
+            if (IsBusy) return;
+            
             try
             {
+                IsBusy = true;
                 await _envioService.UpdateEnvioEstadoAsync(Envio.IdEnvio, SelectedEstado);
                 Envio.Estado = SelectedEstado;
                 OnPropertyChanged(nameof(Envio));
@@ -70,6 +83,10 @@ namespace GestionLogisticaApp.ViewModels
                 Message = "Error al actualizar el estado";
                 await Task.Delay(3000);
                 Message = "";
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
     }

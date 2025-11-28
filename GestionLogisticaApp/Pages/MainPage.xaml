@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:GestionLogisticaApp.ViewModels"
              x:Class="GestionLogisticaApp.MainPage"
+             x:Name="MainPageRoot"
              Title="Inicio"
              BackgroundColor="#F8F9FA">
 
@@ -98,23 +99,23 @@
                        Margin="5,10,0,5"/>
 
                 <!-- Lista de accesos rapidos -->
-                <CollectionView ItemsSource="{Binding AccesosRapidos}" SelectionMode="None">
-                    <CollectionView.ItemTemplate>
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding AccesosRapidos}" Spacing="15">
+                    <BindableLayout.ItemTemplate>
                         <DataTemplate>
-                            <Frame Padding="0" 
-                                   CornerRadius="15" 
-                                   Margin="0,0,0,15" 
-                                   HasShadow="True"
-                                   BackgroundColor="White">
-                                <Frame.Shadow>
+                            <Border StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 15"
+                                    BackgroundColor="White"
+                                    Margin="0">
+                                <Border.Shadow>
                                     <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.08"/>
-                                </Frame.Shadow>
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}, Path=NavegaCommand}" 
-                                                          CommandParameter="{Binding Ruta}"/>
-                                </Frame.GestureRecognizers>
+                                </Border.Shadow>
                                 
                                 <Grid ColumnDefinitions="8,*,Auto" Padding="0">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference MainPageRoot}, Path=BindingContext.NavegaCommand}"
+                                                              CommandParameter="{Binding Ruta}"/>
+                                    </Grid.GestureRecognizers>
+                                    
                                     <!-- Barra lateral de color -->
                                     <BoxView Grid.Column="0" 
                                              BackgroundColor="{Binding Color}"
@@ -156,10 +157,10 @@
                                                FontAttributes="Bold"/>
                                     </Frame>
                                 </Grid>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
 
                 <!-- Footer informativo -->
                 <VerticalStackLayout Spacing="12" Margin="0,20,0,30">
