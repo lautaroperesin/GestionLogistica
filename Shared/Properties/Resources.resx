@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="urlApi3" xml:space="preserve">
+  <data name="urlApi" xml:space="preserve">
     <value>https://gestionlogisticabackend.azurewebsites.net/api/</value>
   </data>
-  <data name="urlApi" xml:space="preserve">
+  <data name="urlApi2" xml:space="preserve">
     <value>https://localhost:7000/api/</value>
   </data>
 </root>
