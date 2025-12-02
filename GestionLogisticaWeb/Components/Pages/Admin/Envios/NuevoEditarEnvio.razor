@@ -4,7 +4,7 @@
 @inject IEnvioService EnvioService
 @inject IClienteService ClienteService
 @inject IVehiculoService VehiculoService
-@inject IConductorService ConductorService
+@inject IUsuarioService UsuarioService
 @inject IGenericApiService<TipoCargaDto> TipoCargaService
 @inject IUbicacionService UbicacionService
 @rendermode InteractiveServer
@@ -161,16 +161,16 @@
                             </div>
 
                             <!-- Conductor -->
-@*                             <div class="mb-3">
+                            <div class="mb-3">
                                 <label for="conductor" class="form-label">Conductor <span class="text-danger">*</span></label>
                                 <InputSelect id="conductor" class="form-control" @bind-Value="SelectedConductorId">
                                     <option value="0">Seleccionar Conductor</option>
-                                    @foreach (var conductor in Conductores.Items)
+                                    @foreach (var conductor in Usuarios)
                                     {
-                                        <option value="@conductor.IdConductor">@conductor.Nombre (@conductor.Dni)</option>
+                                        <option value="@conductor.Id">@conductor.Email</option>
                                     }
                                 </InputSelect>
-                            </div> *@
+                            </div>
 
                             <!-- Tipo de Carga -->
                             <div class="mb-3">
@@ -215,8 +215,8 @@
 
     private EnvioDto Envio = new();
     private PagedResult<ClienteDto> Clientes = new();
-	private IEnumerable<VehiculoDto> Vehiculos = new List<VehiculoDto>();
-    private PagedResult<UsuarioDto> Usuarios = new();
+    private IEnumerable<VehiculoDto> Vehiculos = new List<VehiculoDto>();
+    private List<UsuarioDto> Usuarios = new();
     private List<TipoCargaDto> TiposCarga = new();
     private PagedResult<UbicacionDto> Ubicaciones = new();
     private int SelectedClienteId = 0;
@@ -238,7 +238,7 @@
                 // Cargar datos de referencia de forma secuencial para mejor manejo de errores
                 Clientes = await ClienteService.GetClientesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ClienteDto>();
                 Vehiculos = await VehiculoService.GetVehiculosAsync() ?? new List<VehiculoDto>();
-                //Conductores = await ConductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ConductorDto>();
+                Usuarios = await UsuarioService.GetUsuariosConductoresAsync();
                 TiposCarga = await TipoCargaService.GetAllAsync(null) ?? new List<TipoCargaDto>();
                 Ubicaciones = await UbicacionService.GetUbicacionesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<UbicacionDto>();
 
@@ -321,7 +321,7 @@
             // Asignar objetos desde IDs seleccionados
             Envio.Cliente = Clientes.Items.FirstOrDefault(c => c.IdCliente == SelectedClienteId);
             Envio.Vehiculo = Vehiculos.FirstOrDefault(v => v.IdVehiculo == SelectedVehiculoId);
-            //Envio.Usuario = Conductores.Items.FirstOrDefault(c => c.IdConductor == SelectedConductorId);
+            Envio.Usuario = Usuarios.FirstOrDefault(c => c.Id == SelectedConductorId);
             Envio.TipoCarga = TiposCarga.FirstOrDefault(t => t.IdTipoCarga == SelectedTipoCargaId);
             Envio.Origen = Ubicaciones.Items.FirstOrDefault(u => u.IdUbicacion == SelectedOrigenId);
             Envio.Destino = Ubicaciones.Items.FirstOrDefault(u => u.IdUbicacion == SelectedDestinoId);

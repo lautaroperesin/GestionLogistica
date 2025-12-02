@@ -4,6 +4,7 @@ using GestionLogisticaBackend.DTOs.Usuario;
 using GestionLogisticaBackend.Models;
 using LogisticaBackend.Data;
 using Microsoft.EntityFrameworkCore;
+using Service.Enums;
 using Shared.Interfaces;
 
 namespace GestionLogisticaBackend.Services
@@ -15,6 +16,19 @@ namespace GestionLogisticaBackend.Services
         public UsuarioService(LogisticaContext context)
         {
             _context = context;
+        }
+
+        // get all usuarios
+        public async Task<List<UsuarioDto>> GetUsuariosConductoresAsync()
+        {
+            var usuarios = await _context.Usuarios.AsNoTracking().Where(u => u.TipoRol == TipoRolEnum.Conductor).ToListAsync();
+            return usuarios.Select(usuario => new UsuarioDto
+            {
+                Id = usuario.IdUsuario,
+                Email = usuario.Email,
+                Password = usuario.Password,
+                TipoRol = usuario.TipoRol
+            }).ToList();
         }
 
         // get usuario by email

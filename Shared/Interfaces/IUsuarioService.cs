@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GestionLogisticaBackend.DTOs.Usuario;
+using Service.Enums;
 using Service.Interfaces;
 
 namespace Shared.Interfaces
@@ -14,5 +15,6 @@ namespace Shared.Interfaces
         public Task<UsuarioDto?> GetByIdAsync(int id);
         public Task<UsuarioDto> AddAsync(CreateUsuarioDto createUsuarioDto);
         public Task<bool> LoginInSystem(string email, string password);
+        public Task<List<UsuarioDto>> GetUsuariosConductoresAsync();
     }
 }

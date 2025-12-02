@@ -1,4 +1,6 @@
 ﻿using GestionLogisticaBackend.DTOs.Usuario;
+using GestionLogisticaBackend.DTOs.Vehiculo;
+using GestionLogisticaBackend.Implementations;
 using GestionLogisticaBackend.Models;
 using GestionLogisticaBackend.Services;
 using GestionLogisticaBackend.Services.Interfaces;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Service.Enums;
 using Shared.Interfaces;
 
 namespace GestionLogisticaBackend.Controllers
@@ -20,6 +23,20 @@ namespace GestionLogisticaBackend.Controllers
         public UsuariosController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
+        }
+
+        // get all usuarios conductores
+        [HttpGet]
+        public IActionResult Get() {
+            try
+            {
+                var usuarios = _usuarioService.GetUsuariosConductoresAsync();
+                return Ok(usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al obtener los usuarios. Error: {ex.Message}" });
+            }
         }
 
         // get usuario by email usando service

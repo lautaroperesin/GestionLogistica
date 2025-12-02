@@ -11,7 +11,6 @@
 @inject SweetAlertService _sweetAlert
 @inject IClienteService _clienteService
 @inject IVehiculoService _vehiculoService
-@inject IConductorService _conductorService
 @rendermode InteractiveServer
 
 <div class="container-fluid py-4">
@@ -67,18 +66,6 @@
                             @foreach (var cliente in clientes)
                             {
                                 <option value="@cliente.IdCliente">@cliente.Nombre</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="conductor" class="form-label fw-semibold">
-                            <i class="bi bi-person-badge-fill text-muted me-1"></i>Conductor
-                        </label>
-                        <InputSelect id="conductor" class="form-select" @bind-Value="envioFilter.IdUsuario">
-                            <option value="">Todos los conductores</option>
-                            @foreach (var conductor in conductores)
-                            {
-                                <option value="@conductor.IdConductor">@conductor.Nombre</option>
                             }
                         </InputSelect>
                     </div>
@@ -639,7 +626,6 @@
 
     List<ClienteDto> clientes = new();
     List<VehiculoDto> vehiculos = new();
-    List<ConductorDto> conductores = new();
 
     bool isLoading = true;
     bool showModal = false;
@@ -652,13 +638,11 @@
             try
             {
                 var clientesTask = _clienteService.GetClientesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
-                var conductoresTask = _conductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
                 var vehiculosTask = _vehiculoService.GetVehiculosAsync();
 
-                await Task.WhenAll(clientesTask, conductoresTask, vehiculosTask);
+                await Task.WhenAll(clientesTask, vehiculosTask);
 
                 clientes = (await clientesTask)?.Items.ToList() ?? new List<ClienteDto>();
-                conductores = (await conductoresTask)?.Items.ToList() ?? new List<ConductorDto>();
                 vehiculos = (await vehiculosTask)?.ToList() ?? new List<VehiculoDto>();
 
                 envios = await _envioService.GetEnviosAsync(envioFilter);
