@@ -22,6 +22,26 @@ namespace Shared.ApiServices
         {
         }
 
+        // get all usuarios conductores
+        public async Task<List<UsuarioDto>> GetUsuariosConductoresAsync()
+        {
+            SetAuthorizationHeader();
+            try
+            {
+                var response = await _httpClient.GetAsync(_endpoint);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Error al obtener los usuarios conductores: {response.StatusCode} - {content}");
+                }
+                return JsonSerializer.Deserialize<List<UsuarioDto>>(content, _options)!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en UsuarioService al obtener conductores: {ex.Message}");
+            }
+        }
+
         public async Task<UsuarioDto?> GetUserByEmailAsync(string email)
         {
             SetAuthorizationHeader();
