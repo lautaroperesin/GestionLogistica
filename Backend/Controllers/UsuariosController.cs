@@ -27,16 +27,11 @@ namespace GestionLogisticaBackend.Controllers
 
         // get all usuarios conductores
         [HttpGet]
-        public IActionResult Get() {
-            try
-            {
-                var usuarios = _usuarioService.GetUsuariosConductoresAsync();
-                return Ok(usuarios);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = $"Error al obtener los usuarios. Error: {ex.Message}" });
-            }
+        public async Task<ActionResult<List<UsuarioDto>>> GetUsuariosConductores()
+        {
+            var usuarios = await _usuarioService.GetUsuariosConductoresAsync();
+
+            return Ok(usuarios);
         }
 
         // get usuario by email usando service
