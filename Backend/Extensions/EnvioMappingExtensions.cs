@@ -1,4 +1,5 @@
 ﻿using GestionLogisticaBackend.DTOs.Envio;
+using GestionLogisticaBackend.DTOs.Usuario;
 using GestionLogisticaBackend.Enums;
 using Humanizer;
 using LogisticaBackend.Models;
@@ -29,7 +30,11 @@ namespace GestionLogisticaBackend.Extensions
                 Destino = envio.Destino.ToDto(),
                 Estado = envio.Estado,
                 Vehiculo = envio.Vehiculo.ToDto(),
-                Conductor = envio.Conductor.ToDto(),
+                Usuario = new UsuarioDto
+                {
+                    Id = envio.Usuario.IdUsuario,
+                    Email = envio.Usuario.Email
+                },
                 Cliente = envio.Cliente.ToDto(),
                 TipoCarga = new TipoCargaDto
                 {
@@ -68,7 +73,7 @@ namespace GestionLogisticaBackend.Extensions
                 IdDestino = dto.Destino.IdUbicacion,
                 Estado = EstadoEnvioEnum.Pendiente,
                 IdVehiculo = dto.Vehiculo.IdVehiculo,
-                IdConductor = dto.Conductor.IdConductor,
+                IdUsuario = dto.Usuario.Id,
                 IdCliente = dto.Cliente.IdCliente,
                 IdTipoCarga = dto.TipoCarga.IdTipoCarga
             };
@@ -93,7 +98,7 @@ namespace GestionLogisticaBackend.Extensions
             envio.IdOrigen = dto.Origen.IdUbicacion;
             envio.IdDestino = dto.Destino.IdUbicacion;
             envio.IdVehiculo = dto.Vehiculo.IdVehiculo;
-            envio.IdConductor = dto.Conductor.IdConductor;
+            envio.IdUsuario = dto.Usuario.Id;
             envio.IdCliente = dto.Cliente.IdCliente;
             envio.IdTipoCarga = dto.TipoCarga.IdTipoCarga;
         }

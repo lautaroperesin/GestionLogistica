@@ -13,22 +13,24 @@ using Microsoft.Maui.Controls;
 using System.Collections.Generic;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
+using Service.Enums;
+using GestionLogisticaBackend.DTOs.Usuario;
 
 namespace GestionLogisticaApp.ViewModels
 {
     public partial class EnviosPorConductorViewModel : ObservableObject
     {
         private readonly EnvioApiService _envioService;
-        private readonly ConductorApiService _conductorService;
+        private readonly UsuarioApiService _usuarioService;
 
         [ObservableProperty]
         private bool isBusy;
 
         [ObservableProperty]
-        private ObservableCollection<ConductorDto> conductores = new();
+        private UsuarioDto? currentUser;
 
         [ObservableProperty]
-        private ConductorDto? selectedConductor;
+        private string errorMessage = string.Empty;
 
         [ObservableProperty]
         private ObservableCollection<EnvioDto> enviosPendientes = new();
@@ -45,49 +47,85 @@ namespace GestionLogisticaApp.ViewModels
         [ObservableProperty]
         private ObservableCollection<EnvioDto> enviosCancelados = new();
 
-        public IRelayCommand LoadConductoresCommand { get; }
-        public IRelayCommand ConductorSelectedCommand { get; }
         public IRelayCommand<EnvioDto> ViewDetalleCommand { get; }
         public IRelayCommand GoBackCommand { get; }
+        public IRelayCommand RefreshEnviosCommand { get; }
 
         public EnviosPorConductorViewModel()
         {
             Debug.Print("EnviosPorConductorViewModel created");
             _envioService = new EnvioApiService();
-            _conductorService = new ConductorApiService();
+            _usuarioService = new UsuarioApiService();
 
-            LoadConductoresCommand = new RelayCommand(async () => await LoadConductoresAsync());
-            ConductorSelectedCommand = new RelayCommand(async () => await LoadEnviosForSelectedConductorAsync());
             ViewDetalleCommand = new RelayCommand<EnvioDto>(ViewDetalle);
             GoBackCommand = new RelayCommand(GoBack);
-            WeakReferenceMessenger.Default.Register<EnvioUpdatedMessage>(this, async (r, m) => await LoadEnviosForSelectedConductorAsync());
-            InitializeAsync();
+            RefreshEnviosCommand = new RelayCommand(async () => await LoadCurrentUserAndEnviosAsync());
+            
+            WeakReferenceMessenger.Default.Register<EnvioUpdatedMessage>(this, async (r, m) => await LoadEnviosAsync());
         }
 
+        // Este método será llamado desde la página cuando aparezca
         public async Task InitializeAsync()
         {
-            await LoadConductoresAsync();
+            await LoadCurrentUserAndEnviosAsync();
         }
 
-        private async Task LoadConductoresAsync()
+        private async Task LoadCurrentUserAndEnviosAsync()
         {
             if (IsBusy) return;
+            
             try
             {
                 IsBusy = true;
-                Conductores.Clear();
+                ErrorMessage = string.Empty;
 
-                var result = await _conductorService.GetConductoresAsync(new GestionLogisticaBackend.DTOs.Pagination.PaginationParams { PageNumber = 1, PageSize = 1000 });
-                if (result != null && result.Items != null)
+                // Limpiar datos anteriores
+                CurrentUser = null;
+                EnviosPendientes.Clear();
+                EnviosEnTransito.Clear();
+                EnviosEntregados.Clear();
+                EnviosDemorados.Clear();
+                EnviosCancelados.Clear();
+
+                // Obtener el ID del usuario logueado desde Preferences
+                var userLoginId = Preferences.Get("UserLoginId", 0);
+                Debug.WriteLine($"[EnviosPorConductor] UserLoginId desde Preferences: {userLoginId}");
+                
+                if (userLoginId == 0)
                 {
-                    foreach (var c in result.Items)
-                        Conductores.Add(c);
+                    ErrorMessage = "No hay un usuario logueado. Por favor, inicie sesión.";
+                    Debug.WriteLine("[EnviosPorConductor] No hay usuario logueado");
+                    return;
                 }
+
+                // Obtener la información del usuario
+                CurrentUser = await _usuarioService.GetByIdAsync(userLoginId);
+                Debug.WriteLine($"[EnviosPorConductor] Usuario obtenido: {CurrentUser?.Email}, ID: {CurrentUser?.Id}, Rol: {CurrentUser?.TipoRol}");
+                
+                if (CurrentUser == null)
+                {
+                    ErrorMessage = "No se pudo obtener la información del usuario.";
+                    Debug.WriteLine("[EnviosPorConductor] CurrentUser es null");
+                    return;
+                }
+
+                // Verificar que el usuario sea conductor
+                if (CurrentUser.TipoRol != TipoRolEnum.Conductor)
+                {
+                    ErrorMessage = "Esta sección es solo para conductores. Tu rol no tiene acceso.";
+                    Debug.WriteLine($"[EnviosPorConductor] Usuario no es conductor. Rol: {CurrentUser.TipoRol}");
+                    return;
+                }
+
+                Debug.WriteLine("[EnviosPorConductor] Usuario es conductor, cargando envíos...");
+                // Cargar los envíos del conductor
+                await LoadEnviosAsync();
             }
             catch (System.Exception ex)
             {
-                // manejar error, por ahora dejamos en Debug
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                ErrorMessage = $"Error al cargar los datos: {ex.Message}";
+                Debug.WriteLine($"[EnviosPorConductor] Exception: {ex.Message}");
+                Debug.WriteLine($"[EnviosPorConductor] StackTrace: {ex.StackTrace}");
             }
             finally
             {
@@ -95,10 +133,10 @@ namespace GestionLogisticaApp.ViewModels
             }
         }
 
-        private async Task LoadEnviosForSelectedConductorAsync()
+        private async Task LoadEnviosAsync()
         {
-            if (IsBusy) return;
-            if (SelectedConductor == null) return;
+            //if (IsBusy) return;
+            if (CurrentUser == null) return;
 
             try
             {
@@ -112,18 +150,26 @@ namespace GestionLogisticaApp.ViewModels
 
                 var filtros = new EnvioFilterDto
                 {
-                    IdConductor = SelectedConductor.IdConductor,
+                    IdUsuario = CurrentUser.Id,
                     PageNumber = 1,
                     PageSize = 1000
                 };
 
+                Debug.WriteLine($"[EnviosPorConductor] Consultando envíos con IdUsuario: {filtros.IdUsuario}");
+                
                 var result = await _envioService.GetEnviosAsync(filtros);
+                
+                Debug.WriteLine($"[EnviosPorConductor] Resultado obtenido. Items: {result?.Items?.Count() ?? 0}, TotalItems: {result?.TotalItems ?? 0}");
+                
                 if (result != null && result.Items != null)
                 {
-                    var envios = result.Items;
+                    var envios = result.Items.ToList();
+                    Debug.WriteLine($"[EnviosPorConductor] Procesando {envios.Count} envíos");
 
                     foreach (var e in envios)
                     {
+                        Debug.WriteLine($"[EnviosPorConductor] Envío {e.NumeroSeguimiento} - Estado: {e.Estado}");
+                        
                         switch (e.Estado)
                         {
                             case EstadoEnvioEnum.Pendiente:
@@ -142,15 +188,23 @@ namespace GestionLogisticaApp.ViewModels
                                 EnviosCancelados.Add(e);
                                 break;
                             default:
-                                // ignorar None u otros
+                                Debug.WriteLine($"[EnviosPorConductor] Envío ignorado por estado: {e.Estado}");
                                 break;
                         }
                     }
+                    
+                    Debug.WriteLine($"[EnviosPorConductor] Resumen - Pendientes: {EnviosPendientes.Count}, EnTransito: {EnviosEnTransito.Count}, Entregados: {EnviosEntregados.Count}, Demorados: {EnviosDemorados.Count}, Cancelados: {EnviosCancelados.Count}");
+                }
+                else
+                {
+                    Debug.WriteLine("[EnviosPorConductor] Result es null o no tiene items");
                 }
             }
             catch (System.Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                ErrorMessage = $"Error al cargar los envíos: {ex.Message}";
+                Debug.WriteLine($"[EnviosPorConductor] Exception en LoadEnviosAsync: {ex.Message}");
+                Debug.WriteLine($"[EnviosPorConductor] StackTrace: {ex.StackTrace}");
             }
             finally
             {

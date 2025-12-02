@@ -41,8 +41,6 @@ namespace LogisticaBackend.Models
         [Column("deleted")]
         public bool Deleted { get; set; } = false;
 
-        // Navegación
-        public virtual ICollection<Envio> Envios { get; set; } = new List<Envio>();
 
         [NotMapped]
         public bool LicenciaVencida => VencimientoLicencia < DateTime.Now;

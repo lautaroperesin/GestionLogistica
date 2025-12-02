@@ -1,6 +1,7 @@
 ﻿using GestionLogisticaBackend.DTOs.Cliente;
 using GestionLogisticaBackend.DTOs.Conductor;
 using GestionLogisticaBackend.DTOs.Ubicacion;
+using GestionLogisticaBackend.DTOs.Usuario;
 using GestionLogisticaBackend.DTOs.Vehiculo;
 using GestionLogisticaBackend.Enums;
 
@@ -20,7 +21,7 @@ namespace GestionLogisticaBackend.DTOs.Envio
         public string? Descripcion { get; set; }
         public decimal CostoTotal { get; set; }
         public VehiculoDto Vehiculo { get; set; } = new();
-        public ConductorDto Conductor { get; set; } = new();
+        public UsuarioDto Usuario { get; set; } = new();
         public ClienteDto Cliente { get; set; } = new();
         public TipoCargaDto TipoCarga { get; set; } = new();
     }

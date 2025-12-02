@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:GestionLogisticaApp"
              x:Class="GestionLogisticaApp.EnviosPorConductorPage"
              x:Name="EnviosPorConductorPageRoot"
-             Title="Envios por Conductor"
+             Title="Mis Envios"
              BackgroundColor="#F8F9FA">
 
     <ContentPage.BindingContext>
@@ -26,7 +26,7 @@
         <ScrollView>
             <VerticalStackLayout Padding="20" Spacing="20">
                 
-                <!-- Selector de conductor -->
+                <!-- Header con información del conductor -->
                 <Frame Padding="25" 
                        CornerRadius="20" 
                        BackgroundColor="White" 
@@ -48,41 +48,58 @@
                                 Padding="0"
                                 Margin="0,0,0,10"/>
                         
-                        <Label Text="Seleccionar Conductor" 
+                        <!-- Mostrar mensaje de error si existe -->
+                        <Frame IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                               Padding="15" 
+                               CornerRadius="10" 
+                               BackgroundColor="#FEE2E2"
+                               BorderColor="#EF4444"
+                               HasShadow="False"
+                               Margin="0,0,0,10">
+                            <HorizontalStackLayout Spacing="10">
+                                <Label Text="&#x26A0;" 
+                                       FontSize="20" 
+                                       TextColor="#EF4444"
+                                       VerticalOptions="Center"/>
+                                <Label Text="{Binding ErrorMessage}" 
+                                       FontSize="14" 
+                                       TextColor="#991B1B"
+                                       VerticalOptions="Center"
+                                       LineBreakMode="WordWrap"
+                                       HorizontalOptions="FillAndExpand"/>
+                            </HorizontalStackLayout>
+                        </Frame>
+
+                        <!-- Información del conductor actual -->
+                        <Label Text="Mis Envíos Asignados" 
                                FontAttributes="Bold" 
                                FontSize="20" 
                                TextColor="#333333" />
                         
-                        <Frame Padding="0" 
+                        <Frame Padding="15" 
                                CornerRadius="12" 
                                BorderColor="#E0E0E0"
                                HasShadow="False"
-                               BackgroundColor="#F8F9FA">
-                            <Picker ItemsSource="{Binding Conductores}" 
-                                    ItemDisplayBinding="{Binding Nombre}" 
-                                    SelectedItem="{Binding SelectedConductor, Mode=TwoWay}" 
-                                    BackgroundColor="Transparent" 
-                                    TextColor="#333333"
-                                    Margin="10,0"/>
+                               BackgroundColor="#F8F9FA"
+                               IsVisible="{Binding CurrentUser, Converter={StaticResource IsNotNullConverter}}">
+                            <HorizontalStackLayout Spacing="10">
+                                <Label Text="&#x1F464;" FontSize="24" VerticalOptions="Center"/>
+                                <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                                    <Label Text="{Binding CurrentUser.Email}" 
+                                           FontSize="14" 
+                                           FontAttributes="Bold"
+                                           TextColor="#333333"/>
+                                    <Label Text="Conductor" 
+                                           FontSize="12" 
+                                           TextColor="#666666"/>
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
                         </Frame>
-                        
-                        <Button Text="CARGAR ENVÍOS" 
-                                Command="{Binding ConductorSelectedCommand}" 
-                                BackgroundColor="#667eea"
-                                TextColor="White"
-                                FontSize="16"
-                                FontAttributes="Bold"
-                                CornerRadius="12"
-                                HeightRequest="50">
-                            <Button.Shadow>
-                                <Shadow Brush="#667eea" Offset="0,4" Radius="8" Opacity="0.3"/>
-                            </Button.Shadow>
-                        </Button>
                     </VerticalStackLayout>
                 </Frame>
 
                 <!-- Pendientes -->
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringEmptyConverter}}">
                     <Frame Padding="15,10" 
                            CornerRadius="10" 
                            BackgroundColor="#FFF9E6"
@@ -151,7 +168,7 @@
                 </VerticalStackLayout>
 
                 <!-- En transito -->
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringEmptyConverter}}">
                     <Frame Padding="15,10" 
                            CornerRadius="10" 
                            BackgroundColor="#E6F2FF"
@@ -220,7 +237,7 @@
                 </VerticalStackLayout>
 
                 <!-- Entregados -->
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringEmptyConverter}}">
                     <Frame Padding="15,10" 
                            CornerRadius="10" 
                            BackgroundColor="#ECFDF5"
@@ -289,7 +306,7 @@
                 </VerticalStackLayout>
 
                 <!-- Demorados -->
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringEmptyConverter}}">
                     <Frame Padding="15,10" 
                            CornerRadius="10" 
                            BackgroundColor="#FFF4E6"
@@ -358,7 +375,7 @@
                 </VerticalStackLayout>
 
                 <!-- Cancelados -->
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringEmptyConverter}}">
                     <Frame Padding="15,10" 
                            CornerRadius="10" 
                            BackgroundColor="#FEE2E2"

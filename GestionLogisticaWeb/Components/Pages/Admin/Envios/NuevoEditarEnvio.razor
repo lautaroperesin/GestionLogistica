@@ -161,7 +161,7 @@
                             </div>
 
                             <!-- Conductor -->
-                            <div class="mb-3">
+@*                             <div class="mb-3">
                                 <label for="conductor" class="form-label">Conductor <span class="text-danger">*</span></label>
                                 <InputSelect id="conductor" class="form-control" @bind-Value="SelectedConductorId">
                                     <option value="0">Seleccionar Conductor</option>
@@ -170,7 +170,7 @@
                                         <option value="@conductor.IdConductor">@conductor.Nombre (@conductor.Dni)</option>
                                     }
                                 </InputSelect>
-                            </div>
+                            </div> *@
 
                             <!-- Tipo de Carga -->
                             <div class="mb-3">
@@ -216,7 +216,7 @@
     private EnvioDto Envio = new();
     private PagedResult<ClienteDto> Clientes = new();
 	private IEnumerable<VehiculoDto> Vehiculos = new List<VehiculoDto>();
-    private PagedResult<ConductorDto> Conductores = new();
+    private PagedResult<UsuarioDto> Usuarios = new();
     private List<TipoCargaDto> TiposCarga = new();
     private PagedResult<UbicacionDto> Ubicaciones = new();
     private int SelectedClienteId = 0;
@@ -238,7 +238,7 @@
                 // Cargar datos de referencia de forma secuencial para mejor manejo de errores
                 Clientes = await ClienteService.GetClientesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ClienteDto>();
                 Vehiculos = await VehiculoService.GetVehiculosAsync() ?? new List<VehiculoDto>();
-                Conductores = await ConductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ConductorDto>();
+                //Conductores = await ConductorService.GetConductoresAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<ConductorDto>();
                 TiposCarga = await TipoCargaService.GetAllAsync(null) ?? new List<TipoCargaDto>();
                 Ubicaciones = await UbicacionService.GetUbicacionesAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 }) ?? new PagedResult<UbicacionDto>();
 
@@ -248,7 +248,7 @@
                     Envio = await EnvioService.GetEnvioByIdAsync(EnvioId) ?? new EnvioDto();
                     SelectedClienteId = Envio.Cliente?.IdCliente ?? 0;
                     SelectedVehiculoId = Envio.Vehiculo?.IdVehiculo ?? 0;
-                    SelectedConductorId = Envio.Conductor?.IdConductor ?? 0;
+                    SelectedConductorId = Envio.Usuario?.Id ?? 0;
                     SelectedTipoCargaId = Envio.TipoCarga?.IdTipoCarga ?? 0;
                     SelectedOrigenId = Envio.Origen?.IdUbicacion ?? 0;
                     SelectedDestinoId = Envio.Destino?.IdUbicacion ?? 0;
@@ -321,7 +321,7 @@
             // Asignar objetos desde IDs seleccionados
             Envio.Cliente = Clientes.Items.FirstOrDefault(c => c.IdCliente == SelectedClienteId);
             Envio.Vehiculo = Vehiculos.FirstOrDefault(v => v.IdVehiculo == SelectedVehiculoId);
-            Envio.Conductor = Conductores.Items.FirstOrDefault(c => c.IdConductor == SelectedConductorId);
+            //Envio.Usuario = Conductores.Items.FirstOrDefault(c => c.IdConductor == SelectedConductorId);
             Envio.TipoCarga = TiposCarga.FirstOrDefault(t => t.IdTipoCarga == SelectedTipoCargaId);
             Envio.Origen = Ubicaciones.Items.FirstOrDefault(u => u.IdUbicacion == SelectedOrigenId);
             Envio.Destino = Ubicaciones.Items.FirstOrDefault(u => u.IdUbicacion == SelectedDestinoId);

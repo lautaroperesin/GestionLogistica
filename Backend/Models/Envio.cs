@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using GestionLogisticaBackend.Enums;
+using GestionLogisticaBackend.Models;
 
 namespace LogisticaBackend.Models
 {
@@ -54,8 +55,8 @@ namespace LogisticaBackend.Models
         public int IdVehiculo { get; set; }
 
         [Required]
-        [Column("id_conductor")]
-        public int IdConductor { get; set; }
+        [Column("id_usuario")]
+        public int IdUsuario { get; set; }
 
         [Required]
         [Column("id_cliente")]
@@ -78,8 +79,8 @@ namespace LogisticaBackend.Models
         [ForeignKey("IdVehiculo")]
         public virtual Vehiculo Vehiculo { get; set; } = null!;
 
-        [ForeignKey("IdConductor")]
-        public virtual Conductor Conductor { get; set; } = null!;
+        [ForeignKey("IdUsuario")]
+        public virtual Usuario Usuario { get; set; } = null!;
 
         [ForeignKey("IdCliente")]
         public virtual Cliente Cliente { get; set; } = null!;

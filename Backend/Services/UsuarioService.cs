@@ -76,6 +76,23 @@ namespace GestionLogisticaBackend.Services
             return usuario != null;
         }
 
+        // get by id
+        public async Task<UsuarioDto?> GetByIdAsync(int id)
+        {
+            var usuario = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == id);
+            if (usuario == null)
+            {
+                return null;
+            }
+            return new UsuarioDto
+            {
+                Id = usuario.IdUsuario,
+                Email = usuario.Email,
+                Password = usuario.Password,
+                TipoRol = usuario.TipoRol
+            };
+        }
+
         public string GetHashSha256(string textoAEncriptar)
         {
             // Create a SHA256   

@@ -13,5 +13,16 @@ namespace GestionLogisticaApp
         {
             InitializeComponent();
         }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            
+            // Recargar los datos cada vez que la página aparece
+            if (BindingContext is EnviosPorConductorViewModel viewModel)
+            {
+                await viewModel.InitializeAsync();
+            }
+        }
     }
 }

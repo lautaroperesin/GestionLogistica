@@ -5,7 +5,7 @@ namespace GestionLogisticaBackend.DTOs.Filters
 {
     public class EnvioFilterDto : PaginationParams
     {
-        public int? IdConductor { get; set; }
+        public int? IdUsuario { get; set; }
         public int? IdCliente { get; set; }
         public int? IdVehiculo { get; set; }
         public DateTime? FechaSalidaDesde { get; set; }

@@ -74,7 +74,7 @@
                         <label for="conductor" class="form-label fw-semibold">
                             <i class="bi bi-person-badge-fill text-muted me-1"></i>Conductor
                         </label>
-                        <InputSelect id="conductor" class="form-select" @bind-Value="envioFilter.IdConductor">
+                        <InputSelect id="conductor" class="form-select" @bind-Value="envioFilter.IdUsuario">
                             <option value="">Todos los conductores</option>
                             @foreach (var conductor in conductores)
                             {
@@ -481,7 +481,7 @@
                     </div>
 
                     <!-- Conductor y Vehículo -->
-                    @if (envioSeleccionado.Conductor != null || envioSeleccionado.Vehiculo != null)
+                    @if (envioSeleccionado.Usuario != null || envioSeleccionado.Vehiculo != null)
                     {
                         <div class="card mb-3 border-0 bg-light">
                             <div class="card-body">
@@ -489,22 +489,14 @@
                                     <i class="bi bi-truck-front me-2"></i>Transporte
                                 </h6>
                                 <div class="row g-3">
-                                    @if (envioSeleccionado.Conductor != null)
+                                    @if (envioSeleccionado.Usuario != null)
                                     {
                                         <div class="col-md-6">
                                             <label class="text-muted small">Conductor</label>
                                             <p class="fw-bold mb-1">
                                                 <i class="bi bi-person-badge me-2"></i>
-                                                @envioSeleccionado.Conductor.Nombre
+                                                @envioSeleccionado.Usuario.Email
                                             </p>
-                                            <small class="text-muted d-block">
-                                                <i class="bi bi-telephone me-1"></i>
-                                                @envioSeleccionado.Conductor.Telefono
-                                            </small>
-                                            <small class="text-muted d-block">
-                                                <i class="bi bi-credit-card me-1"></i>
-                                                DNI: @envioSeleccionado.Conductor.Dni
-                                            </small>
                                         </div>
                                     }
                                     @if (envioSeleccionado.Vehiculo != null)

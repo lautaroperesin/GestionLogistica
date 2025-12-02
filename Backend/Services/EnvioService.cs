@@ -131,7 +131,7 @@ namespace GestionLogisticaBackend.Implementations
                         .ThenInclude(l => l.Provincia)
                             .ThenInclude(p => p.Pais)
                 .Include(e => e.Vehiculo)
-                .Include(e => e.Conductor)
+                .Include(e => e.Usuario)
                 .Include(e => e.Cliente)
                 .Include(e => e.TipoCarga);
         }
@@ -155,9 +155,9 @@ namespace GestionLogisticaBackend.Implementations
             {
                 query = query.Where(e => e.Estado == filtros.EstadoEnvio);
             }
-            if (filtros.IdConductor.HasValue)
+            if (filtros.IdUsuario.HasValue)
             {
-                query = query.Where(e => e.IdConductor == filtros.IdConductor.Value);
+                query = query.Where(e => e.IdUsuario == filtros.IdUsuario.Value);
             }
             if (filtros.IdCliente.HasValue)
             {

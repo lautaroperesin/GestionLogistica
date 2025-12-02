@@ -12,7 +12,6 @@ namespace GestionLogisticaApp
         {
             InitializeComponent();
             Routing.RegisterRoute("EnvioDetallePage", typeof(EnvioDetallePage));
-            Routing.RegisterRoute("CrearEnvioPage", typeof(CrearEnvioPage));
         }
 
         // Método público para cambiar el estado de login desde otras páginas

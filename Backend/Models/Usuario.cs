@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using GestionLogisticaBackend.Enums;
+using LogisticaBackend.Models;
 using Service.Enums;
 
 namespace GestionLogisticaBackend.Models
@@ -35,6 +36,9 @@ namespace GestionLogisticaBackend.Models
         public string Telefono { get; set; } = string.Empty;
         public string Observacion { get; set; } = string.Empty;
         public bool isDeleted { get; set; } = false;
+
+        // Navegación
+        public virtual ICollection<Envio> Envios { get; set; } = new List<Envio>();
 
     }
 }

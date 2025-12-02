@@ -27,7 +27,7 @@ namespace Shared.ApiServices
             var queryParams = new List<string>();
             if (filtros == null) filtros = new EnvioFilterDto();
 
-            if (filtros.IdConductor.HasValue) queryParams.Add($"IdConductor={Uri.EscapeDataString(filtros.IdConductor.Value.ToString())}");
+            if (filtros.IdUsuario.HasValue) queryParams.Add($"IdUsuario={Uri.EscapeDataString(filtros.IdUsuario.Value.ToString())}");
             if (filtros.IdCliente.HasValue) queryParams.Add($"IdCliente={Uri.EscapeDataString(filtros.IdCliente.Value.ToString())}");
             if (filtros.IdVehiculo.HasValue) queryParams.Add($"IdVehiculo={Uri.EscapeDataString(filtros.IdVehiculo.Value.ToString())}");
             if (filtros.FechaSalidaDesde.HasValue) queryParams.Add($"FechaSalidaDesde={Uri.EscapeDataString(filtros.FechaSalidaDesde.Value.ToString("o"))}");
@@ -83,12 +83,15 @@ namespace Shared.ApiServices
         {
             SetAuthorizationHeader();
             var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{id}", envioDto);
-            var content = await response.Content.ReadAsStringAsync();
+            
             if (!response.IsSuccessStatusCode)
             {
+                var content = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Error al actualizar envío: {response.StatusCode} - {content}");
             }
-            return JsonSerializer.Deserialize<EnvioDto>(content, _options);
+
+            // El servidor devuelve NoContent (204), así que no hay contenido JSON
+            return null;
         }
 
         public async Task<bool> DeleteEnvioAsync(int id)

@@ -83,5 +83,24 @@ namespace GestionLogisticaBackend.Controllers
             }
         }
 
+        // get by id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UsuarioDto>> GetById(int id)
+        {
+            try
+            {
+                var user = await _usuarioService.GetByIdAsync(id);
+                if (user != null)
+                {
+                    return Ok(user);
+                }
+                return NotFound(new { message = "Usuario no encontrado." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al obtener el usuario. Error: {ex.Message}" });
+            }
+
+        }
     }
 }
